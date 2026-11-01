@@ -1,0 +1,13 @@
+{
+  "offers": {
+    "offer_clean.pdf": {"flagged": false, "hidden": false, "unfair": false},
+    "offer_hidden.pdf": {"flagged": true, "hidden": true, "unfair": false},
+    "offer_visible.pdf": {"flagged": true, "hidden": false, "unfair": false},
+    "offer_unfair.pdf": {"flagged": false, "hidden": false, "unfair": true}
+  },
+  "letters": {
+    "letter_clean.pdf": {"flagged": false, "hidden": false},
+    "letter_hidden.pdf": {"flagged": true, "hidden": true},
+    "letter_visible.pdf": {"flagged": true, "hidden": false}
+  }
+}
