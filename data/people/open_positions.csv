@@ -1,0 +1,7 @@
+job_id,department,title,opened_date,status
+job-be,Engineering,Backend Developer,2026-09-15,open
+job-da,Operations,Data Analyst,2026-09-22,open
+job-pd,Product & Design,Product Designer,2026-10-01,open
+job-se,Sales,Account Executive,2026-08-18,open
+job-su,Support,Support Specialist,2026-07-06,open
+job-pp,People & Finance,People Partner,2026-06-02,on_hold

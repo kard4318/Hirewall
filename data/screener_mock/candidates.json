@@ -1,0 +1,244 @@
+[
+  {
+    "candidate_id": "cand-omar",
+    "first_name": "Omar",
+    "last_name": "Haddad",
+    "email": "omar.haddad@example.test",
+    "job_id": "job-be",
+    "job_title": "Backend Developer",
+    "score": 94,
+    "matched_skills": [
+      "Python",
+      "PostgreSQL",
+      "Docker",
+      "REST APIs"
+    ],
+    "justification": "Six years building Python REST services; led a database migration to PostgreSQL and maintains Docker-based CI pipelines.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  },
+  {
+    "candidate_id": "cand-yassine",
+    "first_name": "Yassine",
+    "last_name": "Test",
+    "email": "yassine@example.test",
+    "job_id": "job-be",
+    "job_title": "Backend Developer",
+    "score": 88,
+    "matched_skills": [
+      "Python",
+      "FastAPI",
+      "Redis"
+    ],
+    "justification": "Four years of FastAPI and Redis in production, including a rate-limited public API serving partner integrations.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  },
+  {
+    "candidate_id": "cand-karim",
+    "first_name": "Karim",
+    "last_name": "Mansour",
+    "email": "karim.mansour@example.test",
+    "job_id": "job-be",
+    "job_title": "Backend Developer",
+    "score": 83,
+    "matched_skills": [
+      "Go",
+      "gRPC",
+      "Kubernetes"
+    ],
+    "justification": "Built gRPC microservices in Go and operated them on Kubernetes; contributed observability dashboards to an open-source project.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  },
+  {
+    "candidate_id": "cand-lea",
+    "first_name": "Lea",
+    "last_name": "Martin",
+    "email": "lea.martin@example.test",
+    "job_id": "job-be",
+    "job_title": "Backend Developer",
+    "score": 79,
+    "matched_skills": [
+      "Node.js",
+      "TypeScript",
+      "MongoDB"
+    ],
+    "justification": "Three years of Node.js and TypeScript back ends; delivered a document-storage service on MongoDB for an e-commerce platform.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  },
+  {
+    "candidate_id": "cand-nour",
+    "first_name": "Nour",
+    "last_name": "Jaziri",
+    "email": "nour.jaziri@example.test",
+    "job_id": "job-be",
+    "job_title": "Backend Developer",
+    "score": 71,
+    "matched_skills": [
+      "Java",
+      "Spring Boot",
+      "SQL"
+    ],
+    "justification": "Two years of Spring Boot development with solid SQL; final-year project was an inventory API with automated tests.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  },
+  {
+    "candidate_id": "cand-ines",
+    "first_name": "Ines",
+    "last_name": "Trabelsi",
+    "email": "ines.trabelsi@example.test",
+    "job_id": "job-da",
+    "job_title": "Data Analyst",
+    "score": 92,
+    "matched_skills": [
+      "SQL",
+      "Python",
+      "Power BI",
+      "A/B testing"
+    ],
+    "justification": "Five years of SQL and Python analytics; designed A/B test reporting and Power BI dashboards used by product teams.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  },
+  {
+    "candidate_id": "cand-sara",
+    "first_name": "Sara",
+    "last_name": "Test",
+    "email": "sara@example.test",
+    "job_id": "job-da",
+    "job_title": "Data Analyst",
+    "score": 90,
+    "matched_skills": [
+      "SQL",
+      "pandas",
+      "Tableau"
+    ],
+    "justification": "Four years analysing sales data with SQL and pandas; built Tableau dashboards that replaced weekly manual reports.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  },
+  {
+    "candidate_id": "cand-emily",
+    "first_name": "Emily",
+    "last_name": "Test",
+    "email": "emily@example.test",
+    "job_id": "job-da",
+    "job_title": "Data Analyst",
+    "score": 85,
+    "matched_skills": [
+      "Python",
+      "statistics",
+      "Looker"
+    ],
+    "justification": "Three years of statistical analysis in Python; created Looker models and a churn-analysis project with clear documentation.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  },
+  {
+    "candidate_id": "cand-mehdi",
+    "first_name": "Mehdi",
+    "last_name": "Gharbi",
+    "email": "mehdi.gharbi@example.test",
+    "job_id": "job-da",
+    "job_title": "Data Analyst",
+    "score": 76,
+    "matched_skills": [
+      "Excel",
+      "SQL",
+      "data cleaning"
+    ],
+    "justification": "Two years of reporting with advanced Excel and SQL; automated a data-cleaning workflow for monthly finance reports.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  },
+  {
+    "candidate_id": "cand-lucas",
+    "first_name": "Lucas",
+    "last_name": "Bernard",
+    "email": "lucas.bernard@example.test",
+    "job_id": "job-da",
+    "job_title": "Data Analyst",
+    "score": 73,
+    "matched_skills": [
+      "R",
+      "ggplot2",
+      "survey analysis"
+    ],
+    "justification": "Survey and research analysis in R with ggplot2; master's project modelled customer satisfaction drivers.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  },
+  {
+    "candidate_id": "cand-maya",
+    "first_name": "Maya",
+    "last_name": "Durand",
+    "email": "maya.durand@example.test",
+    "job_id": "job-pd",
+    "job_title": "Product Designer",
+    "score": 91,
+    "matched_skills": [
+      "Figma",
+      "design systems",
+      "user research"
+    ],
+    "justification": "Five years of product design in Figma; built and documented a design system adopted across three product teams.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  },
+  {
+    "candidate_id": "cand-salma",
+    "first_name": "Salma",
+    "last_name": "Riahi",
+    "email": "salma.riahi@example.test",
+    "job_id": "job-pd",
+    "job_title": "Product Designer",
+    "score": 87,
+    "matched_skills": [
+      "prototyping",
+      "usability testing",
+      "Figma"
+    ],
+    "justification": "Four years of interactive prototyping with regular usability testing; redesigned a mobile onboarding flow end to end.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  },
+  {
+    "candidate_id": "cand-hugo",
+    "first_name": "Hugo",
+    "last_name": "Petit",
+    "email": "hugo.petit@example.test",
+    "job_id": "job-pd",
+    "job_title": "Product Designer",
+    "score": 81,
+    "matched_skills": [
+      "interaction design",
+      "accessibility",
+      "Framer"
+    ],
+    "justification": "Interaction designer with an accessibility focus; shipped WCAG-compliant checkout screens and Framer prototypes.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  },
+  {
+    "candidate_id": "cand-rania",
+    "first_name": "Rania",
+    "last_name": "Kefi",
+    "email": "rania.kefi@example.test",
+    "job_id": "job-pd",
+    "job_title": "Product Designer",
+    "score": 78,
+    "matched_skills": [
+      "UX writing",
+      "wireframing",
+      "Miro"
+    ],
+    "justification": "Three years of wireframing and UX writing; facilitated discovery workshops and delivered a help-centre redesign.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  },
+  {
+    "candidate_id": "cand-adam",
+    "first_name": "Adam",
+    "last_name": "Saidi",
+    "email": "adam.saidi@example.test",
+    "job_id": "job-pd",
+    "job_title": "Product Designer",
+    "score": 72,
+    "matched_skills": [
+      "visual design",
+      "Illustrator",
+      "Figma"
+    ],
+    "justification": "Two years of visual and marketing design in Illustrator and Figma; portfolio includes a B2B dashboard concept.",
+    "screened_at": "2026-10-30T10:00:00+01:00"
+  }
+]

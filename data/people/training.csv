@@ -1,0 +1,819 @@
+employee_id,course,hours,completed
+E-0005,Data protection basics,16,true
+E-0005,Inclusive hiring,6,true
+E-0006,Inclusive hiring,4,false
+E-0006,Time management,8,false
+E-0006,Negotiation,4,true
+E-0008,Customer empathy,8,true
+E-0008,Advanced SQL,8,true
+E-0009,Product discovery,6,false
+E-0009,Advanced SQL,2,true
+E-0009,Negotiation,4,true
+E-0010,Inclusive hiring,4,false
+E-0010,Product discovery,3,true
+E-0010,Security awareness,2,true
+E-0011,Product discovery,2,true
+E-0011,Time management,4,true
+E-0011,Inclusive hiring,4,true
+E-0012,Feedback skills,16,true
+E-0012,Python for analysts,8,true
+E-0012,Product discovery,3,true
+E-0013,Advanced SQL,6,true
+E-0013,Negotiation,12,true
+E-0013,Inclusive hiring,16,false
+E-0015,Product discovery,2,true
+E-0015,Security awareness,16,true
+E-0015,Customer empathy,16,true
+E-0016,Feedback skills,12,true
+E-0017,Security awareness,4,true
+E-0017,Customer empathy,4,true
+E-0017,Python for analysts,3,true
+E-0020,Feedback skills,12,true
+E-0020,Inclusive hiring,6,false
+E-0020,Security awareness,16,true
+E-0022,Data protection basics,4,true
+E-0022,Feedback skills,3,true
+E-0022,Customer empathy,2,true
+E-0024,Security awareness,4,true
+E-0024,Time management,8,true
+E-0024,Customer empathy,12,true
+E-0025,Negotiation,8,true
+E-0027,Python for analysts,8,true
+E-0027,Feedback skills,12,true
+E-0028,Data protection basics,4,true
+E-0030,Python for analysts,2,true
+E-0030,Data protection basics,6,true
+E-0031,Advanced SQL,4,true
+E-0034,Product discovery,3,false
+E-0035,Negotiation,2,false
+E-0035,Inclusive hiring,3,true
+E-0035,Python for analysts,4,true
+E-0037,Data protection basics,3,false
+E-0037,Python for analysts,3,true
+E-0037,Security awareness,16,true
+E-0038,Data protection basics,6,true
+E-0038,Product discovery,4,true
+E-0039,Feedback skills,8,true
+E-0039,Python for analysts,12,false
+E-0039,Product discovery,12,true
+E-0040,Customer empathy,8,false
+E-0042,Security awareness,2,true
+E-0042,Product discovery,16,true
+E-0042,Inclusive hiring,4,true
+E-0043,Security awareness,12,true
+E-0043,Data protection basics,16,false
+E-0043,Customer empathy,4,true
+E-0045,Product discovery,16,false
+E-0046,Feedback skills,8,false
+E-0046,Customer empathy,2,false
+E-0047,Python for analysts,2,true
+E-0047,Time management,8,false
+E-0049,Security awareness,8,true
+E-0049,Python for analysts,6,true
+E-0049,Feedback skills,3,true
+E-0050,Advanced SQL,3,false
+E-0050,Python for analysts,8,true
+E-0050,Product discovery,2,true
+E-0054,Security awareness,4,true
+E-0054,Time management,4,false
+E-0056,Inclusive hiring,8,false
+E-0056,Data protection basics,8,false
+E-0056,Customer empathy,12,true
+E-0058,Python for analysts,3,true
+E-0060,Python for analysts,6,true
+E-0060,Advanced SQL,3,true
+E-0063,Time management,4,true
+E-0063,Feedback skills,8,false
+E-0063,Inclusive hiring,6,false
+E-0065,Python for analysts,3,true
+E-0068,Time management,4,true
+E-0068,Data protection basics,3,true
+E-0068,Inclusive hiring,16,true
+E-0069,Customer empathy,6,true
+E-0069,Product discovery,16,false
+E-0070,Product discovery,2,true
+E-0070,Inclusive hiring,2,true
+E-0070,Feedback skills,8,true
+E-0071,Python for analysts,3,true
+E-0071,Feedback skills,4,true
+E-0071,Time management,16,true
+E-0072,Python for analysts,3,true
+E-0072,Negotiation,6,true
+E-0072,Advanced SQL,3,true
+E-0073,Customer empathy,16,false
+E-0074,Customer empathy,12,true
+E-0074,Feedback skills,3,true
+E-0075,Inclusive hiring,6,true
+E-0076,Advanced SQL,3,true
+E-0076,Negotiation,16,true
+E-0078,Customer empathy,8,false
+E-0078,Advanced SQL,8,true
+E-0078,Python for analysts,8,true
+E-0081,Security awareness,6,true
+E-0081,Time management,2,false
+E-0081,Data protection basics,3,true
+E-0082,Security awareness,6,true
+E-0082,Time management,12,false
+E-0084,Product discovery,6,true
+E-0087,Product discovery,3,true
+E-0087,Negotiation,8,false
+E-0089,Time management,16,true
+E-0089,Inclusive hiring,2,true
+E-0089,Negotiation,2,true
+E-0091,Time management,6,true
+E-0091,Inclusive hiring,2,true
+E-0091,Customer empathy,8,false
+E-0093,Negotiation,2,true
+E-0094,Inclusive hiring,2,true
+E-0094,Data protection basics,12,true
+E-0094,Time management,8,true
+E-0095,Time management,8,true
+E-0095,Inclusive hiring,16,true
+E-0095,Customer empathy,4,true
+E-0096,Inclusive hiring,3,true
+E-0096,Python for analysts,2,true
+E-0096,Time management,4,true
+E-0098,Product discovery,2,false
+E-0098,Inclusive hiring,3,true
+E-0099,Security awareness,6,true
+E-0099,Negotiation,8,true
+E-0100,Negotiation,8,true
+E-0100,Feedback skills,6,true
+E-0100,Time management,2,true
+E-0102,Feedback skills,8,true
+E-0103,Time management,3,true
+E-0103,Feedback skills,12,true
+E-0103,Security awareness,3,true
+E-0105,Python for analysts,2,true
+E-0105,Product discovery,6,false
+E-0105,Advanced SQL,3,true
+E-0106,Python for analysts,6,true
+E-0106,Time management,4,false
+E-0106,Inclusive hiring,2,true
+E-0107,Advanced SQL,16,true
+E-0107,Customer empathy,6,true
+E-0108,Product discovery,6,true
+E-0112,Product discovery,8,true
+E-0112,Advanced SQL,3,true
+E-0112,Customer empathy,2,true
+E-0113,Time management,12,true
+E-0113,Data protection basics,16,false
+E-0113,Negotiation,4,true
+E-0114,Product discovery,8,false
+E-0114,Time management,4,false
+E-0115,Python for analysts,6,true
+E-0115,Negotiation,8,true
+E-0115,Time management,4,false
+E-0116,Data protection basics,2,true
+E-0118,Feedback skills,16,true
+E-0119,Customer empathy,4,true
+E-0119,Security awareness,16,true
+E-0120,Feedback skills,12,true
+E-0121,Product discovery,4,true
+E-0122,Security awareness,12,true
+E-0122,Data protection basics,6,true
+E-0123,Security awareness,4,true
+E-0123,Inclusive hiring,12,true
+E-0123,Feedback skills,6,true
+E-0125,Inclusive hiring,12,true
+E-0125,Negotiation,16,true
+E-0125,Python for analysts,4,true
+E-0127,Security awareness,4,true
+E-0127,Time management,12,true
+E-0128,Security awareness,16,false
+E-0128,Feedback skills,16,true
+E-0128,Advanced SQL,3,true
+E-0129,Advanced SQL,6,true
+E-0130,Python for analysts,8,true
+E-0131,Data protection basics,12,true
+E-0131,Product discovery,6,true
+E-0131,Advanced SQL,3,true
+E-0132,Feedback skills,4,true
+E-0132,Time management,4,true
+E-0133,Data protection basics,6,false
+E-0134,Time management,3,true
+E-0134,Inclusive hiring,6,true
+E-0136,Product discovery,16,false
+E-0136,Advanced SQL,16,false
+E-0136,Inclusive hiring,8,true
+E-0137,Feedback skills,12,true
+E-0138,Time management,2,true
+E-0138,Data protection basics,2,true
+E-0139,Data protection basics,2,true
+E-0139,Advanced SQL,16,true
+E-0139,Negotiation,4,true
+E-0140,Feedback skills,3,true
+E-0140,Advanced SQL,4,true
+E-0142,Data protection basics,3,true
+E-0142,Product discovery,2,true
+E-0143,Time management,3,true
+E-0143,Python for analysts,8,true
+E-0143,Data protection basics,3,false
+E-0145,Python for analysts,3,true
+E-0145,Feedback skills,8,false
+E-0146,Negotiation,2,true
+E-0146,Security awareness,12,true
+E-0146,Inclusive hiring,6,true
+E-0147,Customer empathy,12,true
+E-0147,Inclusive hiring,8,true
+E-0150,Negotiation,4,true
+E-0150,Advanced SQL,12,true
+E-0150,Product discovery,16,true
+E-0151,Python for analysts,2,true
+E-0151,Inclusive hiring,12,true
+E-0153,Product discovery,6,true
+E-0153,Negotiation,3,true
+E-0155,Product discovery,3,true
+E-0155,Advanced SQL,12,true
+E-0155,Customer empathy,16,false
+E-0156,Negotiation,2,true
+E-0156,Security awareness,4,true
+E-0157,Product discovery,16,true
+E-0161,Inclusive hiring,6,false
+E-0161,Time management,16,true
+E-0161,Data protection basics,8,false
+E-0162,Time management,6,true
+E-0162,Negotiation,3,true
+E-0163,Inclusive hiring,2,true
+E-0163,Negotiation,16,true
+E-0163,Customer empathy,6,true
+E-0165,Python for analysts,8,true
+E-0165,Advanced SQL,3,true
+E-0168,Python for analysts,16,true
+E-0169,Python for analysts,8,true
+E-0169,Negotiation,6,true
+E-0169,Advanced SQL,6,true
+E-0170,Python for analysts,16,true
+E-0171,Negotiation,2,true
+E-0171,Security awareness,3,false
+E-0173,Security awareness,6,true
+E-0173,Inclusive hiring,6,true
+E-0173,Time management,6,true
+E-0174,Advanced SQL,6,true
+E-0174,Product discovery,4,false
+E-0174,Time management,8,true
+E-0175,Customer empathy,2,true
+E-0175,Inclusive hiring,8,false
+E-0175,Product discovery,2,true
+E-0176,Data protection basics,16,true
+E-0176,Product discovery,6,true
+E-0179,Advanced SQL,6,true
+E-0179,Customer empathy,8,true
+E-0180,Negotiation,3,true
+E-0181,Advanced SQL,3,true
+E-0181,Customer empathy,16,true
+E-0182,Security awareness,2,true
+E-0183,Negotiation,12,true
+E-0185,Data protection basics,3,true
+E-0186,Negotiation,8,true
+E-0186,Customer empathy,8,false
+E-0187,Customer empathy,3,true
+E-0187,Advanced SQL,8,true
+E-0189,Feedback skills,4,true
+E-0189,Time management,8,true
+E-0190,Security awareness,8,true
+E-0191,Data protection basics,12,true
+E-0191,Negotiation,12,false
+E-0192,Negotiation,2,true
+E-0192,Time management,8,true
+E-0193,Data protection basics,16,true
+E-0193,Time management,8,true
+E-0194,Time management,6,true
+E-0194,Security awareness,6,true
+E-0195,Customer empathy,16,true
+E-0195,Advanced SQL,3,true
+E-0199,Product discovery,12,true
+E-0199,Python for analysts,3,true
+E-0199,Security awareness,12,false
+E-0200,Python for analysts,6,true
+E-0200,Security awareness,8,true
+E-0200,Product discovery,16,true
+E-0202,Python for analysts,4,true
+E-0203,Security awareness,8,true
+E-0203,Data protection basics,8,false
+E-0205,Negotiation,4,true
+E-0205,Advanced SQL,3,true
+E-0205,Inclusive hiring,16,true
+E-0206,Advanced SQL,2,false
+E-0207,Inclusive hiring,16,true
+E-0207,Negotiation,12,true
+E-0207,Customer empathy,12,true
+E-0209,Advanced SQL,16,true
+E-0209,Security awareness,2,true
+E-0209,Product discovery,6,true
+E-0210,Time management,6,true
+E-0210,Feedback skills,6,true
+E-0211,Time management,16,true
+E-0212,Negotiation,12,true
+E-0212,Customer empathy,8,true
+E-0213,Data protection basics,8,true
+E-0214,Python for analysts,4,true
+E-0214,Product discovery,16,true
+E-0215,Python for analysts,16,false
+E-0215,Customer empathy,3,false
+E-0215,Negotiation,8,false
+E-0217,Advanced SQL,8,true
+E-0217,Inclusive hiring,2,true
+E-0217,Python for analysts,2,true
+E-0219,Data protection basics,3,true
+E-0219,Negotiation,4,true
+E-0219,Advanced SQL,2,true
+E-0220,Python for analysts,12,false
+E-0222,Python for analysts,12,true
+E-0224,Data protection basics,16,true
+E-0225,Python for analysts,2,true
+E-0225,Inclusive hiring,4,true
+E-0226,Data protection basics,16,true
+E-0226,Negotiation,12,true
+E-0226,Product discovery,4,true
+E-0227,Product discovery,16,true
+E-0228,Advanced SQL,4,false
+E-0228,Security awareness,4,true
+E-0229,Negotiation,3,true
+E-0230,Negotiation,2,true
+E-0231,Feedback skills,6,true
+E-0231,Data protection basics,2,true
+E-0232,Python for analysts,12,true
+E-0233,Security awareness,3,true
+E-0233,Negotiation,2,false
+E-0235,Customer empathy,12,true
+E-0235,Product discovery,6,false
+E-0235,Inclusive hiring,8,false
+E-0236,Negotiation,6,true
+E-0236,Customer empathy,16,true
+E-0237,Time management,3,true
+E-0239,Negotiation,4,true
+E-0239,Data protection basics,6,true
+E-0239,Advanced SQL,12,true
+E-0240,Advanced SQL,16,true
+E-0240,Data protection basics,12,true
+E-0240,Negotiation,8,true
+E-0242,Feedback skills,12,true
+E-0242,Product discovery,2,true
+E-0244,Negotiation,12,true
+E-0244,Data protection basics,3,true
+E-0245,Security awareness,12,false
+E-0246,Negotiation,6,true
+E-0250,Product discovery,2,true
+E-0250,Negotiation,2,true
+E-0250,Time management,12,true
+E-0251,Feedback skills,16,true
+E-0252,Negotiation,12,false
+E-0252,Time management,2,true
+E-0252,Inclusive hiring,3,false
+E-0253,Negotiation,8,true
+E-0254,Inclusive hiring,12,true
+E-0254,Security awareness,4,true
+E-0254,Python for analysts,2,true
+E-0255,Python for analysts,2,true
+E-0256,Data protection basics,6,true
+E-0257,Feedback skills,6,true
+E-0257,Data protection basics,16,false
+E-0257,Python for analysts,12,false
+E-0258,Python for analysts,8,true
+E-0259,Security awareness,8,true
+E-0260,Data protection basics,4,true
+E-0261,Inclusive hiring,8,true
+E-0261,Advanced SQL,3,false
+E-0263,Inclusive hiring,2,true
+E-0265,Python for analysts,2,false
+E-0265,Customer empathy,2,true
+E-0265,Inclusive hiring,3,false
+E-0266,Python for analysts,12,true
+E-0266,Product discovery,16,true
+E-0266,Customer empathy,3,true
+E-0268,Product discovery,6,true
+E-0268,Time management,3,true
+E-0268,Negotiation,2,true
+E-0269,Negotiation,4,true
+E-0269,Data protection basics,8,true
+E-0269,Product discovery,2,false
+E-0270,Python for analysts,4,true
+E-0271,Time management,16,true
+E-0271,Feedback skills,3,true
+E-0271,Negotiation,3,true
+E-0272,Negotiation,6,true
+E-0275,Security awareness,4,true
+E-0275,Python for analysts,4,true
+E-0275,Advanced SQL,16,false
+E-0276,Security awareness,12,true
+E-0276,Data protection basics,8,true
+E-0277,Negotiation,8,true
+E-0278,Negotiation,8,true
+E-0279,Feedback skills,3,true
+E-0279,Advanced SQL,4,true
+E-0280,Customer empathy,16,true
+E-0282,Data protection basics,6,true
+E-0283,Customer empathy,3,true
+E-0284,Negotiation,4,true
+E-0284,Inclusive hiring,12,true
+E-0284,Customer empathy,4,false
+E-0285,Advanced SQL,3,true
+E-0287,Security awareness,2,true
+E-0287,Product discovery,6,true
+E-0287,Inclusive hiring,16,true
+E-0289,Python for analysts,16,false
+E-0289,Inclusive hiring,8,false
+E-0291,Time management,6,true
+E-0291,Feedback skills,6,true
+E-0291,Data protection basics,3,true
+E-0295,Product discovery,12,true
+E-0295,Security awareness,16,true
+E-0296,Customer empathy,8,false
+E-0296,Feedback skills,8,false
+E-0297,Security awareness,6,true
+E-0297,Python for analysts,8,true
+E-0298,Customer empathy,6,true
+E-0298,Negotiation,2,true
+E-0298,Data protection basics,2,true
+E-0299,Feedback skills,4,true
+E-0299,Inclusive hiring,12,false
+E-0300,Negotiation,12,true
+E-0301,Negotiation,6,true
+E-0301,Security awareness,16,true
+E-0301,Python for analysts,3,true
+E-0303,Negotiation,16,true
+E-0303,Security awareness,6,false
+E-0305,Time management,4,true
+E-0305,Security awareness,4,true
+E-0306,Time management,8,false
+E-0306,Feedback skills,12,false
+E-0306,Data protection basics,8,false
+E-0307,Advanced SQL,6,true
+E-0307,Security awareness,8,true
+E-0307,Data protection basics,4,true
+E-0308,Data protection basics,3,false
+E-0308,Time management,3,true
+E-0308,Feedback skills,12,true
+E-0309,Feedback skills,4,false
+E-0309,Python for analysts,8,true
+E-0309,Advanced SQL,4,true
+E-0310,Advanced SQL,6,false
+E-0310,Negotiation,16,true
+E-0311,Time management,6,true
+E-0311,Python for analysts,16,true
+E-0311,Product discovery,12,true
+E-0312,Feedback skills,6,true
+E-0315,Inclusive hiring,2,true
+E-0315,Product discovery,4,true
+E-0316,Negotiation,3,false
+E-0317,Security awareness,12,true
+E-0317,Product discovery,3,true
+E-0317,Customer empathy,6,true
+E-0318,Security awareness,2,true
+E-0318,Product discovery,16,true
+E-0318,Feedback skills,8,true
+E-0321,Python for analysts,12,true
+E-0321,Advanced SQL,4,true
+E-0322,Time management,6,true
+E-0322,Python for analysts,3,false
+E-0322,Negotiation,4,true
+E-0323,Feedback skills,4,false
+E-0323,Negotiation,16,true
+E-0324,Advanced SQL,4,false
+E-0325,Python for analysts,3,true
+E-0326,Inclusive hiring,16,true
+E-0326,Python for analysts,12,true
+E-0329,Feedback skills,2,true
+E-0330,Python for analysts,6,true
+E-0330,Inclusive hiring,3,true
+E-0331,Security awareness,3,true
+E-0331,Advanced SQL,8,false
+E-0331,Time management,8,true
+E-0332,Customer empathy,6,false
+E-0333,Advanced SQL,2,false
+E-0333,Inclusive hiring,8,false
+E-0334,Product discovery,4,false
+E-0334,Negotiation,16,false
+E-0335,Inclusive hiring,12,true
+E-0335,Negotiation,6,false
+E-0335,Advanced SQL,3,true
+E-0336,Product discovery,2,false
+E-0337,Negotiation,4,true
+E-0338,Python for analysts,12,true
+E-0339,Feedback skills,2,true
+E-0339,Product discovery,16,true
+E-0339,Python for analysts,12,false
+E-0340,Customer empathy,4,false
+E-0340,Feedback skills,8,false
+E-0340,Negotiation,12,true
+E-0341,Customer empathy,4,true
+E-0342,Product discovery,4,true
+E-0343,Time management,3,true
+E-0343,Data protection basics,6,true
+E-0346,Negotiation,3,true
+E-0346,Product discovery,6,true
+E-0348,Inclusive hiring,3,true
+E-0348,Data protection basics,6,false
+E-0349,Advanced SQL,2,true
+E-0349,Data protection basics,12,false
+E-0349,Customer empathy,6,true
+E-0350,Python for analysts,3,true
+E-0350,Inclusive hiring,6,true
+E-0351,Security awareness,16,true
+E-0351,Product discovery,6,true
+E-0352,Feedback skills,16,true
+E-0352,Security awareness,4,true
+E-0353,Negotiation,6,true
+E-0353,Data protection basics,12,false
+E-0353,Product discovery,2,true
+E-0354,Negotiation,8,true
+E-0354,Data protection basics,8,true
+E-0355,Product discovery,12,true
+E-0355,Negotiation,4,true
+E-0356,Security awareness,8,true
+E-0356,Product discovery,4,false
+E-0356,Inclusive hiring,12,true
+E-0357,Security awareness,4,true
+E-0358,Advanced SQL,4,true
+E-0358,Security awareness,2,true
+E-0358,Product discovery,16,true
+E-0359,Python for analysts,16,true
+E-0360,Advanced SQL,4,true
+E-0360,Product discovery,12,true
+E-0361,Python for analysts,2,true
+E-0361,Advanced SQL,4,true
+E-0361,Inclusive hiring,6,true
+E-0362,Data protection basics,3,true
+E-0363,Feedback skills,16,false
+E-0364,Time management,6,true
+E-0364,Python for analysts,2,true
+E-0364,Data protection basics,3,false
+E-0365,Advanced SQL,12,true
+E-0365,Product discovery,16,true
+E-0366,Time management,12,true
+E-0366,Advanced SQL,12,true
+E-0366,Inclusive hiring,3,true
+E-0367,Inclusive hiring,3,true
+E-0367,Feedback skills,2,true
+E-0367,Product discovery,16,true
+E-0368,Security awareness,16,true
+E-0369,Security awareness,2,true
+E-0369,Feedback skills,12,true
+E-0370,Negotiation,2,false
+E-0371,Data protection basics,4,true
+E-0373,Data protection basics,8,true
+E-0374,Inclusive hiring,12,true
+E-0375,Inclusive hiring,16,true
+E-0376,Python for analysts,4,true
+E-0376,Advanced SQL,8,true
+E-0377,Feedback skills,2,false
+E-0377,Time management,16,true
+E-0377,Data protection basics,3,false
+E-0378,Inclusive hiring,2,false
+E-0378,Time management,2,false
+E-0379,Negotiation,6,true
+E-0379,Advanced SQL,2,true
+E-0379,Inclusive hiring,4,false
+E-0380,Feedback skills,3,true
+E-0380,Time management,16,false
+E-0381,Negotiation,2,true
+E-0382,Advanced SQL,8,true
+E-0382,Product discovery,2,true
+E-0383,Customer empathy,4,false
+E-0384,Product discovery,8,true
+E-0384,Negotiation,16,true
+E-0384,Feedback skills,16,true
+E-0385,Advanced SQL,2,false
+E-0385,Inclusive hiring,6,false
+E-0387,Negotiation,12,true
+E-0387,Time management,2,true
+E-0388,Python for analysts,12,false
+E-0388,Data protection basics,3,true
+E-0389,Advanced SQL,3,true
+E-0391,Data protection basics,16,true
+E-0391,Feedback skills,6,true
+E-0393,Python for analysts,4,true
+E-0393,Product discovery,8,false
+E-0393,Customer empathy,6,true
+E-0394,Negotiation,2,true
+E-0395,Negotiation,12,false
+E-0395,Feedback skills,2,true
+E-0396,Data protection basics,6,true
+E-0397,Customer empathy,8,true
+E-0400,Product discovery,8,false
+E-0401,Time management,16,true
+E-0402,Feedback skills,12,true
+E-0402,Product discovery,8,true
+E-0403,Time management,2,false
+E-0403,Python for analysts,2,false
+E-0404,Customer empathy,6,true
+E-0405,Negotiation,2,true
+E-0405,Python for analysts,8,true
+E-0406,Inclusive hiring,6,true
+E-0406,Negotiation,12,true
+E-0408,Python for analysts,12,false
+E-0409,Time management,8,false
+E-0409,Negotiation,8,true
+E-0409,Python for analysts,4,false
+E-0410,Python for analysts,16,false
+E-0410,Advanced SQL,4,true
+E-0412,Security awareness,4,true
+E-0412,Inclusive hiring,8,true
+E-0412,Advanced SQL,12,true
+E-0413,Customer empathy,4,false
+E-0414,Advanced SQL,12,true
+E-0414,Security awareness,3,true
+E-0415,Data protection basics,2,true
+E-0415,Python for analysts,2,false
+E-0415,Product discovery,2,false
+E-0417,Python for analysts,6,true
+E-0417,Time management,12,true
+E-0418,Advanced SQL,6,false
+E-0420,Python for analysts,16,true
+E-0420,Data protection basics,12,true
+E-0421,Negotiation,16,true
+E-0421,Time management,4,true
+E-0422,Advanced SQL,3,true
+E-0422,Customer empathy,16,false
+E-0424,Time management,3,true
+E-0425,Product discovery,8,false
+E-0426,Python for analysts,12,false
+E-0427,Python for analysts,4,true
+E-0427,Data protection basics,16,true
+E-0427,Advanced SQL,6,true
+E-0428,Product discovery,8,true
+E-0429,Time management,3,true
+E-0429,Advanced SQL,4,true
+E-0430,Time management,2,true
+E-0430,Inclusive hiring,8,true
+E-0431,Negotiation,4,false
+E-0431,Feedback skills,8,true
+E-0431,Python for analysts,16,true
+E-0432,Python for analysts,8,true
+E-0432,Security awareness,6,true
+E-0433,Product discovery,16,true
+E-0435,Data protection basics,16,false
+E-0435,Feedback skills,16,true
+E-0436,Product discovery,12,true
+E-0437,Feedback skills,3,true
+E-0437,Data protection basics,3,true
+E-0438,Negotiation,8,false
+E-0438,Python for analysts,6,true
+E-0439,Feedback skills,3,true
+E-0440,Product discovery,16,true
+E-0441,Time management,12,true
+E-0441,Inclusive hiring,2,true
+E-0441,Security awareness,2,true
+E-0442,Data protection basics,4,true
+E-0442,Customer empathy,2,true
+E-0443,Inclusive hiring,8,true
+E-0443,Feedback skills,2,true
+E-0443,Data protection basics,16,true
+E-0444,Product discovery,3,false
+E-0444,Negotiation,16,false
+E-0444,Data protection basics,4,false
+E-0445,Customer empathy,3,true
+E-0445,Feedback skills,3,true
+E-0445,Python for analysts,4,false
+E-0446,Python for analysts,6,true
+E-0446,Security awareness,12,false
+E-0447,Time management,6,true
+E-0447,Customer empathy,4,false
+E-0448,Advanced SQL,6,true
+E-0449,Security awareness,16,false
+E-0449,Python for analysts,16,false
+E-0450,Feedback skills,4,true
+E-0450,Product discovery,12,true
+E-0450,Customer empathy,16,true
+E-0452,Feedback skills,2,false
+E-0452,Negotiation,6,false
+E-0452,Customer empathy,4,true
+E-0453,Product discovery,3,true
+E-0454,Negotiation,12,true
+E-0455,Customer empathy,16,true
+E-0455,Security awareness,16,false
+E-0455,Product discovery,6,false
+E-0456,Customer empathy,16,true
+E-0456,Data protection basics,4,false
+E-0457,Customer empathy,12,true
+E-0457,Time management,12,true
+E-0458,Inclusive hiring,12,true
+E-0459,Inclusive hiring,3,true
+E-0459,Security awareness,4,true
+E-0459,Customer empathy,2,true
+E-0460,Inclusive hiring,6,true
+E-0460,Customer empathy,12,true
+E-0460,Advanced SQL,3,true
+E-0461,Product discovery,2,true
+E-0461,Feedback skills,3,true
+E-0462,Python for analysts,2,false
+E-0462,Feedback skills,8,true
+E-0463,Feedback skills,3,true
+E-0463,Data protection basics,16,true
+E-0463,Negotiation,6,false
+E-0464,Product discovery,4,true
+E-0464,Inclusive hiring,8,true
+E-0464,Data protection basics,12,false
+E-0465,Negotiation,3,true
+E-0465,Data protection basics,3,false
+E-0466,Product discovery,6,true
+E-0466,Negotiation,16,true
+E-0467,Product discovery,12,false
+E-0468,Inclusive hiring,16,true
+E-0468,Customer empathy,4,false
+E-0469,Python for analysts,6,false
+E-0470,Python for analysts,2,true
+E-0470,Negotiation,3,false
+E-0471,Customer empathy,12,true
+E-0471,Feedback skills,8,true
+E-0471,Python for analysts,2,true
+E-0472,Advanced SQL,3,false
+E-0473,Python for analysts,2,true
+E-0473,Security awareness,8,true
+E-0475,Advanced SQL,8,true
+E-0475,Inclusive hiring,3,true
+E-0476,Negotiation,3,true
+E-0476,Advanced SQL,12,true
+E-0476,Python for analysts,3,true
+E-0477,Security awareness,6,false
+E-0477,Inclusive hiring,16,true
+E-0478,Customer empathy,4,false
+E-0478,Product discovery,16,false
+E-0479,Advanced SQL,4,false
+E-0479,Customer empathy,6,false
+E-0479,Inclusive hiring,3,false
+E-0480,Negotiation,3,true
+E-0480,Security awareness,3,true
+E-0480,Feedback skills,4,true
+E-0481,Customer empathy,6,true
+E-0481,Data protection basics,4,false
+E-0482,Negotiation,2,true
+E-0482,Python for analysts,16,true
+E-0482,Time management,4,true
+E-0483,Inclusive hiring,12,true
+E-0483,Python for analysts,4,true
+E-0484,Python for analysts,8,true
+E-0484,Feedback skills,3,true
+E-0484,Security awareness,2,true
+E-0485,Data protection basics,2,true
+E-0485,Advanced SQL,12,true
+E-0486,Python for analysts,16,true
+E-0486,Data protection basics,2,true
+E-0487,Negotiation,8,true
+E-0487,Python for analysts,4,false
+E-0487,Product discovery,12,true
+E-0488,Advanced SQL,3,false
+E-0488,Inclusive hiring,16,false
+E-0489,Security awareness,8,false
+E-0489,Data protection basics,6,true
+E-0490,Inclusive hiring,16,true
+E-0490,Feedback skills,2,true
+E-0491,Inclusive hiring,6,true
+E-0492,Inclusive hiring,4,true
+E-0492,Data protection basics,6,true
+E-0493,Python for analysts,4,true
+E-0493,Inclusive hiring,16,true
+E-0494,Negotiation,6,false
+E-0495,Product discovery,2,true
+E-0495,Customer empathy,16,true
+E-0496,Customer empathy,12,false
+E-0497,Time management,4,false
+E-0498,Feedback skills,8,false
+E-0498,Inclusive hiring,8,true
+E-0498,Negotiation,6,false
+E-0499,Product discovery,3,true
+E-0499,Inclusive hiring,4,true
+E-0500,Customer empathy,8,true
+E-0500,Product discovery,2,true
+E-0500,Security awareness,8,true
+E-0501,Negotiation,12,false
+E-0502,Advanced SQL,8,true
+E-0502,Product discovery,8,true
+E-0503,Negotiation,16,true
+E-0503,Inclusive hiring,2,true
+E-0503,Time management,12,true
+E-0504,Negotiation,4,false
+E-0504,Python for analysts,16,true
+E-0504,Product discovery,3,true
+E-0505,Python for analysts,6,true
+E-0505,Product discovery,2,true
+E-0505,Data protection basics,2,true
+E-0506,Negotiation,16,true
+E-0506,Customer empathy,12,true
+E-0507,Product discovery,12,true
+E-0507,Advanced SQL,12,true
+E-0508,Data protection basics,3,true
+E-0508,Inclusive hiring,2,true
+E-0509,Feedback skills,6,true
+E-0509,Security awareness,12,true
+E-0509,Python for analysts,16,true
+E-0510,Feedback skills,16,true
+E-0510,Data protection basics,6,true
+E-0510,Product discovery,2,true
+E-0511,Negotiation,6,true
+E-0512,Python for analysts,3,true
+E-0512,Feedback skills,16,false
+E-0513,Advanced SQL,2,true
+E-0514,Customer empathy,12,false
+E-0514,Python for analysts,12,false
+E-0514,Negotiation,4,true
+E-0515,Negotiation,8,true
+E-0515,Time management,12,false
+E-0516,Feedback skills,8,true
+E-0516,Security awareness,8,true
+E-0517,Product discovery,12,true
+E-0518,Data protection basics,8,false
+E-0518,Negotiation,4,true
+E-0519,Security awareness,4,true
+E-0519,Inclusive hiring,6,true

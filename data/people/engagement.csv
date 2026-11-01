@@ -1,0 +1,334 @@
+quarter,department,site,score,response_rate,respondents
+2022Q1,Engineering,Tunis,3.8,0.85,22
+2022Q1,Engineering,Paris,3.7,0.80,13
+2022Q1,Engineering,Remote,4.0,0.68,7
+2022Q1,Support,Tunis,3.8,0.78,8
+2022Q1,Support,Paris,3.6,0.81,3
+2022Q1,Support,Remote,4.0,0.84,3
+2022Q1,Sales,Tunis,3.5,0.63,2
+2022Q1,Sales,Paris,3.5,0.64,3
+2022Q1,Sales,Remote,3.6,0.77,2
+2022Q1,Product & Design,Tunis,3.9,0.80,2
+2022Q1,Product & Design,Paris,3.8,0.76,4
+2022Q1,Product & Design,Remote,4.1,0.71,1
+2022Q1,Operations,Tunis,3.5,0.84,12
+2022Q1,Operations,Paris,3.6,0.68,3
+2022Q1,Operations,Remote,3.7,0.67,2
+2022Q1,People & Finance,Tunis,3.8,0.82,6
+2022Q1,People & Finance,Paris,3.7,0.81,3
+2022Q2,Engineering,Tunis,4.0,0.62,19
+2022Q2,Engineering,Paris,3.7,0.73,13
+2022Q2,Engineering,Remote,4.0,0.74,9
+2022Q2,Support,Tunis,3.7,0.66,9
+2022Q2,Support,Paris,3.7,0.76,3
+2022Q2,Support,Remote,3.9,0.78,4
+2022Q2,Sales,Tunis,3.4,0.70,4
+2022Q2,Sales,Paris,3.4,0.78,5
+2022Q2,Sales,Remote,3.7,0.76,2
+2022Q2,Product & Design,Tunis,3.9,0.72,1
+2022Q2,Product & Design,Paris,3.8,0.65,5
+2022Q2,Product & Design,Remote,4.1,0.65,1
+2022Q2,Operations,Tunis,3.5,0.83,11
+2022Q2,Operations,Paris,3.5,0.66,3
+2022Q2,Operations,Remote,3.7,0.74,3
+2022Q2,People & Finance,Tunis,3.8,0.85,5
+2022Q2,People & Finance,Paris,3.7,0.83,4
+2022Q3,Engineering,Tunis,4.0,0.82,29
+2022Q3,Engineering,Paris,3.8,0.67,13
+2022Q3,Engineering,Remote,4.0,0.73,11
+2022Q3,Support,Tunis,3.7,0.67,9
+2022Q3,Support,Paris,3.6,0.65,3
+2022Q3,Support,Remote,3.9,0.80,3
+2022Q3,Sales,Tunis,3.4,0.74,5
+2022Q3,Sales,Paris,3.4,0.78,5
+2022Q3,Sales,Remote,3.6,0.76,2
+2022Q3,Product & Design,Tunis,3.8,0.71,2
+2022Q3,Product & Design,Paris,3.8,0.62,4
+2022Q3,Product & Design,Remote,4.1,0.84,2
+2022Q3,Operations,Tunis,3.6,0.82,12
+2022Q3,Operations,Paris,3.5,0.66,3
+2022Q3,Operations,Remote,3.8,0.76,3
+2022Q3,People & Finance,Tunis,3.8,0.75,4
+2022Q3,People & Finance,Paris,3.7,0.64,3
+2022Q4,Engineering,Tunis,3.9,0.84,34
+2022Q4,Engineering,Paris,3.9,0.62,13
+2022Q4,Engineering,Remote,4.0,0.78,13
+2022Q4,Support,Tunis,3.8,0.72,11
+2022Q4,Support,Paris,3.6,0.79,4
+2022Q4,Support,Remote,3.9,0.85,3
+2022Q4,Sales,Tunis,3.5,0.80,8
+2022Q4,Sales,Paris,3.4,0.81,4
+2022Q4,Sales,Remote,3.7,0.82,3
+2022Q4,Product & Design,Tunis,3.9,0.72,4
+2022Q4,Product & Design,Paris,3.8,0.80,6
+2022Q4,Product & Design,Remote,4.1,0.64,2
+2022Q4,Operations,Tunis,3.6,0.75,14
+2022Q4,Operations,Paris,3.5,0.62,3
+2022Q4,Operations,Remote,3.8,0.62,2
+2022Q4,People & Finance,Tunis,3.8,0.74,4
+2022Q4,People & Finance,Paris,3.7,0.67,3
+2023Q1,Engineering,Tunis,3.8,0.72,30
+2023Q1,Engineering,Paris,3.8,0.72,16
+2023Q1,Engineering,Remote,4.1,0.68,13
+2023Q1,Support,Tunis,3.8,0.76,14
+2023Q1,Support,Paris,3.6,0.86,4
+2023Q1,Support,Remote,3.9,0.67,3
+2023Q1,Sales,Tunis,3.4,0.75,8
+2023Q1,Sales,Paris,3.4,0.75,4
+2023Q1,Sales,Remote,3.7,0.86,3
+2023Q1,Product & Design,Tunis,3.9,0.81,2
+2023Q1,Product & Design,Paris,3.8,0.65,5
+2023Q1,Product & Design,Remote,4.0,0.65,2
+2023Q1,Operations,Tunis,3.7,0.81,16
+2023Q1,Operations,Paris,3.5,0.64,3
+2023Q1,Operations,Remote,3.8,0.81,3
+2023Q1,People & Finance,Tunis,3.8,0.77,6
+2023Q1,People & Finance,Paris,3.7,0.63,3
+2023Q2,Engineering,Tunis,3.9,0.77,36
+2023Q2,Engineering,Paris,3.8,0.82,19
+2023Q2,Engineering,Remote,4.0,0.76,15
+2023Q2,Support,Tunis,3.7,0.68,16
+2023Q2,Support,Paris,3.7,0.77,4
+2023Q2,Support,Remote,3.9,0.84,3
+2023Q2,Sales,Tunis,3.5,0.78,6
+2023Q2,Sales,Paris,3.3,0.85,7
+2023Q2,Sales,Remote,3.6,0.81,2
+2023Q2,Product & Design,Tunis,3.8,0.74,2
+2023Q2,Product & Design,Paris,3.8,0.82,7
+2023Q2,Product & Design,Remote,4.0,0.74,3
+2023Q2,Operations,Tunis,3.6,0.81,19
+2023Q2,Operations,Paris,3.5,0.79,4
+2023Q2,Operations,Remote,3.7,0.78,3
+2023Q2,People & Finance,Tunis,3.9,0.78,8
+2023Q2,People & Finance,Paris,3.6,0.64,3
+2023Q3,Engineering,Tunis,3.9,0.72,34
+2023Q3,Engineering,Paris,3.7,0.72,17
+2023Q3,Engineering,Remote,4.1,0.62,13
+2023Q3,Support,Tunis,3.8,0.84,18
+2023Q3,Support,Paris,3.6,0.79,5
+2023Q3,Support,Remote,3.9,0.76,4
+2023Q3,Sales,Tunis,3.5,0.82,8
+2023Q3,Sales,Paris,3.4,0.85,7
+2023Q3,Sales,Remote,3.6,0.72,2
+2023Q3,Product & Design,Tunis,3.9,0.66,3
+2023Q3,Product & Design,Paris,3.8,0.75,9
+2023Q3,Product & Design,Remote,4.0,0.70,4
+2023Q3,Operations,Tunis,3.6,0.74,17
+2023Q3,Operations,Paris,3.5,0.75,3
+2023Q3,Operations,Remote,3.7,0.68,3
+2023Q3,People & Finance,Tunis,3.8,0.71,10
+2023Q3,People & Finance,Paris,3.7,0.68,5
+2023Q4,Engineering,Tunis,3.9,0.81,39
+2023Q4,Engineering,Paris,3.8,0.84,21
+2023Q4,Engineering,Remote,4.0,0.74,17
+2023Q4,Support,Tunis,3.8,0.71,18
+2023Q4,Support,Paris,3.7,0.67,4
+2023Q4,Support,Remote,3.9,0.81,6
+2023Q4,Sales,Tunis,3.5,0.70,8
+2023Q4,Sales,Paris,3.3,0.79,6
+2023Q4,Sales,Remote,3.6,0.69,1
+2023Q4,Product & Design,Tunis,3.9,0.80,6
+2023Q4,Product & Design,Paris,3.7,0.75,11
+2023Q4,Product & Design,Remote,4.0,0.70,4
+2023Q4,Operations,Tunis,3.5,0.76,17
+2023Q4,Operations,Paris,3.5,0.80,3
+2023Q4,Operations,Remote,3.8,0.67,3
+2023Q4,People & Finance,Tunis,3.8,0.68,10
+2023Q4,People & Finance,Paris,3.6,0.68,5
+2024Q1,Engineering,Tunis,4.0,0.82,41
+2024Q1,Engineering,Paris,3.8,0.71,19
+2024Q1,Engineering,Remote,4.0,0.65,15
+2024Q1,Support,Tunis,3.7,0.85,28
+2024Q1,Support,Paris,3.7,0.62,4
+2024Q1,Support,Remote,4.0,0.85,5
+2024Q1,Sales,Tunis,3.5,0.71,8
+2024Q1,Sales,Paris,3.4,0.84,11
+2024Q1,Sales,Remote,3.6,0.76,2
+2024Q1,Product & Design,Tunis,3.9,0.66,6
+2024Q1,Product & Design,Paris,3.8,0.74,10
+2024Q1,Product & Design,Remote,4.0,0.80,5
+2024Q1,Operations,Tunis,3.6,0.75,19
+2024Q1,Operations,Paris,3.4,0.85,3
+2024Q1,Operations,Remote,3.8,0.70,4
+2024Q1,People & Finance,Tunis,3.8,0.81,12
+2024Q1,People & Finance,Paris,3.7,0.65,5
+2024Q2,Engineering,Tunis,3.8,0.70,35
+2024Q2,Engineering,Paris,3.8,0.78,22
+2024Q2,Engineering,Remote,4.0,0.64,15
+2024Q2,Support,Tunis,3.7,0.83,30
+2024Q2,Support,Paris,3.6,0.68,4
+2024Q2,Support,Remote,3.9,0.85,6
+2024Q2,Sales,Tunis,3.5,0.66,7
+2024Q2,Sales,Paris,3.4,0.72,10
+2024Q2,Sales,Remote,3.6,0.71,1
+2024Q2,Product & Design,Tunis,3.9,0.73,8
+2024Q2,Product & Design,Paris,3.8,0.86,14
+2024Q2,Product & Design,Remote,4.1,0.82,4
+2024Q2,Operations,Tunis,3.6,0.81,21
+2024Q2,Operations,Paris,3.4,0.83,3
+2024Q2,Operations,Remote,3.8,0.81,5
+2024Q2,People & Finance,Tunis,3.7,0.73,12
+2024Q2,People & Finance,Paris,3.6,0.72,5
+2024Q2,People & Finance,Remote,4.0,0.83,1
+2024Q3,Engineering,Tunis,3.9,0.75,38
+2024Q3,Engineering,Paris,3.7,0.74,21
+2024Q3,Engineering,Remote,4.0,0.83,19
+2024Q3,Support,Tunis,3.7,0.64,26
+2024Q3,Support,Paris,3.6,0.67,5
+2024Q3,Support,Remote,3.8,0.82,6
+2024Q3,Sales,Tunis,3.5,0.80,9
+2024Q3,Sales,Paris,3.4,0.71,13
+2024Q3,Sales,Remote,3.6,0.81,2
+2024Q3,Product & Design,Tunis,3.9,0.72,9
+2024Q3,Product & Design,Paris,3.8,0.78,13
+2024Q3,Product & Design,Remote,4.1,0.76,5
+2024Q3,Operations,Tunis,3.7,0.75,21
+2024Q3,Operations,Paris,3.5,0.69,3
+2024Q3,Operations,Remote,3.8,0.74,4
+2024Q3,People & Finance,Tunis,3.7,0.73,12
+2024Q3,People & Finance,Paris,3.7,0.77,7
+2024Q3,People & Finance,Remote,4.0,0.85,1
+2024Q4,Engineering,Tunis,4.0,0.77,40
+2024Q4,Engineering,Paris,3.8,0.72,22
+2024Q4,Engineering,Remote,4.1,0.72,17
+2024Q4,Support,Tunis,3.7,0.64,29
+2024Q4,Support,Paris,3.7,0.70,5
+2024Q4,Support,Remote,3.9,0.79,6
+2024Q4,Sales,Tunis,3.6,0.71,9
+2024Q4,Sales,Paris,3.5,0.81,16
+2024Q4,Sales,Remote,3.7,0.80,1
+2024Q4,Product & Design,Tunis,3.8,0.73,9
+2024Q4,Product & Design,Paris,3.7,0.83,15
+2024Q4,Product & Design,Remote,4.0,0.68,6
+2024Q4,Operations,Tunis,3.6,0.80,25
+2024Q4,Operations,Paris,3.5,0.67,3
+2024Q4,Operations,Remote,3.8,0.64,4
+2024Q4,People & Finance,Tunis,3.7,0.73,14
+2024Q4,People & Finance,Paris,3.7,0.81,11
+2024Q4,People & Finance,Remote,3.9,0.86,2
+2025Q1,Engineering,Tunis,3.8,0.77,40
+2025Q1,Engineering,Paris,3.8,0.84,26
+2025Q1,Engineering,Remote,4.1,0.68,16
+2025Q1,Support,Tunis,3.7,0.73,33
+2025Q1,Support,Paris,3.6,0.75,5
+2025Q1,Support,Remote,3.9,0.63,6
+2025Q1,Sales,Tunis,3.6,0.84,13
+2025Q1,Sales,Paris,3.4,0.73,15
+2025Q1,Sales,Remote,3.7,0.84,2
+2025Q1,Product & Design,Tunis,4.0,0.65,10
+2025Q1,Product & Design,Paris,3.8,0.75,13
+2025Q1,Product & Design,Remote,4.1,0.73,7
+2025Q1,Operations,Tunis,3.6,0.83,26
+2025Q1,Operations,Paris,3.5,0.77,5
+2025Q1,Operations,Remote,3.7,0.84,5
+2025Q1,People & Finance,Tunis,3.7,0.67,13
+2025Q1,People & Finance,Paris,3.7,0.69,9
+2025Q1,People & Finance,Remote,3.9,0.66,1
+2025Q2,Engineering,Tunis,3.9,0.75,39
+2025Q2,Engineering,Paris,3.7,0.65,20
+2025Q2,Engineering,Remote,4.1,0.75,17
+2025Q2,Support,Tunis,3.8,0.74,36
+2025Q2,Support,Paris,3.7,0.69,4
+2025Q2,Support,Remote,3.9,0.81,7
+2025Q2,Sales,Tunis,3.5,0.81,12
+2025Q2,Sales,Paris,3.4,0.67,17
+2025Q2,Sales,Remote,3.6,0.72,3
+2025Q2,Product & Design,Tunis,3.9,0.79,13
+2025Q2,Product & Design,Paris,3.7,0.82,16
+2025Q2,Product & Design,Remote,4.1,0.64,5
+2025Q2,Operations,Tunis,3.6,0.74,24
+2025Q2,Operations,Paris,3.5,0.77,5
+2025Q2,Operations,Remote,3.8,0.69,4
+2025Q2,People & Finance,Tunis,3.8,0.75,15
+2025Q2,People & Finance,Paris,3.6,0.67,9
+2025Q2,People & Finance,Remote,3.9,0.65,1
+2025Q3,Engineering,Tunis,3.9,0.73,38
+2025Q3,Engineering,Paris,3.8,0.79,25
+2025Q3,Engineering,Remote,4.0,0.70,16
+2025Q3,Support,Tunis,3.7,0.85,45
+2025Q3,Support,Paris,3.6,0.85,6
+2025Q3,Support,Remote,3.9,0.65,8
+2025Q3,Sales,Tunis,3.4,0.62,11
+2025Q3,Sales,Paris,3.3,0.62,16
+2025Q3,Sales,Remote,3.7,0.72,2
+2025Q3,Product & Design,Tunis,3.9,0.74,12
+2025Q3,Product & Design,Paris,3.7,0.79,18
+2025Q3,Product & Design,Remote,4.1,0.64,5
+2025Q3,Operations,Tunis,3.6,0.66,22
+2025Q3,Operations,Paris,3.5,0.71,4
+2025Q3,Operations,Remote,3.8,0.66,4
+2025Q3,People & Finance,Tunis,3.8,0.68,14
+2025Q3,People & Finance,Paris,3.8,0.62,8
+2025Q3,People & Finance,Remote,3.9,0.79,2
+2025Q4,Engineering,Tunis,3.9,0.85,46
+2025Q4,Engineering,Paris,3.7,0.86,28
+2025Q4,Engineering,Remote,4.0,0.80,20
+2025Q4,Support,Tunis,3.7,0.78,44
+2025Q4,Support,Paris,3.7,0.71,5
+2025Q4,Support,Remote,3.8,0.84,13
+2025Q4,Sales,Tunis,3.5,0.79,17
+2025Q4,Sales,Paris,3.3,0.75,20
+2025Q4,Sales,Remote,3.6,0.74,1
+2025Q4,Product & Design,Tunis,3.8,0.71,13
+2025Q4,Product & Design,Paris,3.9,0.78,18
+2025Q4,Product & Design,Remote,4.0,0.68,6
+2025Q4,Operations,Tunis,3.6,0.62,21
+2025Q4,Operations,Paris,3.5,0.76,5
+2025Q4,Operations,Remote,3.8,0.68,4
+2025Q4,People & Finance,Tunis,3.8,0.76,15
+2025Q4,People & Finance,Paris,3.6,0.79,10
+2025Q4,People & Finance,Remote,3.9,0.80,2
+2026Q1,Engineering,Tunis,3.9,0.74,41
+2026Q1,Engineering,Paris,3.9,0.70,23
+2026Q1,Engineering,Remote,4.0,0.80,20
+2026Q1,Support,Tunis,3.1,0.71,42
+2026Q1,Support,Paris,3.0,0.75,6
+2026Q1,Support,Remote,3.3,0.74,11
+2026Q1,Sales,Tunis,3.5,0.75,17
+2026Q1,Sales,Paris,3.4,0.70,20
+2026Q1,Sales,Remote,3.6,0.80,3
+2026Q1,Product & Design,Tunis,3.9,0.71,13
+2026Q1,Product & Design,Paris,3.7,0.68,15
+2026Q1,Product & Design,Remote,4.1,0.79,7
+2026Q1,Operations,Tunis,3.6,0.75,26
+2026Q1,Operations,Paris,3.5,0.76,5
+2026Q1,Operations,Remote,3.7,0.70,4
+2026Q1,People & Finance,Tunis,3.8,0.83,17
+2026Q1,People & Finance,Paris,3.6,0.83,11
+2026Q1,People & Finance,Remote,3.9,0.75,2
+2026Q2,Engineering,Tunis,3.9,0.82,48
+2026Q2,Engineering,Paris,3.8,0.73,24
+2026Q2,Engineering,Remote,4.1,0.74,18
+2026Q2,Support,Tunis,3.0,0.83,46
+2026Q2,Support,Paris,2.8,0.71,5
+2026Q2,Support,Remote,3.0,0.70,10
+2026Q2,Sales,Tunis,3.6,0.85,20
+2026Q2,Sales,Paris,3.4,0.67,20
+2026Q2,Sales,Remote,3.6,0.80,2
+2026Q2,Product & Design,Tunis,3.9,0.69,12
+2026Q2,Product & Design,Paris,3.7,0.70,14
+2026Q2,Product & Design,Remote,4.0,0.78,8
+2026Q2,Operations,Tunis,3.5,0.85,31
+2026Q2,Operations,Paris,3.4,0.63,4
+2026Q2,Operations,Remote,3.7,0.67,4
+2026Q2,People & Finance,Tunis,3.8,0.77,16
+2026Q2,People & Finance,Paris,3.7,0.74,10
+2026Q2,People & Finance,Remote,3.9,0.76,2
+2026Q3,Engineering,Tunis,3.9,0.67,39
+2026Q3,Engineering,Paris,3.8,0.62,20
+2026Q3,Engineering,Remote,4.1,0.78,22
+2026Q3,Support,Tunis,3.3,0.82,46
+2026Q3,Support,Paris,3.2,0.77,7
+2026Q3,Support,Remote,3.5,0.80,10
+2026Q3,Sales,Tunis,3.5,0.82,20
+2026Q3,Sales,Paris,3.4,0.63,20
+2026Q3,Sales,Remote,3.7,0.75,3
+2026Q3,Product & Design,Tunis,3.8,0.82,16
+2026Q3,Product & Design,Paris,3.8,0.67,13
+2026Q3,Product & Design,Remote,4.0,0.64,7
+2026Q3,Operations,Tunis,3.6,0.71,27
+2026Q3,Operations,Paris,3.5,0.78,5
+2026Q3,Operations,Remote,3.8,0.85,5
+2026Q3,People & Finance,Tunis,3.8,0.75,18
+2026Q3,People & Finance,Paris,3.7,0.80,10
+2026Q3,People & Finance,Remote,4.0,0.78,2

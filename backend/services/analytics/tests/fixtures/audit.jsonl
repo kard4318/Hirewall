@@ -1,0 +1,11 @@
+{"ts": "2026-06-22T09:00:00+01:00", "event": "resume_screened", "actor": "agent", "reason_code": "screened", "job_id": "job-be", "candidate_ref": "C-1001", "synthetic": true}
+{"ts": "2026-06-22T09:05:00+01:00", "event": "resume_screened", "actor": "agent", "reason_code": "screened", "job_id": "job-be", "candidate_ref": "C-1002", "synthetic": true}
+{"ts": "2026-06-23T10:00:00+01:00", "event": "resume_screened", "actor": "agent", "reason_code": "screened", "job_id": "job-be", "candidate_ref": "C-1003", "synthetic": true}
+{"ts": "2026-06-23T10:30:00+01:00", "event": "resume_screened", "actor": "agent", "reason_code": "screened", "job_id": "job-be", "candidate_ref": "C-1004", "synthetic": true}
+{"ts": "2026-06-24T11:00:00+01:00", "event": "booking_created", "actor": "agent", "reason_code": "candidate_confirmed", "job_id": "job-be", "candidate_ref": "C-1001", "synthetic": true}
+{"ts": "2026-06-24T11:30:00+01:00", "event": "booking_created", "actor": "agent", "reason_code": "candidate_confirmed", "job_id": "job-be", "candidate_ref": "C-1002", "synthetic": true}
+{"ts": "2026-06-25T12:00:00+01:00", "event": "approval_decided", "actor": "human", "reason_code": "queue_review", "outcome": "approve", "synthetic": true}
+{"ts": "2026-06-25T13:00:00+01:00", "event": "kb_question", "actor": "agent", "reason_code": "kb", "outcome": "answered", "topic": "leave", "synthetic": true}
+{"ts": "2026-06-25T14:00:00+01:00", "event": "kb_question", "actor": "agent", "reason_code": "kb", "outcome": "escalated", "topic": "benefits", "synthetic": true}
+{"ts": "2026-06-26T15:00:00+01:00", "event": "message_blocked", "actor": "agent", "reason_code": "injection_suspected", "synthetic": true}
+{"ts": "2026-06-10T15:00:00+01:00", "event": "resume_screened", "actor": "agent", "reason_code": "screened", "job_id": "job-be", "candidate_ref": "C-0999", "synthetic": true}

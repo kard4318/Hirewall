@@ -1,0 +1,11 @@
+employee_id,course,hours,completed
+E-0001,Security awareness,2,true
+E-0002,Security awareness,2,true
+E-0003,Security awareness,2,true
+E-0004,Security awareness,2,true
+E-0005,Security awareness,2,true
+E-0006,Security awareness,2,true
+E-0007,Security awareness,2,false
+E-0011,Security awareness,4,false
+E-0012,Security awareness,4,false
+E-0013,Security awareness,4,false

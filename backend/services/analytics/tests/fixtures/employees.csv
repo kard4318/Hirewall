@@ -1,0 +1,15 @@
+employee_id,department,job_title,level,site,contract,hire_date,end_date,exit_type,exit_reason,age_band,gender,manager_id
+E-0001,Engineering,Engineer,L2,Tunis,permanent,2024-01-01,,,,25-34,F,
+E-0002,Engineering,Engineer,L2,Tunis,permanent,2024-01-01,,,,25-34,F,E-0001
+E-0003,Engineering,Engineer,L2,Tunis,permanent,2024-06-01,,,,35-44,F,E-0001
+E-0004,Engineering,Engineer,L2,Tunis,permanent,2025-01-01,,,,25-34,F,E-0001
+E-0005,Engineering,Engineer,L2,Tunis,permanent,2025-01-01,,,,25-34,M,E-0001
+E-0006,Engineering,Engineer,L2,Paris,permanent,2025-06-01,,,,35-44,M,E-0001
+E-0007,Engineering,Junior Engineer,L1,Paris,intern,2026-01-15,,,,<25,M,E-0001
+E-0008,Engineering,Engineer,L2,Remote,permanent,2024-01-01,2026-02-10,voluntary,career_growth,25-34,F,E-0001
+E-0009,Engineering,Engineer,L2,Remote,fixed_term,2024-01-01,2026-05-20,involuntary,performance,25-34,M,E-0001
+E-0010,Engineering,Engineer,L2,Remote,permanent,2025-03-01,2026-04-30,voluntary,compensation,25-34,F,E-0001
+E-0011,Support,Support Specialist,L2,Tunis,permanent,2024-01-01,,,,25-34,F,
+E-0012,Support,Support Specialist,L2,Tunis,permanent,2024-01-01,,,,<25,F,E-0011
+E-0013,Support,Support Specialist,L2,Paris,permanent,2025-01-01,,,,25-34,M,E-0011
+E-0014,Support,Support Specialist,L2,Remote,permanent,2024-01-01,2026-03-01,voluntary,career_growth,25-34,M,E-0011

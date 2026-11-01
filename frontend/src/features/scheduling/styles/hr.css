@@ -1,0 +1,125 @@
+/* HR dashboard: passcode gate, top bar, the ledger, the wall (calendar) and the logbook drawer */
+
+/* Passcode gate */
+.gate { display: grid; place-items: center; padding: 1.5rem; }
+.gate-card {
+  width: min(420px, 100%); display: flex; flex-direction: column; gap: 0.85rem;
+  background: var(--paper); background-image: var(--ruled);
+  border: 1px solid var(--ink); box-shadow: 6px 6px 0 var(--paper-edge);
+  padding: 2rem 1.75rem 1.75rem; position: relative;
+}
+.gate-card::before { content: ""; position: absolute; top: 0; bottom: 0; left: 1.1rem; width: 1.5px; background: var(--vermilion); opacity: 0.75; }
+.gate-card > * { margin-left: 0.6rem; }
+.gate-card .display { font-size: 2.2rem; margin-top: 0.6rem; }
+.gate-lede { margin: 0 0 0.5rem; color: var(--ink-soft); }
+.gate-card .btn { margin-top: 0.6rem; }
+
+/* Layout */
+.hr { display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 3.4rem; }
+.hr-main {
+  flex: 1; display: grid; grid-template-columns: minmax(360px, 1fr) minmax(420px, 1.15fr);
+  gap: 1.5rem; padding: 1.25rem 1.5rem; align-items: start;
+}
+@media (max-width: 980px) { .hr-main { grid-template-columns: 1fr; padding: 1rem; } }
+
+/* Top bar with a faint staggered-brick pattern */
+.topbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.5rem;
+  padding: 0.85rem 1.5rem; border-bottom: 3px double var(--ink);
+  background-color: var(--paper-deep);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='24'%3E%3Cg fill='none' stroke='%2317150F' stroke-opacity='0.07'%3E%3Crect x='0.5' y='0.5' width='23' height='11'/%3E%3Crect x='24.5' y='0.5' width='23' height='11'/%3E%3Crect x='-11.5' y='12.5' width='23' height='11'/%3E%3Crect x='12.5' y='12.5' width='23' height='11'/%3E%3Crect x='36.5' y='12.5' width='23' height='11'/%3E%3C/g%3E%3C/svg%3E"), var(--grain);
+}
+.job-tabs { display: flex; flex-wrap: wrap; gap: 0.25rem; flex: 1; }
+.job-tab {
+  display: inline-flex; align-items: baseline; gap: 0.5rem;
+  font: 600 0.9rem var(--font-ui); color: var(--ink-soft);
+  background: none; border: none; border-bottom: 2px solid transparent;
+  padding: 0.45rem 0.7rem; cursor: pointer;
+}
+.job-tab:hover { color: var(--ink); }
+.job-tab.is-active { color: var(--ink); border-bottom-color: var(--vermilion); }
+.job-tab-count { font-family: var(--font-mono); font-size: 0.68rem; font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+.topbar-tools { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+
+.notice {
+  margin: 0.75rem 1.5rem 0; padding: 0.6rem 0.85rem; display: flex; justify-content: space-between; gap: 1rem;
+  border: 1.5px solid var(--vermilion-ink); color: var(--vermilion-ink); background: rgba(229, 65, 45, 0.06); font-weight: 600;
+}
+
+/* The ledger: ruled paper with a vermilion margin line */
+.ledger {
+  position: relative; padding: 1.25rem 1.25rem 1.5rem 3.25rem;
+  background-color: var(--paper); background-image: var(--ruled), var(--grain);
+  border: 1px solid var(--ink); box-shadow: 5px 5px 0 var(--paper-edge);
+}
+.ledger::before { content: ""; position: absolute; top: 0; bottom: 0; left: 2.2rem; width: 1.5px; background: var(--vermilion); opacity: 0.8; }
+.ledger-head { padding-bottom: 0.9rem; margin-bottom: 1rem; border-bottom: 3px double var(--ink); }
+.ledger-head .display { font-size: clamp(2rem, 3.4vw, 2.9rem); margin: 0.25rem 0 0.35rem; }
+.ledger-tally { margin: 0; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.ledger-empty { color: var(--ink-soft); font-style: italic; }
+
+/* Dossier cards, dealt onto the desk */
+.dossiers { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.9rem; }
+.dossier {
+  position: relative; display: grid; grid-template-columns: auto 1fr auto; gap: 0.9rem;
+  padding: 1rem 1rem 1rem 0.6rem; background: rgba(255, 253, 247, 0.72);
+  border: 1px solid var(--rule-strong); border-left: 3px solid var(--ink);
+  animation: deal 460ms cubic-bezier(0.2, 0.75, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 75ms);
+}
+.dossier.status-booked { border-left-color: var(--moss); }
+.dossier.status-pending_approval { border-left-color: var(--vermilion); }
+@keyframes deal {
+  from { opacity: 0; transform: translate(-14px, -22px) rotate(-2.2deg); }
+  to { opacity: 1; transform: none; }
+}
+.dossier-rank { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; padding-top: 0.25rem; margin-left: -2.85rem; width: 2rem; text-align: right; }
+.dossier-body { min-width: 0; }
+.dossier-top { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.dossier-name { font-family: var(--font-display); font-weight: 400; font-size: 1.45rem; margin: 0; line-height: 1.1; }
+.skills { list-style: none; display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.55rem 0; padding: 0; }
+.justification { margin: 0 0 0.75rem; color: var(--ink-soft); font-size: 0.9rem; max-width: 58ch; }
+.dossier-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.slot-line { font-family: var(--font-mono); font-size: 0.78rem; font-variant-numeric: tabular-nums; color: var(--moss); font-weight: 500; margin-right: 0.35rem; }
+.dossier-score { display: flex; flex-direction: column; align-items: flex-end; padding-left: 0.6rem; border-left: 1px solid var(--rule); }
+.score-num { font-family: var(--font-display); font-size: 2.9rem; line-height: 0.9; font-variant-numeric: tabular-nums; }
+
+/* The wall: a framed window on the HR calendar */
+.wall { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+@media (max-width: 980px) { .wall { position: static; } }
+.wall-head { display: flex; justify-content: space-between; align-items: center; }
+.wall-frame {
+  height: min(72vh, 760px); min-height: 420px;
+  border: 1px solid var(--ink); outline: 6px solid var(--paper-deep); outline-offset: -1px;
+  box-shadow: 0 0 0 7px var(--ink), 10px 12px 0 7px var(--paper-edge);
+  background: #fff; margin: 7px;
+}
+.wall-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+.wall-empty { height: 100%; display: grid; place-content: center; text-align: center; padding: 2rem; background: var(--paper); background-image: var(--ruled); color: var(--ink-soft); }
+
+/* The logbook: a drawer pinned to the bottom */
+.logbook {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  background: var(--ink); color: var(--paper);
+  border-top: 3px double var(--paper-edge);
+}
+.logbook-bar {
+  width: 100%; display: flex; align-items: center; gap: 1rem; padding: 0.7rem 1.5rem;
+  background: none; border: none; color: inherit; cursor: pointer; text-align: left; font: inherit;
+}
+.logbook-bar .label { color: var(--paper-edge); flex: none; }
+.logbook-latest { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.logbook-latest .log-entry { display: inline-flex; border: none; padding: 0; }
+.logbook-caret { font-size: 0.8rem; }
+.blocked-badge {
+  font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.25rem 0.55rem; border: 1.5px solid var(--paper-edge); border-radius: 2px; transform: rotate(-2deg);
+}
+.blocked-badge.has-blocks { background: var(--vermilion); border-color: var(--vermilion); color: var(--ink); font-weight: 600; }
+.logbook-list { list-style: none; margin: 0; padding: 0 1.5rem 1rem; max-height: 42vh; overflow-y: auto; }
+.log-entry { display: flex; flex-wrap: wrap; gap: 0.35rem 0.9rem; align-items: baseline; padding: 0.4rem 0; border-top: 1px solid rgba(242, 236, 223, 0.12); font-size: 0.85rem; }
+.log-time { font-family: var(--font-mono); font-size: 0.7rem; font-variant-numeric: tabular-nums; color: var(--paper-edge); }
+.log-event { font-weight: 600; }
+.log-entry.bad .log-event { color: #ff8a78; }
+.log-entry.ok .log-event { color: #9fd3a8; }
+.log-reason, .log-who { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; color: var(--paper-edge); }

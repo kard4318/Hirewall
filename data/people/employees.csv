@@ -1,0 +1,520 @@
+employee_id,department,job_title,level,site,contract,hire_date,end_date,exit_type,exit_reason,age_band,gender,manager_id
+E-0001,Support,Support Associate,L1,Tunis,intern,2021-01-13,2021-09-13,involuntary,performance,<25,F,
+E-0002,People & Finance,People Partner,L2,Tunis,fixed_term,2021-01-15,2022-05-25,voluntary,compensation,35-44,F,
+E-0003,Sales,Sales Associate,L1,Tunis,intern,2021-01-18,2021-07-14,voluntary,relocation,<25,M,
+E-0004,Sales,Account Executive,L2,Tunis,fixed_term,2021-01-20,2023-06-13,voluntary,personal,35-44,F,
+E-0005,Engineering,Engineer,L2,Tunis,fixed_term,2021-01-21,,,,25-34,M,
+E-0006,Product & Design,Senior Product Designer,L3,Paris,permanent,2021-01-23,,,,25-34,M,
+E-0007,Sales,Sales Associate,L1,Paris,permanent,2021-01-25,2022-01-23,voluntary,compensation,<25,M,
+E-0008,Engineering,Staff Engineer,L4,Tunis,permanent,2021-01-26,,,,35-44,undisclosed,
+E-0009,Engineering,Engineer,L2,Remote,permanent,2021-01-28,,,,35-44,M,E-0008
+E-0010,Operations,Operations Analyst,L3,Paris,permanent,2021-02-01,,,,55+,F,
+E-0011,Engineering,Junior Engineer,L1,Tunis,intern,2021-02-05,,,,<25,M,E-0008
+E-0012,Engineering,Engineer,L2,Tunis,permanent,2021-02-05,,,,25-34,F,E-0008
+E-0013,Engineering,Staff Engineer,L4,Tunis,permanent,2021-02-08,,,,45-54,undisclosed,E-0008
+E-0014,Engineering,Senior Engineer,L3,Paris,permanent,2021-02-09,2021-08-01,voluntary,compensation,35-44,F,E-0013
+E-0015,Operations,Operations Analyst,L3,Tunis,permanent,2021-02-10,,,,25-34,F,
+E-0016,Engineering,Senior Engineer,L3,Paris,permanent,2021-02-14,,,,25-34,M,E-0013
+E-0017,Operations,Operations Coordinator,L2,Tunis,fixed_term,2021-02-14,,,,25-34,M,
+E-0018,Support,Support Associate,L1,Tunis,intern,2021-02-14,2021-09-29,voluntary,compensation,<25,undisclosed,
+E-0019,Sales,Sales Associate,L1,Tunis,fixed_term,2021-02-16,2023-04-17,involuntary,performance,25-34,M,
+E-0020,Engineering,Engineer,L2,Tunis,permanent,2021-02-19,,,,25-34,F,E-0013
+E-0021,Support,Support Associate,L1,Paris,intern,2021-02-23,2021-11-16,voluntary,management,<25,F,
+E-0022,People & Finance,People Partner,L2,Tunis,permanent,2021-02-24,,,,25-34,F,
+E-0023,Sales,Account Executive,L2,Paris,permanent,2021-03-01,2025-04-05,voluntary,compensation,25-34,M,
+E-0024,Engineering,Staff Engineer,L4,Tunis,permanent,2021-03-02,,,,25-34,M,E-0013
+E-0025,Engineering,Staff Engineer,L4,Tunis,permanent,2021-03-03,,,,45-54,M,E-0008
+E-0026,Operations,Operations Coordinator,L2,Tunis,permanent,2021-03-07,2022-06-25,voluntary,management,<25,M,
+E-0027,Engineering,Engineering Manager,L5,Paris,permanent,2021-03-10,,,,35-44,undisclosed,
+E-0028,Product & Design,Junior Designer,L1,Paris,permanent,2021-03-10,,,,25-34,F,
+E-0029,People & Finance,Senior People Partner,L4,Paris,permanent,2021-03-18,2024-04-29,voluntary,compensation,35-44,M,
+E-0030,Engineering,Junior Engineer,L1,Tunis,permanent,2021-03-23,,,,<25,M,E-0008
+E-0031,Engineering,Junior Engineer,L1,Remote,intern,2021-03-25,,,,<25,M,E-0013
+E-0032,People & Finance,People Partner,L2,Tunis,permanent,2021-03-30,2021-07-09,voluntary,career_growth,25-34,F,E-0029
+E-0033,Support,Support Associate,L1,Tunis,intern,2021-03-31,2022-05-19,voluntary,personal,<25,F,
+E-0034,Engineering,Senior Engineer,L3,Tunis,permanent,2021-04-06,,,,25-34,undisclosed,E-0024
+E-0035,Engineering,Engineer,L2,Paris,permanent,2021-04-10,,,,25-34,F,E-0024
+E-0036,Sales,Sales Associate,L1,Paris,intern,2021-04-11,2022-12-18,voluntary,personal,<25,M,
+E-0037,Support,Support Associate,L1,Tunis,permanent,2021-04-15,,,,<25,F,
+E-0038,Engineering,Senior Engineer,L3,Tunis,permanent,2021-04-24,,,,25-34,M,E-0024
+E-0039,Engineering,Senior Engineer,L3,Paris,fixed_term,2021-04-30,,,,35-44,M,E-0027
+E-0040,Engineering,Engineer,L2,Paris,permanent,2021-05-02,,,,25-34,M,E-0027
+E-0041,Sales,Sales Associate,L1,Paris,permanent,2021-05-02,2021-09-03,voluntary,compensation,<25,F,
+E-0042,Product & Design,Senior Product Designer,L3,Paris,permanent,2021-05-13,,,,35-44,F,
+E-0043,Operations,Head of Operations,L5,Tunis,permanent,2021-05-15,,,,55+,F,
+E-0044,People & Finance,Finance Analyst,L3,Tunis,permanent,2021-05-21,2022-06-28,voluntary,career_growth,35-44,M,E-0029
+E-0045,Engineering,Engineer,L2,Tunis,permanent,2021-05-23,,,,35-44,M,E-0008
+E-0046,Operations,Head of Operations,L5,Tunis,permanent,2021-05-24,,,,55+,M,
+E-0047,Engineering,Engineer,L2,Paris,permanent,2021-05-25,,,,35-44,F,E-0008
+E-0048,People & Finance,Finance Analyst,L3,Tunis,fixed_term,2021-06-02,2021-10-02,voluntary,career_growth,25-34,undisclosed,E-0029
+E-0049,Sales,Senior Account Executive,L3,Tunis,permanent,2021-06-02,,,,<25,undisclosed,
+E-0050,Engineering,Junior Engineer,L1,Paris,permanent,2021-06-09,,,,<25,undisclosed,E-0025
+E-0051,Operations,Operations Analyst,L3,Paris,permanent,2021-06-15,2022-01-30,involuntary,performance,55+,F,E-0043
+E-0052,People & Finance,People Partner,L2,Tunis,permanent,2021-06-19,2021-10-07,voluntary,management,25-34,F,E-0029
+E-0053,Sales,Sales Associate,L1,Paris,intern,2021-06-19,2022-06-10,voluntary,compensation,<25,M,
+E-0054,Engineering,Senior Engineer,L3,Paris,permanent,2021-06-20,,,,25-34,F,E-0008
+E-0055,Product & Design,Junior Designer,L1,Tunis,intern,2021-06-29,2022-01-22,voluntary,career_growth,<25,F,
+E-0056,Product & Design,Junior Designer,L1,Paris,intern,2021-07-03,,,,<25,F,
+E-0057,Support,Support Specialist,L2,Paris,permanent,2021-07-08,2024-05-05,voluntary,compensation,25-34,F,
+E-0058,Engineering,Engineer,L2,Remote,permanent,2021-07-13,,,,25-34,F,E-0024
+E-0059,Engineering,Junior Engineer,L1,Paris,intern,2021-07-14,2021-12-12,involuntary,restructuring,<25,M,E-0027
+E-0060,Operations,Operations Analyst,L3,Tunis,permanent,2021-07-16,,,,25-34,M,E-0043
+E-0061,Product & Design,Junior Designer,L1,Tunis,intern,2021-07-19,2022-03-28,voluntary,career_growth,<25,F,
+E-0062,Operations,Operations Analyst,L3,Tunis,fixed_term,2021-07-30,2021-10-20,voluntary,compensation,45-54,F,E-0043
+E-0063,Product & Design,Head of Product,L5,Tunis,fixed_term,2021-07-30,,,,55+,M,
+E-0064,Operations,Operations Assistant,L1,Paris,intern,2021-08-03,2022-02-07,voluntary,career_growth,<25,M,E-0043
+E-0065,Support,Senior Support Specialist,L3,Tunis,permanent,2021-08-09,,,,25-34,M,
+E-0066,Product & Design,Junior Designer,L1,Paris,intern,2021-08-15,2025-04-28,involuntary,performance,<25,F,E-0063
+E-0067,Sales,Account Executive,L2,Remote,permanent,2021-08-20,2023-10-10,voluntary,career_growth,35-44,M,
+E-0068,Operations,Operations Lead,L4,Tunis,permanent,2021-08-25,,,,55+,M,E-0043
+E-0069,Engineering,Engineer,L2,Paris,permanent,2021-08-31,,,,35-44,M,E-0025
+E-0070,Engineering,Staff Engineer,L4,Tunis,permanent,2021-09-01,,,,35-44,M,E-0013
+E-0071,Operations,Operations Analyst,L3,Tunis,permanent,2021-09-02,,,,55+,M,E-0068
+E-0072,Support,Support Associate,L1,Paris,permanent,2021-09-03,,,,25-34,F,
+E-0073,Support,Support Associate,L1,Remote,fixed_term,2021-09-04,,,,25-34,M,
+E-0074,Engineering,Senior Engineer,L3,Tunis,permanent,2021-09-06,,,,25-34,F,E-0024
+E-0075,Engineering,Junior Engineer,L1,Paris,permanent,2021-09-10,,,,<25,M,E-0008
+E-0076,Engineering,Senior Engineer,L3,Tunis,permanent,2021-09-13,,,,45-54,F,E-0025
+E-0077,People & Finance,HR Assistant,L1,Tunis,permanent,2021-09-16,2025-06-07,voluntary,management,25-34,M,E-0029
+E-0078,Support,Support Associate,L1,Tunis,permanent,2021-09-17,,,,25-34,F,
+E-0079,Sales,Sales Associate,L1,Paris,permanent,2021-09-18,2022-07-25,retirement,retirement,55+,M,
+E-0080,Operations,Operations Lead,L4,Paris,permanent,2021-09-19,2023-09-19,voluntary,compensation,25-34,undisclosed,E-0068
+E-0081,Operations,Operations Assistant,L1,Remote,intern,2021-09-22,,,,<25,F,E-0043
+E-0082,Engineering,Senior Engineer,L3,Remote,permanent,2021-09-23,,,,35-44,F,E-0025
+E-0083,People & Finance,HR Assistant,L1,Tunis,intern,2021-10-15,2024-11-29,voluntary,career_growth,<25,F,E-0029
+E-0084,Engineering,Engineer,L2,Paris,fixed_term,2021-10-16,,,,25-34,F,E-0070
+E-0085,People & Finance,Senior People Partner,L4,Tunis,permanent,2021-10-16,2024-03-30,voluntary,career_growth,25-34,F,E-0029
+E-0086,Engineering,Junior Engineer,L1,Remote,intern,2021-10-17,2024-02-24,voluntary,relocation,<25,M,E-0025
+E-0087,Engineering,Engineer,L2,Tunis,fixed_term,2021-10-18,,,,25-34,M,E-0008
+E-0088,Operations,Head of Operations,L5,Tunis,fixed_term,2021-10-18,2025-02-19,voluntary,management,55+,M,
+E-0089,Engineering,Junior Engineer,L1,Paris,intern,2021-10-29,,,,<25,F,E-0027
+E-0090,Engineering,Senior Engineer,L3,Tunis,permanent,2021-10-30,2022-05-08,voluntary,career_growth,25-34,M,E-0070
+E-0091,Engineering,Junior Engineer,L1,Paris,intern,2021-11-07,,,,<25,M,E-0008
+E-0092,Sales,Account Executive,L2,Remote,fixed_term,2021-11-13,2023-01-15,voluntary,personal,25-34,undisclosed,
+E-0093,Operations,Operations Analyst,L3,Paris,permanent,2021-11-14,,,,45-54,M,E-0088
+E-0094,Operations,Operations Analyst,L3,Paris,permanent,2021-11-27,,,,25-34,F,E-0080
+E-0095,Engineering,Engineer,L2,Tunis,permanent,2021-11-29,,,,25-34,M,E-0027
+E-0096,Engineering,Junior Engineer,L1,Remote,permanent,2021-11-30,,,,<25,M,E-0025
+E-0097,Sales,Senior Account Executive,L3,Remote,permanent,2021-11-30,2024-10-16,voluntary,compensation,45-54,F,
+E-0098,Operations,Operations Coordinator,L2,Tunis,fixed_term,2021-12-04,,,,25-34,F,E-0088
+E-0099,Operations,Operations Assistant,L1,Tunis,intern,2021-12-06,,,,<25,F,E-0046
+E-0100,People & Finance,Head of People & Finance,L5,Paris,permanent,2021-12-09,,,,35-44,M,
+E-0101,Support,Support Associate,L1,Tunis,intern,2021-12-10,2022-10-03,voluntary,personal,<25,F,
+E-0102,Engineering,Staff Engineer,L4,Tunis,permanent,2021-12-11,,,,35-44,M,E-0070
+E-0103,People & Finance,Senior People Partner,L4,Paris,permanent,2021-12-16,,,,45-54,F,E-0100
+E-0104,Support,Support Associate,L1,Tunis,intern,2021-12-18,2024-09-04,voluntary,career_growth,<25,M,E-0105
+E-0105,Support,Head of Support,L5,Paris,permanent,2021-12-18,,,,55+,M,
+E-0106,Engineering,Junior Engineer,L1,Remote,intern,2021-12-23,,,,<25,M,E-0070
+E-0107,Operations,Operations Coordinator,L2,Remote,permanent,2021-12-25,,,,35-44,M,E-0046
+E-0108,Engineering,Engineering Manager,L5,Tunis,permanent,2021-12-26,,,,45-54,M,
+E-0109,Support,Support Associate,L1,Tunis,intern,2022-01-06,2023-09-01,involuntary,performance,<25,M,E-0105
+E-0110,Operations,Head of Operations,L5,Tunis,permanent,2022-01-12,2022-05-30,voluntary,relocation,35-44,F,
+E-0111,Product & Design,Senior Product Designer,L3,Remote,permanent,2022-01-19,2022-06-02,voluntary,management,25-34,F,E-0063
+E-0112,Engineering,Engineer,L2,Tunis,permanent,2022-01-27,,,,25-34,M,E-0070
+E-0113,Support,Support Associate,L1,Tunis,permanent,2022-01-27,,,,25-34,F,E-0105
+E-0114,Operations,Operations Lead,L4,Remote,permanent,2022-01-29,,,,55+,F,E-0080
+E-0115,People & Finance,Senior People Partner,L4,Paris,permanent,2022-01-30,,,,45-54,M,E-0085
+E-0116,Engineering,Junior Engineer,L1,Remote,permanent,2022-01-31,,,,<25,M,E-0027
+E-0117,Support,Support Associate,L1,Tunis,permanent,2022-01-31,2023-07-24,voluntary,compensation,<25,M,E-0105
+E-0118,Engineering,Senior Engineer,L3,Tunis,permanent,2022-02-02,,,,35-44,M,E-0070
+E-0119,Support,Senior Support Specialist,L3,Tunis,permanent,2022-02-02,,,,35-44,M,E-0105
+E-0120,Engineering,Senior Engineer,L3,Tunis,permanent,2022-02-07,,,,35-44,M,E-0108
+E-0121,Engineering,Staff Engineer,L4,Paris,permanent,2022-02-07,,,,45-54,F,E-0024
+E-0122,Engineering,Engineer,L2,Remote,permanent,2022-02-11,,,,35-44,F,E-0024
+E-0123,Operations,Operations Analyst,L3,Tunis,permanent,2022-02-13,,,,35-44,M,E-0080
+E-0124,People & Finance,People Partner,L2,Tunis,permanent,2022-02-15,2025-11-13,voluntary,management,25-34,M,E-0115
+E-0125,Product & Design,Junior Designer,L1,Tunis,permanent,2022-02-15,,,,<25,F,E-0063
+E-0126,Engineering,Junior Engineer,L1,Tunis,intern,2022-02-18,2023-10-28,voluntary,relocation,<25,F,E-0121
+E-0127,Support,Support Specialist,L2,Remote,permanent,2022-02-18,,,,25-34,undisclosed,E-0105
+E-0128,Operations,Operations Coordinator,L2,Tunis,fixed_term,2022-02-22,,,,45-54,F,E-0110
+E-0129,Engineering,Engineer,L2,Paris,fixed_term,2022-02-24,,,,25-34,F,E-0121
+E-0130,Engineering,Junior Engineer,L1,Paris,intern,2022-03-07,,,,<25,M,E-0025
+E-0131,Support,Support Specialist,L2,Remote,permanent,2022-03-08,,,,35-44,F,E-0105
+E-0132,Engineering,Engineering Manager,L5,Tunis,fixed_term,2022-03-09,,,,45-54,F,
+E-0133,Sales,Sales Lead,L4,Paris,permanent,2022-03-11,,,,55+,undisclosed,
+E-0134,Engineering,Junior Engineer,L1,Tunis,permanent,2022-03-12,,,,25-34,F,E-0025
+E-0135,Support,Support Specialist,L2,Remote,permanent,2022-03-15,2022-08-17,voluntary,career_growth,25-34,M,E-0105
+E-0136,Engineering,Engineer,L2,Remote,permanent,2022-03-17,,,,<25,F,E-0070
+E-0137,Support,Support Specialist,L2,Paris,permanent,2022-03-27,,,,35-44,F,E-0105
+E-0138,Engineering,Senior Engineer,L3,Paris,permanent,2022-04-01,,,,35-44,M,E-0024
+E-0139,People & Finance,Senior People Partner,L4,Tunis,permanent,2022-04-09,,,,25-34,undisclosed,E-0115
+E-0140,Engineering,Senior Engineer,L3,Tunis,permanent,2022-04-12,,,,35-44,M,E-0121
+E-0141,Sales,Sales Associate,L1,Paris,permanent,2022-04-13,2023-11-01,voluntary,career_growth,25-34,F,E-0133
+E-0142,Operations,Operations Lead,L4,Tunis,permanent,2022-04-17,,,,35-44,M,E-0110
+E-0143,Engineering,Senior Engineer,L3,Tunis,permanent,2022-04-19,,,,25-34,undisclosed,E-0013
+E-0144,Product & Design,Product Manager,L4,Paris,permanent,2022-04-27,2025-01-16,voluntary,compensation,35-44,M,E-0063
+E-0145,Engineering,Engineer,L2,Tunis,permanent,2022-05-03,,,,25-34,F,E-0121
+E-0146,Product & Design,Product Designer,L2,Paris,permanent,2022-05-05,,,,25-34,M,E-0144
+E-0147,Engineering,Senior Engineer,L3,Remote,permanent,2022-05-09,,,,25-34,M,E-0132
+E-0148,Sales,Sales Associate,L1,Paris,fixed_term,2022-05-10,2023-08-04,voluntary,management,<25,F,E-0133
+E-0149,Support,Senior Support Specialist,L3,Tunis,permanent,2022-05-12,2022-12-29,involuntary,restructuring,55+,F,E-0105
+E-0150,Engineering,Senior Engineer,L3,Tunis,permanent,2022-05-23,,,,35-44,F,E-0102
+E-0151,Support,Support Lead,L4,Remote,permanent,2022-05-23,,,,35-44,M,E-0105
+E-0152,Support,Support Specialist,L2,Tunis,permanent,2022-05-27,2022-09-28,involuntary,restructuring,25-34,F,E-0105
+E-0153,Engineering,Engineer,L2,Remote,permanent,2022-05-28,,,,35-44,M,E-0008
+E-0154,Sales,Sales Associate,L1,Paris,intern,2022-05-29,2025-05-03,voluntary,relocation,<25,M,E-0133
+E-0155,Operations,Operations Coordinator,L2,Remote,permanent,2022-06-05,,,,25-34,undisclosed,E-0068
+E-0156,Engineering,Senior Engineer,L3,Paris,permanent,2022-06-06,,,,45-54,F,E-0008
+E-0157,People & Finance,Finance Analyst,L3,Paris,permanent,2022-06-06,,,,35-44,M,E-0139
+E-0158,Support,Support Associate,L1,Tunis,intern,2022-06-13,2023-07-15,voluntary,relocation,<25,M,E-0105
+E-0159,Support,Senior Support Specialist,L3,Tunis,fixed_term,2022-06-16,2026-05-15,voluntary,management,25-34,undisclosed,E-0105
+E-0160,Product & Design,Product Designer,L2,Remote,permanent,2022-06-19,2025-05-23,involuntary,performance,<25,M,E-0144
+E-0161,Sales,Account Executive,L2,Tunis,permanent,2022-06-19,,,,<25,M,E-0133
+E-0162,Engineering,Junior Engineer,L1,Tunis,permanent,2022-06-20,,,,25-34,M,E-0027
+E-0163,Support,Support Associate,L1,Tunis,intern,2022-06-26,,,,<25,undisclosed,E-0151
+E-0164,Sales,Account Executive,L2,Tunis,permanent,2022-06-29,2023-03-04,voluntary,management,25-34,F,E-0133
+E-0165,Operations,Operations Assistant,L1,Paris,permanent,2022-07-02,,,,<25,F,E-0043
+E-0166,Support,Senior Support Specialist,L3,Tunis,fixed_term,2022-07-03,2026-06-30,voluntary,compensation,25-34,undisclosed,E-0151
+E-0167,Sales,Sales Lead,L4,Tunis,permanent,2022-07-06,2026-05-28,voluntary,career_growth,35-44,F,E-0133
+E-0168,Engineering,Junior Engineer,L1,Tunis,fixed_term,2022-07-17,,,,25-34,M,E-0121
+E-0169,Operations,Operations Analyst,L3,Tunis,permanent,2022-07-21,,,,45-54,F,E-0043
+E-0170,Product & Design,Product Designer,L2,Remote,fixed_term,2022-08-01,,,,<25,F,E-0144
+E-0171,Operations,Operations Assistant,L1,Tunis,permanent,2022-08-07,,,,25-34,M,E-0142
+E-0172,Engineering,Senior Engineer,L3,Tunis,permanent,2022-08-17,2026-09-23,voluntary,career_growth,25-34,F,E-0013
+E-0173,Engineering,Staff Engineer,L4,Remote,permanent,2022-08-21,,,,35-44,M,E-0132
+E-0174,Engineering,Engineer,L2,Remote,permanent,2022-08-27,,,,25-34,M,E-0173
+E-0175,Engineering,Junior Engineer,L1,Paris,fixed_term,2022-08-28,,,,<25,F,E-0121
+E-0176,Engineering,Junior Engineer,L1,Tunis,intern,2022-09-05,,,,<25,M,E-0025
+E-0177,Product & Design,Junior Designer,L1,Tunis,intern,2022-09-07,2023-01-19,voluntary,career_growth,<25,undisclosed,E-0144
+E-0178,Engineering,Junior Engineer,L1,Tunis,intern,2022-09-10,2023-08-25,voluntary,management,<25,M,E-0025
+E-0179,Engineering,Engineer,L2,Remote,permanent,2022-09-11,,,,25-34,F,E-0121
+E-0180,Sales,Sales Associate,L1,Tunis,fixed_term,2022-09-15,,,,<25,F,E-0167
+E-0181,Engineering,Junior Engineer,L1,Tunis,permanent,2022-09-22,,,,25-34,M,E-0173
+E-0182,Engineering,Engineer,L2,Tunis,permanent,2022-10-02,,,,<25,M,E-0008
+E-0183,Engineering,Engineer,L2,Tunis,permanent,2022-10-06,,,,25-34,F,E-0102
+E-0184,Support,Support Associate,L1,Paris,fixed_term,2022-10-06,2024-09-18,voluntary,compensation,<25,M,E-0151
+E-0185,Engineering,Senior Engineer,L3,Tunis,permanent,2022-10-09,,,,35-44,F,E-0102
+E-0186,Sales,Senior Account Executive,L3,Tunis,permanent,2022-10-10,,,,35-44,M,E-0167
+E-0187,Engineering,Senior Engineer,L3,Tunis,permanent,2022-10-12,,,,35-44,M,E-0121
+E-0188,Sales,Sales Associate,L1,Tunis,permanent,2022-10-21,2024-07-01,voluntary,career_growth,35-44,M,E-0133
+E-0189,Engineering,Engineer,L2,Paris,permanent,2022-10-24,,,,25-34,M,E-0008
+E-0190,Operations,Operations Coordinator,L2,Tunis,permanent,2022-10-27,,,,25-34,F,E-0088
+E-0191,Sales,Account Executive,L2,Tunis,permanent,2022-10-28,,,,<25,F,E-0133
+E-0192,Product & Design,Senior Product Designer,L3,Paris,permanent,2022-10-29,,,,35-44,M,E-0144
+E-0193,Engineering,Junior Engineer,L1,Paris,permanent,2022-10-30,,,,<25,F,E-0025
+E-0194,Product & Design,Junior Designer,L1,Tunis,permanent,2022-10-31,,,,<25,M,E-0144
+E-0195,Engineering,Junior Engineer,L1,Tunis,permanent,2022-11-01,,,,<25,M,E-0132
+E-0196,Product & Design,Junior Designer,L1,Tunis,permanent,2022-11-03,2023-03-18,voluntary,relocation,<25,M,E-0063
+E-0197,Support,Support Associate,L1,Tunis,fixed_term,2022-11-17,2026-04-15,voluntary,career_growth,<25,M,E-0105
+E-0198,Operations,Head of Operations,L5,Tunis,permanent,2022-11-21,2023-08-08,voluntary,career_growth,55+,F,
+E-0199,Support,Support Associate,L1,Tunis,intern,2022-11-21,,,,<25,M,E-0151
+E-0200,Engineering,Engineer,L2,Remote,permanent,2022-11-24,,,,25-34,F,E-0108
+E-0201,Product & Design,Junior Designer,L1,Remote,intern,2022-12-05,2024-05-29,voluntary,career_growth,<25,F,E-0063
+E-0202,Engineering,Senior Engineer,L3,Remote,permanent,2022-12-06,,,,45-54,M,E-0173
+E-0203,Sales,Sales Lead,L4,Remote,permanent,2022-12-09,,,,55+,F,E-0133
+E-0204,Support,Support Specialist,L2,Tunis,permanent,2022-12-13,2026-09-18,voluntary,management,25-34,undisclosed,E-0105
+E-0205,Operations,Operations Assistant,L1,Tunis,fixed_term,2022-12-22,,,,55+,M,E-0068
+E-0206,Operations,Operations Coordinator,L2,Tunis,permanent,2022-12-27,,,,<25,F,E-0198
+E-0207,Engineering,Engineer,L2,Remote,permanent,2023-01-04,,,,35-44,M,E-0013
+E-0208,Support,Support Specialist,L2,Tunis,permanent,2023-01-05,2023-05-03,voluntary,compensation,25-34,M,E-0151
+E-0209,Engineering,Junior Engineer,L1,Tunis,permanent,2023-01-13,,,,25-34,M,E-0008
+E-0210,People & Finance,Head of People & Finance,L5,Tunis,fixed_term,2023-01-28,,,,25-34,undisclosed,
+E-0211,Engineering,Senior Engineer,L3,Remote,permanent,2023-02-05,,,,25-34,F,E-0102
+E-0212,People & Finance,Finance Analyst,L3,Tunis,permanent,2023-02-11,,,,25-34,M,E-0100
+E-0213,Support,Senior Support Specialist,L3,Tunis,permanent,2023-03-09,,,,35-44,F,E-0151
+E-0214,Sales,Account Executive,L2,Paris,permanent,2023-03-13,,,,25-34,M,E-0133
+E-0215,Sales,Senior Account Executive,L3,Tunis,permanent,2023-03-16,,,,25-34,F,E-0133
+E-0216,Operations,Operations Assistant,L1,Tunis,intern,2023-03-19,2023-08-15,voluntary,compensation,<25,M,E-0088
+E-0217,Engineering,Junior Engineer,L1,Paris,permanent,2023-03-21,,,,25-34,F,E-0008
+E-0218,Support,Support Associate,L1,Tunis,intern,2023-03-22,2023-06-23,voluntary,compensation,<25,M,E-0151
+E-0219,Support,Support Specialist,L2,Tunis,permanent,2023-03-24,,,,35-44,undisclosed,E-0151
+E-0220,Engineering,Engineer,L2,Tunis,permanent,2023-03-31,,,,25-34,F,E-0024
+E-0221,Support,Support Associate,L1,Tunis,fixed_term,2023-04-07,2026-05-14,voluntary,compensation,25-34,F,E-0105
+E-0222,Product & Design,Junior Designer,L1,Remote,permanent,2023-04-16,,,,25-34,F,E-0063
+E-0223,Support,Support Associate,L1,Tunis,fixed_term,2023-05-01,2026-02-24,voluntary,relocation,<25,M,E-0151
+E-0224,Engineering,Engineer,L2,Tunis,permanent,2023-05-05,,,,35-44,F,E-0132
+E-0225,Support,Support Lead,L4,Tunis,permanent,2023-05-07,,,,55+,F,E-0105
+E-0226,Support,Senior Support Specialist,L3,Tunis,permanent,2023-05-11,,,,35-44,M,E-0225
+E-0227,Operations,Operations Analyst,L3,Tunis,permanent,2023-05-13,,,,25-34,M,E-0088
+E-0228,People & Finance,Finance Analyst,L3,Tunis,permanent,2023-05-13,,,,35-44,F,E-0103
+E-0229,Engineering,Engineer,L2,Tunis,permanent,2023-05-15,,,,25-34,undisclosed,E-0132
+E-0230,Engineering,Senior Engineer,L3,Paris,permanent,2023-05-15,,,,25-34,F,E-0121
+E-0231,Engineering,Junior Engineer,L1,Tunis,permanent,2023-05-16,,,,25-34,F,E-0070
+E-0232,Engineering,Junior Engineer,L1,Tunis,permanent,2023-05-20,,,,25-34,F,E-0013
+E-0233,Operations,Operations Coordinator,L2,Tunis,permanent,2023-05-25,,,,35-44,F,E-0110
+E-0234,Operations,Operations Coordinator,L2,Tunis,fixed_term,2023-05-26,2025-06-21,voluntary,management,25-34,F,E-0198
+E-0235,Sales,Account Executive,L2,Paris,permanent,2023-05-27,,,,45-54,M,E-0133
+E-0236,Support,Support Associate,L1,Tunis,fixed_term,2023-06-08,,,,25-34,M,E-0105
+E-0237,People & Finance,Senior People Partner,L4,Tunis,permanent,2023-06-16,,,,35-44,M,E-0115
+E-0238,Sales,Senior Account Executive,L3,Paris,permanent,2023-06-16,2024-09-29,voluntary,career_growth,25-34,M,E-0133
+E-0239,Engineering,Junior Engineer,L1,Tunis,permanent,2023-06-17,,,,25-34,undisclosed,E-0121
+E-0240,Engineering,Engineer,L2,Remote,permanent,2023-06-19,,,,35-44,M,E-0024
+E-0241,Support,Support Associate,L1,Tunis,permanent,2023-06-28,2026-06-01,voluntary,career_growth,25-34,F,E-0151
+E-0242,Operations,Operations Assistant,L1,Tunis,intern,2023-07-06,,,,<25,undisclosed,E-0198
+E-0243,Product & Design,Junior Designer,L1,Paris,intern,2023-07-10,2024-01-25,voluntary,management,<25,undisclosed,E-0144
+E-0244,People & Finance,Finance Analyst,L3,Tunis,permanent,2023-07-16,,,,35-44,F,E-0085
+E-0245,Product & Design,Senior Product Designer,L3,Remote,permanent,2023-07-18,,,,35-44,F,E-0144
+E-0246,Engineering,Senior Engineer,L3,Tunis,permanent,2023-07-25,,,,35-44,F,E-0025
+E-0247,Support,Support Specialist,L2,Tunis,permanent,2023-07-30,2026-07-10,voluntary,career_growth,25-34,M,E-0105
+E-0248,People & Finance,HR Assistant,L1,Tunis,intern,2023-08-07,2025-08-05,voluntary,career_growth,<25,F,E-0139
+E-0249,Support,Support Associate,L1,Remote,intern,2023-08-21,2024-03-07,voluntary,relocation,<25,F,E-0151
+E-0250,Product & Design,Senior Product Designer,L3,Paris,permanent,2023-08-23,,,,35-44,M,E-0144
+E-0251,Product & Design,Product Manager,L4,Tunis,permanent,2023-08-23,,,,35-44,M,E-0144
+E-0252,Sales,Sales Associate,L1,Tunis,permanent,2023-08-23,,,,35-44,F,E-0133
+E-0253,People & Finance,People Partner,L2,Tunis,permanent,2023-08-26,,,,35-44,F,E-0237
+E-0254,Product & Design,Product Designer,L2,Tunis,permanent,2023-08-26,,,,25-34,F,E-0251
+E-0255,People & Finance,Senior People Partner,L4,Tunis,permanent,2023-08-27,,,,45-54,M,E-0029
+E-0256,People & Finance,Finance Analyst,L3,Paris,permanent,2023-08-30,,,,25-34,F,E-0085
+E-0257,Sales,Senior Account Executive,L3,Paris,permanent,2023-09-03,,,,35-44,F,E-0203
+E-0258,Support,Support Associate,L1,Tunis,intern,2023-09-04,,,,<25,M,E-0151
+E-0259,Operations,Operations Analyst,L3,Tunis,permanent,2023-09-06,,,,35-44,F,E-0142
+E-0260,Engineering,Engineering Manager,L5,Remote,permanent,2023-09-08,,,,45-54,F,
+E-0261,Product & Design,Senior Product Designer,L3,Paris,permanent,2023-09-08,,,,35-44,M,E-0063
+E-0262,Sales,Sales Lead,L4,Tunis,permanent,2023-09-11,2026-07-20,involuntary,restructuring,45-54,M,E-0203
+E-0263,People & Finance,Senior People Partner,L4,Paris,permanent,2023-09-17,,,,45-54,F,E-0103
+E-0264,Product & Design,Product Designer,L2,Paris,permanent,2023-09-19,2026-04-22,voluntary,compensation,35-44,F,E-0063
+E-0265,Support,Support Associate,L1,Paris,permanent,2023-09-19,,,,25-34,F,E-0225
+E-0266,Product & Design,Senior Product Designer,L3,Tunis,permanent,2023-10-06,,,,25-34,M,E-0144
+E-0267,Engineering,Engineer,L2,Remote,fixed_term,2023-10-07,2024-10-15,voluntary,management,25-34,F,E-0102
+E-0268,Product & Design,Senior Product Designer,L3,Paris,permanent,2023-10-15,,,,25-34,M,E-0063
+E-0269,Engineering,Junior Engineer,L1,Remote,permanent,2023-10-22,,,,<25,M,E-0102
+E-0270,Engineering,Senior Engineer,L3,Paris,permanent,2023-10-24,,,,35-44,M,E-0027
+E-0271,Product & Design,Junior Designer,L1,Paris,permanent,2023-11-02,,,,25-34,M,E-0251
+E-0272,Product & Design,Product Designer,L2,Remote,fixed_term,2023-11-05,,,,25-34,undisclosed,E-0251
+E-0273,Support,Support Specialist,L2,Tunis,fixed_term,2023-11-11,2026-06-01,voluntary,career_growth,35-44,F,E-0151
+E-0274,Sales,Senior Account Executive,L3,Paris,fixed_term,2023-11-12,2025-05-25,voluntary,career_growth,35-44,F,E-0133
+E-0275,Engineering,Senior Engineer,L3,Tunis,permanent,2023-11-13,,,,35-44,M,E-0121
+E-0276,Product & Design,Product Designer,L2,Tunis,permanent,2023-11-21,,,,25-34,undisclosed,E-0144
+E-0277,People & Finance,Finance Analyst,L3,Tunis,permanent,2023-11-25,,,,25-34,F,E-0255
+E-0278,Engineering,Engineer,L2,Tunis,permanent,2023-12-06,,,,35-44,F,E-0121
+E-0279,Support,Support Specialist,L2,Tunis,permanent,2023-12-14,,,,25-34,undisclosed,E-0151
+E-0280,Engineering,Engineer,L2,Paris,permanent,2023-12-16,,,,35-44,F,E-0108
+E-0281,Support,Support Specialist,L2,Tunis,permanent,2023-12-17,2024-07-28,retirement,retirement,55+,F,E-0105
+E-0282,Support,Support Lead,L4,Remote,permanent,2023-12-20,,,,25-34,F,E-0151
+E-0283,Support,Support Specialist,L2,Tunis,permanent,2023-12-21,,,,35-44,F,E-0151
+E-0284,Product & Design,Product Manager,L4,Tunis,permanent,2023-12-22,,,,45-54,F,E-0144
+E-0285,Sales,Sales Lead,L4,Tunis,permanent,2023-12-30,,,,45-54,F,E-0133
+E-0286,Support,Support Specialist,L2,Remote,permanent,2023-12-30,2026-09-12,voluntary,compensation,25-34,M,E-0105
+E-0287,Product & Design,Senior Product Designer,L3,Paris,permanent,2023-12-31,,,,25-34,F,E-0144
+E-0288,Sales,Account Executive,L2,Paris,permanent,2024-01-07,2024-07-15,retirement,retirement,55+,F,E-0285
+E-0289,Sales,Head of Sales,L5,Paris,permanent,2024-01-09,,,,35-44,M,
+E-0290,Sales,Sales Lead,L4,Paris,permanent,2024-01-14,2025-11-06,voluntary,compensation,45-54,M,E-0285
+E-0291,Operations,Operations Coordinator,L2,Remote,fixed_term,2024-01-16,,,,45-54,M,E-0043
+E-0292,Support,Support Associate,L1,Tunis,permanent,2024-01-17,2025-01-15,voluntary,career_growth,<25,F,E-0105
+E-0293,Support,Support Specialist,L2,Tunis,fixed_term,2024-01-22,2026-01-15,voluntary,relocation,25-34,F,E-0151
+E-0294,Operations,Head of Operations,L5,Tunis,permanent,2024-02-03,2025-02-28,voluntary,personal,35-44,M,
+E-0295,People & Finance,People Partner,L2,Paris,permanent,2024-02-10,,,,45-54,M,E-0103
+E-0296,Product & Design,Product Designer,L2,Tunis,permanent,2024-02-12,,,,35-44,F,E-0284
+E-0297,Engineering,Senior Engineer,L3,Tunis,fixed_term,2024-02-17,,,,45-54,F,E-0013
+E-0298,Operations,Operations Lead,L4,Remote,permanent,2024-02-23,,,,55+,undisclosed,E-0080
+E-0299,Engineering,Engineer,L2,Tunis,permanent,2024-02-25,,,,25-34,F,E-0121
+E-0300,Support,Support Specialist,L2,Tunis,permanent,2024-03-05,,,,<25,M,E-0282
+E-0301,Engineering,Senior Engineer,L3,Paris,permanent,2024-03-06,,,,45-54,M,E-0173
+E-0302,Support,Support Associate,L1,Tunis,intern,2024-03-06,2026-08-18,voluntary,career_growth,<25,F,E-0105
+E-0303,Support,Support Lead,L4,Tunis,permanent,2024-03-06,,,,35-44,M,E-0151
+E-0304,Support,Support Lead,L4,Paris,fixed_term,2024-03-06,2026-05-19,voluntary,career_growth,35-44,M,E-0105
+E-0305,Support,Senior Support Specialist,L3,Tunis,permanent,2024-03-12,,,,<25,F,E-0282
+E-0306,Sales,Account Executive,L2,Paris,permanent,2024-03-13,,,,25-34,F,E-0289
+E-0307,Support,Senior Support Specialist,L3,Tunis,permanent,2024-03-15,,,,25-34,F,E-0225
+E-0308,Engineering,Junior Engineer,L1,Remote,permanent,2024-03-22,,,,25-34,F,E-0008
+E-0309,Engineering,Senior Engineer,L3,Paris,permanent,2024-03-27,,,,25-34,F,E-0013
+E-0310,Sales,Account Executive,L2,Paris,permanent,2024-03-29,,,,25-34,M,E-0133
+E-0311,Operations,Operations Lead,L4,Tunis,permanent,2024-03-30,,,,45-54,undisclosed,E-0043
+E-0312,People & Finance,HR Assistant,L1,Tunis,intern,2024-03-31,,,,<25,M,E-0100
+E-0313,Support,Support Associate,L1,Tunis,intern,2024-04-07,2025-01-29,involuntary,performance,<25,M,E-0225
+E-0314,Support,Support Specialist,L2,Remote,permanent,2024-04-09,2026-04-22,voluntary,career_growth,25-34,F,E-0303
+E-0315,People & Finance,Finance Analyst,L3,Tunis,permanent,2024-04-19,,,,35-44,F,E-0085
+E-0316,People & Finance,Senior People Partner,L4,Tunis,permanent,2024-04-21,,,,35-44,F,E-0263
+E-0317,Support,Support Associate,L1,Tunis,permanent,2024-05-01,,,,<25,F,E-0151
+E-0318,Operations,Operations Coordinator,L2,Tunis,permanent,2024-05-02,,,,25-34,M,E-0088
+E-0319,Product & Design,Product Designer,L2,Paris,permanent,2024-05-05,2026-02-14,voluntary,career_growth,25-34,F,E-0284
+E-0320,Support,Support Associate,L1,Tunis,intern,2024-05-13,2025-11-17,voluntary,career_growth,<25,F,E-0282
+E-0321,Product & Design,Junior Designer,L1,Paris,permanent,2024-05-18,,,,<25,M,E-0284
+E-0322,People & Finance,HR Assistant,L1,Remote,permanent,2024-05-24,,,,25-34,M,E-0316
+E-0323,Engineering,Senior Engineer,L3,Paris,permanent,2024-06-10,,,,25-34,M,E-0102
+E-0324,Sales,Senior Account Executive,L3,Paris,permanent,2024-06-23,,,,25-34,M,E-0262
+E-0325,Product & Design,Senior Product Designer,L3,Tunis,permanent,2024-06-26,,,,25-34,M,E-0251
+E-0326,Product & Design,Product Designer,L2,Tunis,fixed_term,2024-06-27,,,,<25,M,E-0063
+E-0327,Support,Support Associate,L1,Paris,permanent,2024-07-05,2025-05-22,involuntary,performance,<25,undisclosed,E-0282
+E-0328,Product & Design,Senior Product Designer,L3,Tunis,permanent,2024-07-07,2026-09-23,involuntary,performance,25-34,F,E-0063
+E-0329,Product & Design,Product Manager,L4,Paris,permanent,2024-07-12,,,,55+,M,E-0063
+E-0330,Sales,Senior Account Executive,L3,Paris,permanent,2024-07-12,,,,35-44,M,E-0289
+E-0331,Support,Support Specialist,L2,Tunis,permanent,2024-07-24,,,,25-34,F,E-0304
+E-0332,Sales,Senior Account Executive,L3,Paris,permanent,2024-07-28,,,,<25,F,E-0285
+E-0333,Operations,Operations Analyst,L3,Tunis,permanent,2024-07-31,,,,35-44,F,E-0046
+E-0334,Support,Support Specialist,L2,Tunis,permanent,2024-07-31,,,,25-34,undisclosed,E-0304
+E-0335,People & Finance,People Partner,L2,Paris,permanent,2024-08-02,,,,25-34,undisclosed,E-0263
+E-0336,Sales,Senior Account Executive,L3,Paris,permanent,2024-08-02,,,,35-44,M,E-0133
+E-0337,Product & Design,Senior Product Designer,L3,Remote,permanent,2024-08-03,,,,35-44,M,E-0063
+E-0338,Product & Design,Product Manager,L4,Tunis,permanent,2024-08-05,,,,35-44,undisclosed,E-0251
+E-0339,Support,Support Specialist,L2,Tunis,permanent,2024-08-07,,,,25-34,F,E-0303
+E-0340,Sales,Senior Account Executive,L3,Paris,permanent,2024-08-16,,,,55+,F,E-0133
+E-0341,Sales,Sales Lead,L4,Paris,permanent,2024-08-18,,,,25-34,F,E-0203
+E-0342,Support,Senior Support Specialist,L3,Paris,permanent,2024-08-20,,,,25-34,M,E-0304
+E-0343,Product & Design,Senior Product Designer,L3,Remote,fixed_term,2024-08-24,,,,25-34,F,E-0251
+E-0344,People & Finance,Finance Analyst,L3,Paris,fixed_term,2024-08-25,2025-06-05,voluntary,relocation,35-44,M,E-0263
+E-0345,Support,Support Lead,L4,Tunis,fixed_term,2024-08-27,2026-04-13,voluntary,career_growth,25-34,F,E-0105
+E-0346,Operations,Operations Assistant,L1,Paris,intern,2024-08-29,,,,<25,F,E-0088
+E-0347,Support,Support Associate,L1,Tunis,intern,2024-09-03,2025-03-30,voluntary,personal,<25,M,E-0345
+E-0348,Sales,Sales Associate,L1,Tunis,fixed_term,2024-09-09,,,,<25,M,E-0341
+E-0349,Operations,Operations Analyst,L3,Tunis,permanent,2024-09-11,,,,35-44,F,E-0114
+E-0350,Sales,Sales Associate,L1,Paris,permanent,2024-09-15,,,,25-34,F,E-0290
+E-0351,Support,Support Associate,L1,Tunis,permanent,2024-09-27,,,,<25,M,E-0345
+E-0352,Engineering,Senior Engineer,L3,Paris,permanent,2024-10-02,,,,25-34,F,E-0173
+E-0353,Sales,Sales Lead,L4,Paris,permanent,2024-10-02,,,,35-44,M,E-0133
+E-0354,Engineering,Junior Engineer,L1,Remote,intern,2024-10-03,,,,<25,M,E-0108
+E-0355,Support,Support Associate,L1,Remote,permanent,2024-10-04,,,,<25,undisclosed,E-0151
+E-0356,Sales,Senior Account Executive,L3,Paris,permanent,2024-10-15,,,,25-34,F,E-0353
+E-0357,People & Finance,Finance Analyst,L3,Paris,permanent,2024-10-19,,,,25-34,M,E-0103
+E-0358,Support,Support Associate,L1,Tunis,intern,2024-10-19,,,,<25,F,E-0151
+E-0359,Engineering,Senior Engineer,L3,Tunis,permanent,2024-10-31,,,,35-44,M,E-0260
+E-0360,People & Finance,Head of People & Finance,L5,Tunis,permanent,2024-10-31,,,,45-54,F,
+E-0361,Support,Support Specialist,L2,Tunis,permanent,2024-11-01,,,,25-34,M,E-0282
+E-0362,Sales,Account Executive,L2,Tunis,fixed_term,2024-11-06,,,,<25,F,E-0353
+E-0363,Support,Support Specialist,L2,Tunis,permanent,2024-11-06,,,,<25,F,E-0225
+E-0364,Product & Design,Product Designer,L2,Remote,permanent,2024-11-11,,,,25-34,F,E-0338
+E-0365,Support,Support Specialist,L2,Tunis,permanent,2024-11-12,,,,25-34,F,E-0151
+E-0366,People & Finance,Senior People Partner,L4,Remote,permanent,2024-11-13,,,,55+,F,E-0115
+E-0367,People & Finance,Senior People Partner,L4,Paris,permanent,2024-11-13,,,,45-54,F,E-0316
+E-0368,Support,Support Associate,L1,Tunis,fixed_term,2024-11-22,,,,<25,M,E-0345
+E-0369,Operations,Operations Lead,L4,Tunis,permanent,2024-11-26,,,,35-44,undisclosed,E-0311
+E-0370,Product & Design,Senior Product Designer,L3,Remote,permanent,2024-11-26,,,,25-34,F,E-0338
+E-0371,Operations,Operations Analyst,L3,Tunis,permanent,2024-11-28,,,,25-34,M,E-0110
+E-0372,Operations,Operations Coordinator,L2,Tunis,permanent,2024-12-01,2026-09-08,voluntary,career_growth,25-34,M,E-0043
+E-0373,People & Finance,HR Assistant,L1,Paris,intern,2024-12-05,,,,<25,M,E-0255
+E-0374,People & Finance,HR Assistant,L1,Paris,permanent,2024-12-09,,,,25-34,M,E-0367
+E-0375,People & Finance,People Partner,L2,Tunis,permanent,2024-12-14,,,,<25,F,E-0255
+E-0376,Product & Design,Product Designer,L2,Paris,permanent,2024-12-16,,,,25-34,F,E-0144
+E-0377,Sales,Senior Account Executive,L3,Tunis,permanent,2024-12-16,,,,25-34,F,E-0167
+E-0378,Engineering,Senior Engineer,L3,Tunis,permanent,2024-12-17,,,,35-44,F,E-0008
+E-0379,People & Finance,Finance Analyst,L3,Tunis,permanent,2024-12-22,,,,55+,M,E-0029
+E-0380,Engineering,Engineering Manager,L5,Paris,permanent,2024-12-26,,,,55+,M,
+E-0381,Operations,Operations Analyst,L3,Tunis,permanent,2025-01-07,,,,35-44,M,E-0294
+E-0382,Operations,Operations Assistant,L1,Paris,intern,2025-01-10,,,,<25,F,E-0294
+E-0383,Sales,Sales Lead,L4,Tunis,permanent,2025-01-15,,,,45-54,F,E-0290
+E-0384,Operations,Operations Analyst,L3,Tunis,permanent,2025-01-16,,,,35-44,undisclosed,E-0198
+E-0385,Sales,Senior Account Executive,L3,Tunis,fixed_term,2025-01-20,,,,25-34,M,E-0353
+E-0386,Sales,Sales Associate,L1,Paris,intern,2025-02-03,2026-02-01,voluntary,compensation,<25,F,E-0167
+E-0387,Product & Design,Product Designer,L2,Tunis,permanent,2025-02-13,,,,25-34,F,E-0251
+E-0388,Product & Design,Senior Product Designer,L3,Tunis,permanent,2025-02-13,,,,25-34,M,E-0144
+E-0389,Support,Support Specialist,L2,Tunis,permanent,2025-02-16,,,,25-34,M,E-0304
+E-0390,Support,Support Specialist,L2,Remote,permanent,2025-02-24,2026-05-14,voluntary,career_growth,25-34,M,E-0304
+E-0391,Engineering,Junior Engineer,L1,Paris,permanent,2025-02-28,,,,25-34,F,E-0260
+E-0392,Sales,Sales Associate,L1,Remote,intern,2025-03-03,2025-11-23,voluntary,personal,<25,F,E-0289
+E-0393,Support,Support Associate,L1,Tunis,permanent,2025-03-18,,,,25-34,undisclosed,E-0151
+E-0394,Support,Senior Support Specialist,L3,Tunis,fixed_term,2025-03-21,,,,25-34,M,E-0282
+E-0395,Product & Design,Junior Designer,L1,Tunis,permanent,2025-03-30,,,,25-34,F,E-0338
+E-0396,Support,Support Associate,L1,Tunis,intern,2025-04-01,,,,<25,M,E-0345
+E-0397,Product & Design,Product Manager,L4,Paris,fixed_term,2025-04-02,,,,25-34,M,E-0329
+E-0398,Sales,Sales Associate,L1,Remote,intern,2025-04-05,2026-04-05,voluntary,relocation,<25,M,E-0203
+E-0399,Sales,Senior Account Executive,L3,Remote,fixed_term,2025-04-05,2025-07-19,voluntary,personal,35-44,F,E-0203
+E-0400,Sales,Head of Sales,L5,Paris,permanent,2025-04-09,,,,45-54,M,
+E-0401,Product & Design,Product Designer,L2,Paris,permanent,2025-04-16,,,,25-34,F,E-0144
+E-0402,Support,Senior Support Specialist,L3,Tunis,permanent,2025-04-19,,,,25-34,M,E-0151
+E-0403,Sales,Sales Associate,L1,Paris,permanent,2025-04-27,,,,25-34,M,E-0383
+E-0404,Operations,Operations Assistant,L1,Tunis,intern,2025-04-30,,,,<25,M,E-0088
+E-0405,Support,Support Associate,L1,Tunis,intern,2025-05-02,,,,<25,M,E-0151
+E-0406,People & Finance,People Partner,L2,Tunis,fixed_term,2025-05-18,,,,<25,F,E-0085
+E-0407,Sales,Account Executive,L2,Paris,fixed_term,2025-05-18,2026-08-24,voluntary,career_growth,25-34,F,E-0203
+E-0408,Sales,Account Executive,L2,Paris,permanent,2025-05-21,,,,25-34,F,E-0400
+E-0409,Sales,Senior Account Executive,L3,Paris,permanent,2025-05-27,,,,45-54,M,E-0383
+E-0410,Sales,Account Executive,L2,Paris,permanent,2025-06-03,,,,25-34,M,E-0133
+E-0411,Operations,Operations Lead,L4,Tunis,permanent,2025-06-12,2025-10-26,retirement,retirement,55+,M,E-0369
+E-0412,People & Finance,People Partner,L2,Tunis,permanent,2025-06-14,,,,25-34,F,E-0255
+E-0413,Product & Design,Senior Product Designer,L3,Paris,permanent,2025-06-18,,,,25-34,M,E-0284
+E-0414,People & Finance,People Partner,L2,Paris,permanent,2025-06-21,,,,25-34,F,E-0316
+E-0415,Sales,Senior Account Executive,L3,Paris,permanent,2025-06-26,,,,35-44,M,E-0353
+E-0416,Product & Design,Product Designer,L2,Paris,fixed_term,2025-07-02,2026-06-09,voluntary,compensation,35-44,M,E-0063
+E-0417,Product & Design,Product Designer,L2,Paris,permanent,2025-07-06,,,,25-34,M,E-0251
+E-0418,Sales,Sales Associate,L1,Tunis,permanent,2025-07-07,,,,<25,F,E-0400
+E-0419,Support,Senior Support Specialist,L3,Tunis,permanent,2025-07-13,2026-04-21,voluntary,career_growth,25-34,F,E-0105
+E-0420,Support,Support Specialist,L2,Tunis,permanent,2025-07-15,,,,<25,M,E-0225
+E-0421,Support,Senior Support Specialist,L3,Remote,permanent,2025-07-18,,,,25-34,F,E-0105
+E-0422,Support,Support Associate,L1,Tunis,permanent,2025-07-20,,,,25-34,M,E-0151
+E-0423,Support,Support Associate,L1,Remote,permanent,2025-07-22,2026-05-25,voluntary,career_growth,25-34,M,E-0304
+E-0424,Product & Design,Product Designer,L2,Paris,fixed_term,2025-07-23,,,,25-34,M,E-0329
+E-0425,Sales,Sales Associate,L1,Tunis,permanent,2025-07-25,,,,<25,M,E-0341
+E-0426,Engineering,Junior Engineer,L1,Paris,intern,2025-07-28,,,,<25,M,E-0070
+E-0427,Support,Support Associate,L1,Remote,permanent,2025-08-05,,,,<25,F,E-0225
+E-0428,Support,Support Associate,L1,Paris,intern,2025-08-11,,,,<25,M,E-0151
+E-0429,Product & Design,Product Manager,L4,Paris,permanent,2025-08-19,,,,25-34,M,E-0338
+E-0430,Support,Support Associate,L1,Tunis,permanent,2025-08-22,,,,<25,F,E-0304
+E-0431,Support,Support Specialist,L2,Tunis,permanent,2025-08-31,,,,35-44,M,E-0151
+E-0432,People & Finance,Head of People & Finance,L5,Tunis,permanent,2025-09-06,,,,45-54,F,
+E-0433,Operations,Operations Assistant,L1,Tunis,permanent,2025-09-10,,,,25-34,M,E-0046
+E-0434,Support,Support Associate,L1,Remote,permanent,2025-09-26,2026-07-03,voluntary,personal,<25,M,E-0225
+E-0435,Sales,Account Executive,L2,Paris,permanent,2025-09-27,,,,35-44,F,E-0383
+E-0436,Product & Design,Product Designer,L2,Remote,permanent,2025-10-04,,,,35-44,M,E-0144
+E-0437,Support,Support Associate,L1,Tunis,fixed_term,2025-10-06,,,,25-34,undisclosed,E-0151
+E-0438,Operations,Operations Assistant,L1,Tunis,permanent,2025-10-07,,,,25-34,F,E-0110
+E-0439,Operations,Operations Lead,L4,Tunis,permanent,2025-10-11,,,,45-54,F,E-0142
+E-0440,Engineering,Engineer,L2,Remote,permanent,2025-10-21,,,,25-34,F,E-0108
+E-0441,Support,Support Associate,L1,Remote,permanent,2025-10-22,,,,25-34,F,E-0225
+E-0442,Product & Design,Product Designer,L2,Tunis,permanent,2025-10-23,,,,35-44,F,E-0329
+E-0443,Support,Support Lead,L4,Tunis,permanent,2025-10-24,,,,45-54,M,E-0304
+E-0444,Sales,Sales Lead,L4,Paris,permanent,2025-10-25,,,,35-44,M,E-0383
+E-0445,Sales,Senior Account Executive,L3,Tunis,permanent,2025-10-26,,,,45-54,F,E-0203
+E-0446,Engineering,Senior Engineer,L3,Tunis,permanent,2025-11-04,,,,35-44,M,E-0132
+E-0447,Support,Support Specialist,L2,Remote,permanent,2025-11-09,,,,<25,F,E-0304
+E-0448,Engineering,Senior Engineer,L3,Remote,permanent,2025-11-10,,,,45-54,F,E-0380
+E-0449,Sales,Account Executive,L2,Tunis,permanent,2025-11-13,,,,25-34,undisclosed,E-0289
+E-0450,Product & Design,Senior Product Designer,L3,Tunis,permanent,2025-11-19,,,,35-44,M,E-0397
+E-0451,Support,Support Associate,L1,Tunis,intern,2025-11-24,2026-04-23,voluntary,career_growth,<25,M,E-0225
+E-0452,Support,Senior Support Specialist,L3,Tunis,permanent,2025-11-26,,,,25-34,F,E-0105
+E-0453,People & Finance,Finance Analyst,L3,Tunis,permanent,2025-12-02,,,,25-34,M,E-0139
+E-0454,Support,Support Associate,L1,Tunis,permanent,2025-12-04,,,,<25,F,E-0282
+E-0455,Sales,Account Executive,L2,Paris,permanent,2025-12-19,,,,25-34,undisclosed,E-0262
+E-0456,Sales,Senior Account Executive,L3,Tunis,permanent,2025-12-21,,,,35-44,M,E-0444
+E-0457,Sales,Sales Lead,L4,Tunis,permanent,2025-12-21,,,,25-34,F,E-0444
+E-0458,Engineering,Senior Engineer,L3,Tunis,fixed_term,2025-12-26,,,,35-44,F,E-0173
+E-0459,Support,Support Associate,L1,Paris,permanent,2026-01-08,,,,<25,F,E-0345
+E-0460,Support,Support Associate,L1,Tunis,permanent,2026-01-18,,,,25-34,M,E-0303
+E-0461,Engineering,Senior Engineer,L3,Tunis,permanent,2026-01-20,,,,25-34,M,E-0070
+E-0462,Support,Senior Support Specialist,L3,Tunis,permanent,2026-01-23,,,,35-44,M,E-0225
+E-0463,Sales,Account Executive,L2,Remote,permanent,2026-02-01,,,,25-34,M,E-0400
+E-0464,Sales,Sales Associate,L1,Paris,intern,2026-02-05,,,,<25,F,E-0444
+E-0465,Support,Support Specialist,L2,Tunis,permanent,2026-02-06,,,,25-34,F,E-0304
+E-0466,Engineering,Senior Engineer,L3,Paris,permanent,2026-02-28,,,,35-44,F,E-0108
+E-0467,Sales,Sales Associate,L1,Remote,permanent,2026-03-08,,,,<25,M,E-0341
+E-0468,Sales,Sales Associate,L1,Tunis,permanent,2026-03-08,,,,25-34,F,E-0341
+E-0469,Sales,Account Executive,L2,Paris,permanent,2026-03-17,,,,25-34,F,E-0289
+E-0470,Support,Support Associate,L1,Tunis,permanent,2026-03-17,,,,<25,M,E-0303
+E-0471,Engineering,Senior Engineer,L3,Tunis,permanent,2026-03-18,,,,35-44,F,E-0108
+E-0472,Sales,Sales Lead,L4,Tunis,permanent,2026-03-23,,,,45-54,F,E-0353
+E-0473,Operations,Operations Lead,L4,Tunis,permanent,2026-03-30,,,,45-54,M,E-0046
+E-0474,Support,Support Specialist,L2,Remote,fixed_term,2026-04-05,2026-07-07,voluntary,career_growth,<25,M,E-0225
+E-0475,Support,Support Associate,L1,Remote,permanent,2026-04-09,,,,<25,F,E-0151
+E-0476,People & Finance,People Partner,L2,Remote,permanent,2026-04-13,,,,25-34,M,E-0367
+E-0477,Engineering,Engineer,L2,Tunis,permanent,2026-04-15,,,,25-34,M,E-0027
+E-0478,Sales,Sales Associate,L1,Paris,permanent,2026-04-21,,,,<25,M,E-0472
+E-0479,Sales,Sales Associate,L1,Tunis,permanent,2026-04-22,,,,<25,undisclosed,E-0472
+E-0480,Support,Support Specialist,L2,Tunis,permanent,2026-04-28,,,,25-34,M,E-0225
+E-0481,Support,Support Specialist,L2,Tunis,permanent,2026-04-30,,,,<25,M,E-0282
+E-0482,Support,Senior Support Specialist,L3,Tunis,permanent,2026-04-30,,,,25-34,M,E-0303
+E-0483,Engineering,Junior Engineer,L1,Tunis,permanent,2026-05-01,,,,25-34,F,E-0260
+E-0484,People & Finance,Senior People Partner,L4,Tunis,permanent,2026-05-14,,,,55+,M,E-0432
+E-0485,Product & Design,Senior Product Designer,L3,Remote,permanent,2026-05-30,,,,25-34,M,E-0144
+E-0486,Sales,Sales Lead,L4,Paris,permanent,2026-06-02,,,,35-44,M,E-0444
+E-0487,Engineering,Staff Engineer,L4,Tunis,permanent,2026-06-06,,,,25-34,M,E-0013
+E-0488,Sales,Head of Sales,L5,Tunis,permanent,2026-06-09,,,,35-44,F,
+E-0489,Support,Support Associate,L1,Tunis,permanent,2026-06-11,,,,<25,F,E-0105
+E-0490,Operations,Operations Coordinator,L2,Tunis,permanent,2026-06-13,,,,25-34,M,E-0043
+E-0491,Support,Support Associate,L1,Tunis,permanent,2026-06-14,,,,<25,M,E-0345
+E-0492,Operations,Operations Analyst,L3,Tunis,permanent,2026-06-15,,,,25-34,F,E-0114
+E-0493,Operations,Operations Analyst,L3,Tunis,fixed_term,2026-07-04,,,,25-34,F,E-0046
+E-0494,People & Finance,Finance Analyst,L3,Tunis,permanent,2026-07-10,,,,25-34,M,E-0255
+E-0495,Support,Support Specialist,L2,Paris,permanent,2026-07-18,,,,25-34,M,E-0443
+E-0496,Sales,Sales Lead,L4,Tunis,permanent,2026-07-21,,,,55+,F,E-0285
+E-0497,Product & Design,Junior Designer,L1,Tunis,intern,2026-07-23,,,,<25,M,E-0338
+E-0498,Sales,Senior Account Executive,L3,Paris,permanent,2026-07-23,,,,25-34,F,E-0457
+E-0499,Support,Support Associate,L1,Remote,intern,2026-07-23,,,,<25,F,E-0282
+E-0500,Engineering,Junior Engineer,L1,Remote,fixed_term,2026-07-26,,,,35-44,M,E-0380
+E-0501,Sales,Senior Account Executive,L3,Paris,permanent,2026-07-28,,,,45-54,M,E-0383
+E-0502,Product & Design,Product Designer,L2,Tunis,permanent,2026-07-29,,,,25-34,F,E-0251
+E-0503,Engineering,Staff Engineer,L4,Remote,permanent,2026-08-03,,,,35-44,M,E-0108
+E-0504,Product & Design,Senior Product Designer,L3,Remote,permanent,2026-08-03,,,,35-44,M,E-0144
+E-0505,Support,Support Lead,L4,Tunis,fixed_term,2026-08-05,,,,25-34,F,E-0345
+E-0506,Support,Support Associate,L1,Tunis,fixed_term,2026-08-19,,,,25-34,M,E-0304
+E-0507,Support,Senior Support Specialist,L3,Paris,permanent,2026-08-19,,,,35-44,M,E-0505
+E-0508,Operations,Operations Coordinator,L2,Tunis,permanent,2026-08-20,,,,35-44,M,E-0043
+E-0509,Support,Support Associate,L1,Remote,permanent,2026-08-21,,,,<25,F,E-0282
+E-0510,People & Finance,Finance Analyst,L3,Tunis,permanent,2026-08-23,,,,45-54,F,E-0139
+E-0511,Engineering,Senior Engineer,L3,Remote,permanent,2026-08-24,,,,25-34,F,E-0380
+E-0512,Sales,Sales Associate,L1,Remote,permanent,2026-08-28,,,,25-34,M,E-0496
+E-0513,Support,Support Associate,L1,Tunis,intern,2026-08-28,,,,<25,undisclosed,E-0225
+E-0514,Sales,Senior Account Executive,L3,Paris,permanent,2026-09-02,,,,35-44,M,E-0486
+E-0515,People & Finance,Senior People Partner,L4,Tunis,permanent,2026-09-25,,,,35-44,M,E-0139
+E-0516,Support,Senior Support Specialist,L3,Tunis,permanent,2026-09-27,,,,25-34,F,E-0225
+E-0517,Engineering,Staff Engineer,L4,Tunis,permanent,2026-10-04,,,,35-44,M,E-0132
+E-0518,Support,Support Associate,L1,Tunis,permanent,2026-10-10,,,,<25,F,E-0225
+E-0519,Support,Support Lead,L4,Tunis,permanent,2026-10-12,,,,45-54,F,E-0443

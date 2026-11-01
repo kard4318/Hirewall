@@ -1,0 +1,114 @@
+/* Knowledge desk: the employee handbook page (/ask) and the HR question desk view */
+
+/* Employee handbook desk */
+.handbook { display: flex; flex-direction: column; }
+.handbook-top {
+  display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1.5rem;
+  border-bottom: 3px double var(--ink); background-color: var(--paper-deep); background-image: var(--grain);
+}
+.handbook-main {
+  display: grid; grid-template-columns: minmax(300px, 0.9fr) minmax(320px, 1.1fr); gap: 1.5rem;
+  padding: 1.5rem; align-items: start; max-width: 1200px; width: 100%; margin: 0 auto;
+}
+@media (max-width: 900px) { .handbook-main { grid-template-columns: 1fr; padding: 1rem; } }
+
+.ask-sheet {
+  position: sticky; top: 1rem; padding: 1.4rem 1.3rem 1.3rem 2.9rem;
+  background-color: var(--paper); background-image: var(--ruled), var(--grain);
+  border: 1px solid var(--ink); box-shadow: 5px 5px 0 var(--paper-edge);
+}
+@media (max-width: 900px) { .ask-sheet { position: static; } }
+.ask-sheet::before { content: ""; position: absolute; top: 0; bottom: 0; left: 1.9rem; width: 1.5px; background: var(--vermilion); opacity: 0.8; }
+.ask-sheet .display { font-size: clamp(2rem, 4vw, 2.8rem); margin: 0.35rem 0 1.1rem; }
+.ask-line { display: flex; gap: 0.6rem; align-items: flex-end; }
+.ask-line input { font-size: 1.05rem; }
+.suggestions { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 1rem 0 0.9rem; }
+.tag-button { cursor: pointer; text-transform: none; letter-spacing: 0; font-size: 0.72rem; }
+.tag-button:hover:not(:disabled) { border-color: var(--ink); color: var(--ink); }
+.privacy-note { margin: 0; font-size: 0.78rem; color: var(--ink-soft); border-top: 1px solid var(--rule-strong); padding-top: 0.7rem; }
+
+/* Answers as index cards */
+.cards { display: flex; flex-direction: column; gap: 1rem; }
+.cards-empty { color: var(--ink-soft); font-style: italic; margin: 1rem 0; }
+.index-card {
+  position: relative; padding: 1.1rem 1.2rem 1.1rem;
+  background: rgba(255, 253, 247, 0.92); border: 1px solid var(--ink);
+  border-top: 6px solid var(--ink-soft);
+  box-shadow: 3px 4px 0 var(--paper-edge);
+  animation: card-file 420ms cubic-bezier(0.2, 0.75, 0.3, 1) both;
+}
+.index-card.kind-answered { border-top-color: var(--moss); }
+.index-card.kind-not_found, .index-card.kind-error { border-top-color: var(--ink-soft); }
+.index-card.kind-sensitive, .index-card.kind-blocked, .index-card.kind-refused_personal { border-top-color: var(--vermilion); }
+@keyframes card-file { from { opacity: 0; transform: translateY(-14px) rotate(-1deg); } to { opacity: 1; transform: none; } }
+.card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.8rem; }
+.card-question { margin: 0; font-family: var(--font-display); font-size: 1.3rem; line-height: 1.2; }
+.card-answer { margin: 0.7rem 0 0.8rem; white-space: pre-wrap; }
+.looking { margin: 0.6rem 0 0; color: var(--ink-soft); font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.06em; }
+.looking span { animation: dot 1s ease-in-out infinite; }
+.looking span:nth-child(2) { animation-delay: 0.15s; }
+.looking span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes dot { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+
+.citations { list-style: none; margin: 0 0 0.9rem; padding: 0.55rem 0 0; border-top: 1px dashed var(--rule-strong); display: flex; flex-direction: column; gap: 0.3rem; }
+.citations li { display: flex; flex-wrap: wrap; gap: 0.3rem 0.6rem; align-items: baseline; font-size: 0.82rem; }
+.cite-id { font-family: var(--font-mono); font-size: 0.7rem; color: var(--vermilion-ink); }
+.cite-title { color: var(--ink); }
+.cite-version { font-family: var(--font-mono); font-size: 0.66rem; color: var(--ink-soft); }
+
+.escalate { display: flex; flex-direction: column; gap: 0.4rem; }
+.escalate-row { display: flex; gap: 0.5rem; align-items: flex-end; }
+.sent-note { margin: 0; display: flex; gap: 0.6rem; align-items: center; color: var(--moss); font-weight: 600; }
+
+/* Kind stamps (share the rubber-stamp look from base.css) */
+.stamp-kind-answered { color: var(--moss); }
+.stamp-kind-not_found, .stamp-kind-error { color: var(--ink-soft); }
+.stamp-kind-sensitive, .stamp-kind-blocked, .stamp-kind-refused_personal { color: var(--vermilion-ink); }
+
+/* HR question desk */
+.view-switch { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 2px; overflow: hidden; }
+.view-switch button { font: 600 0.8rem var(--font-ui); padding: 0.4rem 0.75rem; background: none; border: none; cursor: pointer; color: var(--ink); display: inline-flex; gap: 0.4rem; align-items: center; }
+.view-switch button.is-active { background: var(--ink); color: var(--paper); }
+.view-badge { font-family: var(--font-mono); font-size: 0.62rem; background: var(--vermilion); color: var(--ink); padding: 0 0.35rem; border-radius: 2px; }
+
+.desk-main { flex: 1; display: grid; grid-template-columns: minmax(380px, 1.4fr) minmax(300px, 0.8fr); gap: 1.5rem; padding: 1.25rem 1.5rem; align-items: start; }
+@media (max-width: 980px) { .desk-main { grid-template-columns: 1fr; padding: 1rem; } }
+.desk-ledger {
+  position: relative; padding: 1.25rem 1.25rem 1.5rem 3.25rem;
+  background-color: var(--paper); background-image: var(--ruled), var(--grain);
+  border: 1px solid var(--ink); box-shadow: 5px 5px 0 var(--paper-edge);
+}
+.desk-ledger::before { content: ""; position: absolute; top: 0; bottom: 0; left: 2.2rem; width: 1.5px; background: var(--vermilion); opacity: 0.8; }
+.desk-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.6rem; margin: 0 0 1rem; }
+.desk-tile { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.6rem 0.7rem; border: 1px solid var(--rule-strong); background: rgba(255, 253, 247, 0.7); }
+.desk-tile.is-hot { border-color: var(--vermilion-ink); }
+.tile-num { font-family: var(--font-display); font-size: 2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.topics { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; margin: 0 0 1rem; }
+.question-rows { list-style: none; margin: 0; padding: 0; }
+.question-row { display: grid; grid-template-columns: 6.5rem 1fr auto auto; gap: 0.8rem; align-items: start; padding: 0.65rem 0; border-top: 1px solid var(--rule); }
+@media (max-width: 600px) { .question-row { grid-template-columns: 1fr; gap: 0.3rem; } }
+.question-row .log-time { color: var(--ink-soft); padding-top: 0.2rem; }
+.q-text { margin: 0; }
+.q-text.is-withheld { font-style: italic; color: var(--ink-soft); }
+.q-cites { display: flex; flex-wrap: wrap; gap: 0.25rem; margin: 0.35rem 0 0; }
+
+.handoffs { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 0.7rem; }
+@media (max-width: 980px) { .handoffs { position: static; } }
+.handoff { padding: 0.85rem 0.95rem; background: rgba(255, 253, 247, 0.85); border: 1px solid var(--rule-strong); border-left: 3px solid var(--ink-soft); display: flex; flex-direction: column; gap: 0.45rem; }
+.handoff.is-open { border-left-color: var(--vermilion); }
+.handoff-top { display: flex; justify-content: space-between; align-items: center; }
+.handoff-contact { margin: 0; font-size: 0.85rem; color: var(--ink-soft); }
+.handoff .btn { align-self: flex-start; }
+
+/* Replying to a hand-off */
+.reply-form { display: flex; flex-direction: column; gap: 0.45rem; }
+.reply-form textarea {
+  font: 0.92rem/1.45 var(--font-ui); color: var(--ink); resize: vertical; min-height: 4.5rem;
+  background: rgba(255, 255, 255, 0.55); border: 1px solid var(--rule-strong); border-radius: 0; padding: 0.55rem 0.6rem;
+  background-image: repeating-linear-gradient(to bottom, transparent 0 21px, var(--rule) 21px 22px);
+}
+.reply-form textarea:focus-visible { outline: 2px solid var(--vermilion); outline-offset: 1px; }
+.reply-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.handoff-reply { border-left: 2px solid var(--moss); padding: 0.1rem 0 0.1rem 0.7rem; display: flex; flex-direction: column; gap: 0.25rem; }
+.reply-text { margin: 0; white-space: pre-wrap; font-size: 0.9rem; }
+.reply-delivery { margin: 0; font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--moss); }
