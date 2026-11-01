@@ -15,6 +15,8 @@ const PeoplePage = lazy(() => import("../../analytics/pages/PeoplePage.jsx").the
 const RetentionPage = lazy(() => import("../../analytics/pages/RetentionPage.jsx").then((m) => ({ default: m.RetentionPage })));
 const InboxPage = lazy(() => import("../../inbox/InboxPage.jsx").then((m) => ({ default: m.InboxPage })));
 const DirectoryPage = lazy(() => import("../../analytics/pages/DirectoryPage.jsx").then((m) => ({ default: m.DirectoryPage })));
+const ScreeningPage = lazy(() => import("../../screening/ScreeningPage.jsx").then((m) => ({ default: m.ScreeningPage })));
+const ApprovalsPage = lazy(() => import("../../approvals/ApprovalsPage.jsx").then((m) => ({ default: m.ApprovalsPage })));
 const loading = <main className="a-page"><div className="skeleton" aria-busy="true"><span /><span /><span /></div></main>;
 
 export function HrPage() {
@@ -40,6 +42,8 @@ export function HrPage() {
         <Route path="directory" element={<Suspense fallback={loading}><DirectoryPage /></Suspense>} />
         <Route path="scheduling" element={<HrDashboard token={token} onSignOut={signOut} embedded />} />
         <Route path="inbox" element={<Suspense fallback={loading}><InboxPage /></Suspense>} />
+        <Route path="screening" element={<Suspense fallback={loading}><ScreeningPage /></Suspense>} />
+        <Route path="approvals" element={<Suspense fallback={loading}><ApprovalsPage /></Suspense>} />
         <Route path="questions" element={<QuestionDesk token={token} onError={(err) => err.status === 401 && signOut()} />} />
         <Route path="*" element={<Navigate to="overview" replace />} />
       </Route>
