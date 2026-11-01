@@ -8,6 +8,7 @@ from typing import Any, Protocol, TypeVar
 
 from pydantic import BaseModel, ValidationError
 
+from core.llm.canary import leaked, new_canary, with_canary
 from core.llm.client import is_local_url
 
 T = TypeVar("T", bound=BaseModel)
@@ -64,15 +65,19 @@ class OpenAILLM:
         self._extra = {"reasoning_effort": effort} if effort else {}
 
     def generate(self, system: str, user: str) -> str:
+        canary = new_canary()
         response = self._client.chat.completions.create(
             model=self._model,
             temperature=0,
             response_format={"type": "json_object"},  # every caller expects one JSON object
-            messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+            messages=[{"role": "system", "content": with_canary(system, canary)}, {"role": "user", "content": user}],
             extra_body=self._extra or None,
         )
+        text = response.choices[0].message.content or ""
+        if leaked(text, canary):
+            raise LLMError("canary_leak")
         # Reasoning models (e.g. Qwen3) may prepend <think>...</think>; only the answer is parsed.
-        return THINK_BLOCK.sub("", response.choices[0].message.content or "").strip()
+        return THINK_BLOCK.sub("", text).strip()
 
 
 def get_llm(provider: str | None = None) -> LLMClient:

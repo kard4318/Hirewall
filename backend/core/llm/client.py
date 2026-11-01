@@ -18,6 +18,8 @@ import httpx
 import ollama
 from dotenv import load_dotenv
 
+from core.llm.canary import leaked, new_canary, with_canary
+
 logger = logging.getLogger(__name__)
 
 DEFAULT_MODEL = "qwen3.5:4b"
@@ -77,11 +79,12 @@ class LLMClient:
     ) -> str | Mapping[str, Any]:
         """Return the model's JSON text. A truncated prompt or response counts as a failure."""
         client = ollama.Client(host=self._host, timeout=timeout_s, **self._client_options)
+        canary = new_canary()
         started = time.monotonic()
         try:
             response = client.chat(
                 model=self._model,
-                messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+                messages=[{"role": "system", "content": with_canary(system, canary)}, {"role": "user", "content": user}],
                 format=_inline_refs(json_schema),
                 think=False,
                 stream=False,
@@ -112,6 +115,9 @@ class LLMClient:
         text = response.message.content
         if not text:
             raise LLMError("no_text_output")
+        if leaked(text, canary):
+            logger.warning("llm output dropped reason=canary_leak")
+            raise LLMError("canary_leak")
         return text
 
 
@@ -177,9 +183,10 @@ class OllamaLLM:
         if estimated > CONTEXT_WARNING_RATIO * self.num_ctx:
             logger.warning("LLM prompt is about %d tokens, over %d%% of LLM_NUM_CTX=%d; it may be truncated",
                            estimated, int(CONTEXT_WARNING_RATIO * 100), self.num_ctx)
+        canary = new_canary()
         body = {
             "model": self.model,
-            "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+            "messages": [{"role": "system", "content": with_canary(system, canary)}, {"role": "user", "content": user}],
             "stream": False,
             "think": self.think,  # reasoning models (e.g. Qwen3) answer ~10x faster without it
             "options": {"temperature": 0, "num_ctx": self.num_ctx},
@@ -210,6 +217,9 @@ class OllamaLLM:
         content = (data.get("message") or {}).get("content")
         if not isinstance(content, str):
             raise LLMError("Ollama response has no message content")
+        if leaked(content, canary):
+            logger.warning("llm output dropped reason=canary_leak")
+            raise LLMError("canary_leak")
         return THINK_BLOCK.sub("", content).strip()
 
 
