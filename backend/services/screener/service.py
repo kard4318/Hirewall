@@ -11,6 +11,8 @@ import uuid
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict
+from datetime import datetime, timezone
+from threading import Lock
 from typing import Any
 
 from core.approval_queue.approval_queue import action_hash
@@ -21,7 +23,7 @@ from core.llm.embeddings import Embedder, HashingEmbedder, SentenceTransformerEm
 from core.paths import data_dir
 from security.file_validator import FileRejected, validate_upload
 from security.injection_detector import find_injection_lines, remove_injection_lines
-from security.pii_bias_filter import mask_identity, split_identity
+from security.pii_bias_filter import Identity, mask_identity, split_identity
 from security.text_extractor import extract_visible_text
 from services.screener.config import (
     RUBRIC_PROMPT_VERSION,
@@ -31,10 +33,14 @@ from services.screener.config import (
     embedder_name,
     embedding_model,
 )
+from services.screener.cover_letter import extract_cover_letter
 from services.screener.extract import Extraction, clean_profile, extract_document, split_sections
 from services.screener.graph_store.taxonomy import default_taxonomy
+from services.screener.job_extract import build_requirements, extract_job, flagged_requirements
 from services.screener.justify import score_rubric
 from services.screener.models import (
+    ApplicantContact,
+    Application,
     CandidateDocument,
     CandidateProfile,
     CandidateSummary,
@@ -45,6 +51,8 @@ from services.screener.models import (
     IdentityRecord,
     IngestionTask,
     JobOffer,
+    JobPosting,
+    JobPostingDetails,
     Position,
     ProposedRecordAction,
     RankedCandidate,
@@ -63,7 +71,9 @@ from services.screener.storage import IdentityStore, ScreenerStore
 logger = logging.getLogger(__name__)
 
 MAX_FILES = 20
+MAX_QUEUED_APPLICATIONS = 20
 _MIN_TEXT_CHARS = 30
+_MAX_COVER_LETTER_CHARS = 8000
 _ACTIONS = {"shortlist": "record_shortlist", "rejection": "record_rejection"}
 _UNSET: Any = object()
 
@@ -80,6 +90,10 @@ class _FixedRanking:
 
     def rank(self, job: JobOffer, top_k: int | None = None) -> SemanticRanking:
         return self._ranking
+
+
+def _now() -> str:
+    return datetime.now(timezone.utc).isoformat()
 
 
 def _sha256(text: str) -> str:
@@ -115,6 +129,8 @@ class ScreeningService:
         self._taxonomy = default_taxonomy()
         # One worker: a local model handles one request at a time anyway.
         self._pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="screener") if background else None
+        self._queued_applications = 0
+        self._queue_lock = Lock()
 
     def _llm(self) -> Any:
         if self._llm_client is _UNSET:
@@ -140,8 +156,18 @@ class ScreeningService:
 
     # Ingestion
 
-    def ingest_files(self, files: list[tuple[str, bytes]]) -> IngestionTask:
-        steps = [lambda i=i, name=name, data=data: self._ingest_file(i, name, data)
+    def ingest_files(self, files: list[tuple[str, bytes]], job_id: str | None = None) -> IngestionTask:
+        """With a job_id, each accepted file also becomes an application to that posting."""
+        if job_id is not None:
+            self._require_posting(job_id, allow={"published", "closed"})
+
+        def step(index: int, name: str, data: bytes) -> FileResult:
+            result = self._ingest_file(index, name, data)
+            if job_id is not None and result.candidate_id:
+                self._link_application(job_id, result.candidate_id, "hr_upload")
+            return result
+
+        steps = [lambda i=i, name=name, data=data: step(i, name, data)
                  for i, (name, data) in enumerate(files[:MAX_FILES])]
         return self._start_task(steps)
 
@@ -272,20 +298,293 @@ class ScreeningService:
             hidden_text_removed=hidden_removed, extraction_failed=extraction.extraction_failed,
         )
 
+    def _summary(self, c: StoredCandidate) -> CandidateSummary:
+        return CandidateSummary(
+            candidate_id=c.candidate_id,
+            source=c.source,
+            profile=c.family,
+            current_title=c.profile.current_title if c.profile else None,
+            skills=sorted(self._taxonomy.find_skills("\n".join(s.text for s in c.document.sections))),
+            injection_flag=c.document.injection_flag,
+            hidden_text_removed=c.hidden_text_removed,
+            extraction_failed=c.extraction_failed,
+        )
+
     def list_candidates(self) -> list[CandidateSummary]:
-        return [
-            CandidateSummary(
-                candidate_id=c.candidate_id,
-                source=c.source,
-                profile=c.family,
-                current_title=c.profile.current_title if c.profile else None,
-                skills=sorted(self._taxonomy.find_skills("\n".join(s.text for s in c.document.sections))),
-                injection_flag=c.document.injection_flag,
-                hidden_text_removed=c.hidden_text_removed,
-                extraction_failed=c.extraction_failed,
-            )
-            for c in self._store.list_candidates()
+        return [self._summary(c) for c in self._store.list_candidates()]
+
+    def get_extracted(self, candidate_id: str) -> dict[str, Any]:
+        """What was extracted from a CV. Pseudonymous: identity only comes from reveal_identity."""
+        candidate = self._store.get_candidate(candidate_id)
+        if candidate is None:
+            raise ScreenerError("candidate_not_found")
+        return {
+            "candidate_id": candidate_id,
+            "profile": candidate.profile.model_dump(mode="json") if candidate.profile else None,
+            "sections": [section.model_dump(mode="json") for section in candidate.document.sections],
+            "extraction_failed": candidate.extraction_failed,
+            "injection_flag": candidate.document.injection_flag,
+            "injection_excerpts": candidate.injection_excerpts,
+            "hidden_text_removed": candidate.hidden_text_removed,
+        }
+
+    # Job postings
+
+    def _require_posting(self, job_id: str, allow: set[str] | None = None) -> JobPosting:
+        posting = self._store.get_posting(job_id)
+        if posting is None:
+            raise ScreenerError("job_not_found")
+        if allow is not None and posting.status not in allow:
+            raise ScreenerError(f"posting_{posting.status}")
+        return posting
+
+    def extract_posting(self, filename: str, data: bytes) -> tuple[IngestionTask, str]:
+        """Turn an offer document into a draft in the background. Nothing is public until HR publishes it."""
+        job_id = f"job-{uuid.uuid4().hex[:8]}"
+        return self._start_task([lambda: self._extract_posting(job_id, filename, data)]), job_id
+
+    def _extract_posting(self, job_id: str, filename: str, data: bytes) -> FileResult:
+        try:
+            extracted = extract_visible_text(validate_upload(filename, data))
+        except FileRejected as rejected:
+            return FileResult(index=0, status="rejected", reason_code=str(rejected))
+        excerpts = find_injection_lines(extracted.text)
+        excerpts += [f"[hidden] {line}" for line in find_injection_lines("\n".join(extracted.hidden_lines))]
+        text = remove_injection_lines(extracted.text)
+        if len(text.strip()) < _MIN_TEXT_CHARS:
+            return FileResult(index=0, status="rejected", reason_code="no_text", injection_flag=bool(excerpts))
+
+        extraction = extract_job(text, self._llm())
+        posting = JobPosting(
+            job_id=job_id,
+            details=extraction.details,
+            requirements=build_requirements(extraction.details),
+            extraction_failed=extraction.extraction_failed,
+            flagged_requirements=flagged_requirements(extraction.details, text),
+            injection_excerpts=excerpts,
+            hidden_text_removed=extracted.hidden_removed,
+            source_hash=hashlib.sha256(data).hexdigest(),
+            created_at=_now(),
+        )
+        self._store.save_posting(posting)
+        self._audit.record(
+            "screener.job_extracted", job_id=job_id, extraction_failed=posting.extraction_failed,
+            flagged_requirements=len(posting.flagged_requirements), injection_flag=bool(excerpts),
+            hidden_text_removed=posting.hidden_text_removed,
+        )
+        return FileResult(
+            index=0, status="accepted", injection_flag=bool(excerpts), hidden_text_removed=posting.hidden_text_removed,
+            extraction_failed=posting.extraction_failed,
+        )
+
+    def get_posting(self, job_id: str) -> JobPosting:
+        return self._require_posting(job_id)
+
+    def list_postings(self) -> list[JobPosting]:
+        return self._store.list_postings()
+
+    def update_posting(self, job_id: str, details: JobPostingDetails) -> JobPosting:
+        """Save HR's edits to a draft. Requirements are derived again, so they always match the details."""
+        posting = self._require_posting(job_id, allow={"draft"})
+        updated = posting.model_copy(update={
+            "details": details,
+            "requirements": build_requirements(details),
+            "flagged_requirements": flagged_requirements(details),
+        })
+        self._store.save_posting(updated)
+        return updated
+
+    def publish_posting(self, job_id: str) -> JobPosting:
+        posting = self._require_posting(job_id, allow={"draft"})
+        if not posting.requirements:
+            raise ScreenerError("no_requirements")
+        published = posting.model_copy(update={"status": "published", "published_at": _now()})
+        self._store.save_posting(published)
+        self._audit.record(
+            "screener.job_published", job_id=job_id, flagged_requirements=len(published.flagged_requirements)
+        )
+        return published
+
+    def close_posting(self, job_id: str) -> JobPosting:
+        posting = self._require_posting(job_id, allow={"published"})
+        closed = posting.model_copy(update={"status": "closed"})
+        self._store.save_posting(closed)
+        self._audit.record("screener.job_closed", job_id=job_id)
+        return closed
+
+    def job_rows(self) -> list[dict[str, Any]]:
+        """Every job HR can pick, with its status (None for samples, presets and hand-written jobs)."""
+        postings = {posting.job_id: posting for posting in self._store.list_postings()}
+        rows = [job.model_dump(mode="json") | {"status": None} for job in self.list_jobs() if job.job_id not in postings]
+        rows += [
+            {"job_id": p.job_id, "title": p.details.title, "status": p.status,
+             "requirements": [requirement.model_dump(mode="json") for requirement in p.requirements]}
+            for p in postings.values()
         ]
+        return [row | {"application_count": len(self._store.list_applications(row["job_id"]))} for row in rows]
+
+    # Public offers
+
+    def _open_posting(self, job_id: str) -> JobPosting:
+        """Drafts do not exist for the public. A closed offer says so."""
+        posting = self._store.get_posting(job_id)
+        if posting is None or posting.status == "draft":
+            raise ScreenerError("job_not_found")
+        if posting.status == "closed":
+            raise ScreenerError("job_closed")
+        return posting
+
+    def public_postings(self) -> list[dict[str, Any]]:
+        published = [p for p in self._store.list_postings() if p.status == "published"]
+        return [self._public_view(posting) for posting in published]
+
+    def public_posting(self, job_id: str) -> dict[str, Any]:
+        return self._public_view(self._open_posting(job_id))
+
+    @staticmethod
+    def _public_view(posting: JobPosting) -> dict[str, Any]:
+        return {"job_id": posting.job_id, "published_at": posting.published_at,
+                "details": posting.details.model_dump(mode="json")}
+
+    # Applications
+
+    def check_application_files(self, cv: tuple[str, bytes], cover_letter: tuple[str, bytes] | None) -> None:
+        """Refuse bad files while the applicant is still there to see why. No model is involved."""
+        for label, item in (("cv", cv), ("cover_letter", cover_letter)):
+            if item is None:
+                continue
+            try:
+                extracted = extract_visible_text(validate_upload(*item))
+            except FileRejected as rejected:
+                raise ScreenerError(f"{label}_{rejected}") from None
+            if len(extracted.text.strip()) < _MIN_TEXT_CHARS:
+                raise ScreenerError(f"{label}_no_text")
+
+    def submit_application(
+        self, job_id: str, cv: tuple[str, bytes], cover_letter: tuple[str, bytes] | None, full_name: str, email: str
+    ) -> str:
+        """Queue one application and return a reference that says nothing about whether this CV is already known."""
+        self._open_posting(job_id)
+        with self._queue_lock:
+            if self._queued_applications >= MAX_QUEUED_APPLICATIONS:
+                raise ScreenerError("try_later")
+            self._queued_applications += 1
+        reference_id = f"ref-{uuid.uuid4().hex[:12]}"
+        contact = ApplicantContact(
+            reference_id=reference_id, job_id=job_id, full_name=full_name, email=email, consent_at=_now()
+        )
+        if self._pool is None:
+            self._run_application(contact, cv, cover_letter)
+        else:
+            self._pool.submit(self._run_application, contact, cv, cover_letter)
+        return reference_id
+
+    def _run_application(
+        self, contact: ApplicantContact, cv: tuple[str, bytes], cover_letter: tuple[str, bytes] | None
+    ) -> None:
+        try:
+            self._process_application(contact, cv, cover_letter)
+        except Exception as error:
+            logger.error("application failed reference=%s error_type=%s", contact.reference_id, type(error).__name__)
+            self._audit.record(
+                "screener.application_rejected", reference_id=contact.reference_id, job_id=contact.job_id,
+                reason_code="application_failed",
+            )
+        finally:
+            with self._queue_lock:
+                self._queued_applications -= 1
+
+    def _process_application(
+        self, contact: ApplicantContact, cv: tuple[str, bytes], cover_letter: tuple[str, bytes] | None
+    ) -> None:
+        result = self._ingest_file(0, *cv)
+        if result.candidate_id is None:
+            self._audit.record(
+                "screener.application_rejected", reference_id=contact.reference_id, job_id=contact.job_id,
+                reason_code=result.reason_code,
+            )
+            return
+        candidate_id = result.candidate_id
+        # A CV anyone can resubmit must never let them replace its identity or its first application's letter.
+        self._identity.add_contact(candidate_id, contact)
+        existing = self._store.get_application(contact.job_id, candidate_id) is not None
+        if not existing:
+            application = self._new_application(contact.job_id, candidate_id, "applicant")
+            if cover_letter is not None:
+                application = self._with_cover_letter(application, cover_letter, contact)
+            self._store.add_application(application)
+        stored = self._store.get_application(contact.job_id, candidate_id)
+        self._audit.record(
+            "screener.application_received", reference_id=contact.reference_id,
+            application_id=stored.application_id, job_id=contact.job_id, candidate_id=candidate_id, source="applicant",
+            repeat=existing, cover_letter=stored.cover_letter is not None or stored.cover_letter_text is not None,
+            cover_letter_failed=stored.cover_letter_failed, injection_flag=bool(stored.injection_excerpts),
+            hidden_text_removed=stored.hidden_text_removed,
+        )
+
+    @staticmethod
+    def _new_application(job_id: str, candidate_id: str, source: str) -> Application:
+        return Application(
+            application_id=f"app-{_sha256(f'{job_id}|{candidate_id}')[:16]}",
+            job_id=job_id, candidate_id=candidate_id, submitted_at=_now(), source=source,
+        )
+
+    def _link_application(self, job_id: str, candidate_id: str, source: str) -> None:
+        application = self._new_application(job_id, candidate_id, source)
+        if self._store.add_application(application):
+            self._audit.record(
+                "screener.application_received", application_id=application.application_id, job_id=job_id,
+                candidate_id=candidate_id, source=source, repeat=False,
+            )
+
+    def _with_cover_letter(
+        self, application: Application, cover_letter: tuple[str, bytes], contact: ApplicantContact
+    ) -> Application:
+        """The same checks as a CV, masked with what is known about this person. A bad letter never loses the CV."""
+        try:
+            extracted = extract_visible_text(validate_upload(*cover_letter))
+            excerpts = find_injection_lines(extracted.text)
+            excerpts += [f"[hidden] {line}" for line in find_injection_lines("\n".join(extracted.hidden_lines))]
+            known = self._identity.get(application.candidate_id)
+            name = (known.full_name if known else None) or contact.full_name
+            _, evidence = split_identity(remove_injection_lines(extracted.text), name)
+            for person in (
+                Identity(known.full_name, tuple(known.emails), tuple(known.phones), tuple(known.links)) if known else None,
+                Identity(contact.full_name, (contact.email,)),
+            ):
+                if person is not None:
+                    evidence = mask_identity(evidence, person)
+                    excerpts = [mask_identity(excerpt, person) for excerpt in excerpts]
+            profile = extract_cover_letter(evidence, self._llm())
+        except (FileRejected, ValueError) as error:
+            logger.warning("cover letter refused error_type=%s", type(error).__name__)
+            return application.model_copy(update={"cover_letter_failed": True})
+        return application.model_copy(update={
+            "cover_letter": profile,
+            "cover_letter_text": evidence[:_MAX_COVER_LETTER_CHARS],
+            "cover_letter_failed": profile is None,
+            "injection_excerpts": excerpts,
+            "hidden_text_removed": extracted.hidden_removed,
+        })
+
+    def list_applications(self, job_id: str) -> list[dict[str, Any]]:
+        """Pseudonymous rows for HR, with the letter's flags merged into the candidate's."""
+        self._require_posting(job_id)
+        rows = []
+        for application in self._store.list_applications(job_id):
+            candidate = self._store.get_candidate(application.candidate_id)
+            if candidate is None:
+                continue
+            summary = self._summary(candidate).model_dump(mode="json")
+            excerpts = [*candidate.injection_excerpts, *_letter_excerpts(application)]
+            rows.append(application.model_dump(mode="json") | {
+                "candidate": summary | {
+                    "injection_flag": bool(excerpts),
+                    "hidden_text_removed": candidate.hidden_text_removed or application.hidden_text_removed,
+                },
+                "injection_excerpts": excerpts,
+            })
+        return rows
 
     # Jobs
 
@@ -297,9 +596,18 @@ class ScreeningService:
                 jobs[job.job_id] = job
         for job in self._store.list_jobs():
             jobs[job.job_id] = job
+        for posting in self._store.list_postings():
+            if posting.status == "published":
+                jobs[posting.job_id] = _posting_offer(posting)
         return list(jobs.values())
 
     def get_job(self, job_id: str) -> JobOffer:
+        """Closed postings still resolve, so their runs stay readable. Drafts cannot be scored."""
+        posting = self._store.get_posting(job_id)
+        if posting is not None:
+            if posting.status == "draft":
+                raise ScreenerError("posting_draft")
+            return _posting_offer(posting)
         for job in self.list_jobs():
             if job.job_id == job_id:
                 return job
@@ -314,7 +622,9 @@ class ScreeningService:
 
     def start_run(self, job_id: str) -> ScreeningRun:
         job = self.get_job(job_id)
-        ids = [candidate.candidate_id for candidate in self._store.list_candidates()]
+        # A job with applicants scores them alone. Otherwise the whole pool, as for presets and the demo set.
+        ids = sorted(a.candidate_id for a in self._store.list_applications(job.job_id))
+        ids = ids or [candidate.candidate_id for candidate in self._store.list_candidates()]
         if not ids:
             raise ScreenerError("no_candidates")
         run = ScreeningRun(
@@ -377,7 +687,12 @@ class ScreeningService:
                     taxonomy=self._taxonomy,
                     rubric=results,
                 )
-                run.candidates = [self._with_details(c, stored[c.candidate_id], index) for c in ranking.candidates]
+                run.candidates = [
+                    self._with_details(
+                        c, stored[c.candidate_id], index, self._store.get_application(job.job_id, c.candidate_id)
+                    )
+                    for c in ranking.candidates
+                ]
             run.pending.remove(candidate_id)
             run.done += 1
             self._store.save_run(run)
@@ -398,14 +713,18 @@ class ScreeningService:
         return result
 
     @staticmethod
-    def _with_details(ranked: RankedCandidate, candidate: StoredCandidate, index: SemanticIndex) -> RankedCandidate:
+    def _with_details(
+        ranked: RankedCandidate, candidate: StoredCandidate, index: SemanticIndex, application: Application | None = None
+    ) -> RankedCandidate:
         """Add what the reviewer reads. Everything here is display only and added after the score is computed."""
         chunk_ids = list(dict.fromkeys(e.best_chunk_id for e in ranked.evidence if e.best_chunk_id))
         chunks = [EvidenceChunk(chunk_id=cid, text=index.chunk_text(cid) or "") for cid in chunk_ids]
+        excerpts = [*candidate.injection_excerpts, *(_letter_excerpts(application) if application else [])]
         return ranked.model_copy(update={
             "evidence_chunks": chunks,
-            "injection_excerpts": candidate.injection_excerpts,
-            "hidden_text_removed": candidate.hidden_text_removed,
+            "injection_flag": bool(excerpts),
+            "injection_excerpts": excerpts,
+            "hidden_text_removed": candidate.hidden_text_removed or bool(application and application.hidden_text_removed),
             "profile": candidate.family,
         })
 
@@ -455,7 +774,16 @@ class ScreeningService:
         if self._store.get_candidate(candidate_id) is None:
             raise ScreenerError("candidate_not_found")
         self._audit.record("screener.identity_revealed", candidate_id=candidate_id, reviewer=reviewer)
-        return self._identity.get(candidate_id) or IdentityRecord(candidate_id=candidate_id)
+        record = self._identity.get(candidate_id) or IdentityRecord(candidate_id=candidate_id)
+        return record.model_copy(update={"contacts": self._identity.contacts_for(candidate_id)})
+
+
+def _posting_offer(posting: JobPosting) -> JobOffer:
+    return JobOffer(job_id=posting.job_id, title=posting.details.title, requirements=posting.requirements)
+
+
+def _letter_excerpts(application: Application) -> list[str]:
+    return [f"[cover letter] {line}" for line in application.injection_excerpts]
 
 
 def _identity_fields(identity: Any) -> dict[str, Any]:
