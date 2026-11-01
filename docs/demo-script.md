@@ -13,6 +13,8 @@ Set up as in "Run the screener" in the README, with Ollama running. The files ar
 2. **Review and publish.** Correct any field, choose **Publish**, and confirm the warning.
 3. **Upload candidates.** With the offer selected, drop `resumes/cvs/ines_kacem_backend.pdf` and
    `resumes/cvs/walid_saidi_data.pdf`. They are attached to this job, and listed under "2 applications".
+   To import several at once, select the offer and drop `resumes/candidates_sample.csv` with the two PDFs it names. The
+   third row holds its CV as text, and cover letters appear under Extracted data.
 4. **See a refused file.** Drop a file that is not a PDF or DOCX. The result line explains why.
 5. **Read a candidate.** Open one from the list: the CV data is there without a name.
 6. **Score.** Choose **Score candidates**. Only this job's two candidates are scored.

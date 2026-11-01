@@ -12,4 +12,17 @@ export const FILE_REASONS = {
   unreadable_pdf: "The PDF could not be read",
   unreadable_docx: "The DOCX could not be read",
   ingest_failed: "Processing failed",
+  cv_missing: "This row has no CV",
+  cv_file_missing: "The CV file named in this row was not uploaded",
+  cover_letter_file_missing: "The cover letter file named in this row was not uploaded",
+  cover_letter_needs_posting: "Cover letter not kept: select a published offer before uploading",
+};
+
+export const UPLOAD_REASONS = {
+  csv_no_cv_column: "The CSV needs a column named cv.",
+  csv_empty: "The CSV has no candidates.",
+  csv_too_many_rows: "The CSV has more than 100 candidates.",
+  csv_too_large: "The CSV is larger than 5 MB.",
+  csv_unreadable: "The CSV could not be read.",
+  one_csv_only: "Upload one CSV at a time.",
 };

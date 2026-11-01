@@ -134,6 +134,33 @@ def test_hr_upload_attaches_only_to_a_real_posting(api):
     assert response.status_code == 409 and response.json() == {"detail": "posting_draft"}
 
 
+def test_csv_with_its_files_is_imported_and_attached(api):
+    job_id = published(api)
+    resumes = REPO_ROOT / "data/resumes"
+    files = [
+        ("files", ("candidates_sample.csv", (resumes / "candidates_sample.csv").read_bytes())),
+        ("files", ("ines_kacem_backend.pdf", (resumes / "cvs/ines_kacem_backend.pdf").read_bytes())),
+        ("files", ("walid_saidi_data.pdf", (resumes / "cvs/walid_saidi_data.pdf").read_bytes())),
+    ]
+    response = api.client.post("/api/screener/candidates", files=files, data={"job_id": job_id}, headers=api.hr)
+    assert response.status_code == 202
+    task = task_done(api, response.json()["task_id"])
+    assert task["total"] == 3 and {f["status"] for f in task["files"]} == {"accepted"}
+    rows = api.client.get(f"/api/screener/jobs/{job_id}/applications", headers=api.hr).json()["applications"]
+    assert len(rows) == 3 and sum(r["cover_letter"] is not None for r in rows) == 2
+    assert "Kacem" not in json.dumps(rows) and "ines.kacem" not in json.dumps(rows)
+
+
+@pytest.mark.parametrize(("files", "code"), [
+    ([("files", ("a.csv", b"name\nA\n"))], "csv_no_cv_column"),
+    ([("files", ("a.csv", b""))], "csv_empty"),
+    ([("files", ("a.csv", b"cv\na.pdf\n")), ("files", ("b.csv", b"cv\na.pdf\n"))], "one_csv_only"),
+])
+def test_unusable_csv_gets_a_reason(api, files, code):
+    response = api.client.post("/api/screener/candidates", files=files, headers=api.hr)
+    assert response.status_code == 422 and response.json() == {"detail": code}
+
+
 def test_edits_on_a_published_job_are_refused(api):
     job_id = published(api)
     response = api.client.put(f"/api/screener/jobs/{job_id}", json={"title": "Late"}, headers=api.hr)

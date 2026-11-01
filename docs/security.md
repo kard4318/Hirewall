@@ -64,6 +64,8 @@ through human approval.
 | Approving something else than what was reviewed | Shortlists and rejections are queued with a hash of the action. Approval needs that hash, the executor checks it again, and a claim makes it run once |
 | Resume text in logs | Logs, audit events and workflow state hold IDs, hashes, statuses, reason codes and counts only. Upload file names are not stored |
 | Poisoned job offer | An offer gets the same file checks, visible-text extraction and injection removal as a resume. Values the model returns are checked again, and HR reviews the result before publishing |
+| Poisoned CSV | Text in a cell gets the same invisible-character removal, injection removal, identity split and fencing as an upload. A cell naming a file is matched by base name against the files in the same request, so it cannot read from disk. Rows and size are capped, and the CSV is not kept. Name and email go to the identity store |
+| Poisoned cover letter | The same checks and fencing as a CV. A letter is display only, so it cannot reach the ranking or the rubric. Its flags stay on that application |
 | Discriminatory requirements | Lines naming age, gender, nationality, religion, family status, health or photo are listed for HR, who is asked to confirm before publishing. They are not silently dropped |
 | Contacting the wrong person or too early | Messages go out only from `core/executor`, after a person approves that exact selection, and once per status change. The text is fixed: no model writes it, and it gives no score or reason. Addresses are never in logs or audit events, and each lookup is audited |
 

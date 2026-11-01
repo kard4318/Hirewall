@@ -4,7 +4,7 @@ import { shortId } from "./api.js";
 import { FILE_REASONS as REASONS } from "./reasons.js";
 
 function fileLine(file, names) {
-  const name = names?.[file.index] ?? `Item ${file.index + 1}`;
+  const name = names?.[file.index] ?? `Row ${file.index + 1}`;
   if (file.status === "rejected" || file.status === "failed") {
     return { level: "error", text: `${name}: ${REASONS[file.reason_code] ?? "Refused"}` };
   }
@@ -13,7 +13,8 @@ function fileLine(file, names) {
   if (file.injection_flag) notes.push("injection flagged");
   if (file.hidden_text_removed) notes.push("hidden text removed");
   if (file.extraction_failed) notes.push("sections only");
-  const level = file.injection_flag || file.hidden_text_removed ? "warn" : "ok";
+  if (file.reason_code) notes.push(REASONS[file.reason_code] ?? file.reason_code);
+  const level = file.injection_flag || file.hidden_text_removed || file.reason_code ? "warn" : "ok";
   return { level, text: `${name} → ${shortId(file.candidate_id ?? "")}${notes.length ? ` (${notes.join(", ")})` : ""}` };
 }
 
@@ -28,7 +29,7 @@ export function UploadPanel({ task, names, count, busy, onFiles, onDemo, applica
 
   return (
     <section className="scr-card">
-      <h2>1. Candidates <span className="scr-muted">({count})</span></h2>
+      <h2>Candidates <span className="scr-muted">({count})</span></h2>
       <button
         type="button"
         className={`scr-drop${over ? " is-over" : ""}`}
@@ -38,18 +39,25 @@ export function UploadPanel({ task, names, count, busy, onFiles, onDemo, applica
         onDragLeave={() => setOver(false)}
         onDrop={(event) => { event.preventDefault(); setOver(false); take(event.dataTransfer.files); }}
       >
-        Drop PDF or DOCX resumes here, or choose files
-        <span className="scr-muted">Up to 20 files, 5 MB each</span>
+        Drop PDF or DOCX resumes, or a CSV with its files
+        <span className="scr-muted">Up to 20 files without a CSV, 5 MB each</span>
       </button>
       <input
         ref={input}
         type="file"
         hidden
         multiple
-        accept=".pdf,.docx"
+        accept=".pdf,.docx,.csv"
         onChange={(event) => { take(event.target.files); event.target.value = ""; }}
       />
-      <button type="button" className="scr-btn" disabled={busy} onClick={onDemo}>Load demo candidates</button>
+      <details className="scr-requirements">
+        <summary>CSV format</summary>
+        <p className="scr-muted">
+          Columns: <code>name</code>, <code>email</code>, <code>cv</code>, <code>cover_letter</code>. Only <code>cv</code> is required.
+          In <code>cv</code> and <code>cover_letter</code>, write a file name and drop that file with the CSV, or paste the text itself.
+          Select a published offer first to keep cover letters.
+        </p>
+      </details>
       {applications && (
         <details className="scr-applicants scr-requirements">
           <summary>{applications.length} application{applications.length === 1 ? "" : "s"}</summary>
@@ -76,6 +84,7 @@ export function UploadPanel({ task, names, count, busy, onFiles, onDemo, applica
           </ul>
         </div>
       )}
+      <button type="button" className="scr-btn scr-demo" disabled={busy} onClick={onDemo}>Load demo candidates</button>
     </section>
   );
 }

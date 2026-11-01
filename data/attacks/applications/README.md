@@ -13,4 +13,4 @@ the tests.
 | `letter_hidden.pdf` | White instruction in a cover letter | yes | yes | Never reaches the model; the score does not change |
 | `letter_visible.pdf` | Visible instruction in a cover letter | yes | no | Never reaches the model; the score does not change |
 
-The letter files test service code that nothing in the gateway calls: there is no public page for applying.
+A flagged letter marks that application only. The same candidate attached to another job is not flagged by it.

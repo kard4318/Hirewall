@@ -15,6 +15,7 @@ from gateway.routers.hr_scheduling import require_hr, service
 from gateway.routers.inbox import REVIEWER
 from orchestrator.record_approval import RECORD_TASK
 from security.file_validator import MAX_BYTES
+from services.screener.csv_import import MAX_ROWS, CsvRejected, parse_candidates_csv
 from services.screener.models import JobPostingDetails, Requirement
 from services.screener.node import SCREEN_TASK
 from services.screener.service import MAX_FILES, ScreenerError
@@ -58,14 +59,25 @@ async def upload(
     request: Request, files: list[UploadFile] = File(...), job_id: str | None = Form(default=None, max_length=64)
 ) -> dict[str, str]:
     _check_upload_limit(request)
-    if not 1 <= len(files) <= MAX_FILES:
+    tables = [file for file in files if (file.filename or "").casefold().endswith(".csv")]
+    if len(tables) > 1:
+        raise HTTPException(422, "one_csv_only")
+    # A CSV can name a CV and a cover letter for each of its rows.
+    if not 1 <= len(files) <= (2 * MAX_ROWS + 1 if tables else MAX_FILES):
         raise HTTPException(422, "too_many_files")
     if int(request.headers.get("content-length") or 0) > _MAX_BODY_BYTES:
         raise HTTPException(413, "upload_too_large")
     # One byte over the limit is enough for the validator to refuse the file with a per-file result.
-    items = [(file.filename or "", await file.read(MAX_BYTES + 1)) for file in files]
+    items = [(file.filename or "", await file.read(MAX_BYTES + 1)) for file in files if file not in tables]
     try:
-        return {"task_id": screening_service(request.app).ingest_files(items, job_id).task_id}
+        if tables:
+            rows = parse_candidates_csv(await tables[0].read(MAX_BYTES + 1))
+            task = screening_service(request.app).ingest_csv(rows, dict(items), job_id)
+        else:
+            task = screening_service(request.app).ingest_files(items, job_id)
+        return {"task_id": task.task_id}
+    except CsvRejected as rejected:
+        raise HTTPException(422, str(rejected)) from None
     except ScreenerError as error:
         raise _error(error) from None
 

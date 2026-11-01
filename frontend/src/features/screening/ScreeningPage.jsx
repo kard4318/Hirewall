@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useHrSession } from "../analytics/HrSession.jsx";
 import { screeningApi, shortId } from "./api.js";
+import { UPLOAD_REASONS } from "./reasons.js";
 import { CandidateDetail } from "./CandidateDetail.jsx";
 import { JobPanel } from "./JobPanel.jsx";
 import { RankingTable } from "./RankingTable.jsx";
@@ -183,7 +184,7 @@ export function ScreeningPage() {
     const started = await call((t) => screeningApi.upload(t, files, attachId.current));
     if (started) {
       // File names stay in this browser: the server never stores them.
-      setNames(files.map((file) => file.name));
+      setNames(files.some((file) => file.name.toLowerCase().endsWith(".csv")) ? null : files.map((file) => file.name));
       setTask({ task_id: started.task_id, status: "queued", total: files.length, done: 0, files: [] });
     }
   };
@@ -297,7 +298,26 @@ export function ScreeningPage() {
           <input type="checkbox" checked={blind} onChange={(event) => setBlind(event.target.checked)} /> Blind review
         </label>
       </header>
-      {error && <p className="scr-alert" role="alert">{error.replaceAll("_", " ")}</p>}
+      {error && <p className="scr-alert" role="alert">{UPLOAD_REASONS[error] ?? error.replaceAll("_", " ")}</p>}
+
+      <JobPanel
+        jobs={jobs}
+        jobId={jobId}
+        onPick={pickJob}
+        onCreate={createJob}
+        onScore={score}
+        canScore={candidates.length > 0 && !taskBusy && Boolean(jobId) && jobStatus !== "draft"}
+        run={run}
+        posting={posting}
+        importing={Boolean(importState)}
+        importError={importError}
+        onImport={importOffer}
+        onSavePosting={savePosting}
+        onPublish={() => changePostingStatus(screeningApi.publish)}
+        onClosePosting={() => changePostingStatus(screeningApi.closeOffer)}
+        postingBusy={postingBusy}
+        applicationCount={applications?.length ?? 0}
+      />
 
       <div className="scr-grid">
         <div className="scr-side">
@@ -313,39 +333,9 @@ export function ScreeningPage() {
             attachTitle={attachId.current ? job?.title : null}
             onSelect={setSelectedId}
           />
-          <JobPanel
-            jobs={jobs}
-            jobId={jobId}
-            onPick={pickJob}
-            onCreate={createJob}
-            onScore={score}
-            canScore={candidates.length > 0 && !taskBusy && Boolean(jobId) && jobStatus !== "draft"}
-            run={run}
-            posting={posting}
-            importing={Boolean(importState)}
-            importError={importError}
-            onImport={importOffer}
-            onSavePosting={savePosting}
-            onPublish={() => changePostingStatus(screeningApi.publish)}
-            onClosePosting={() => changePostingStatus(screeningApi.closeOffer)}
-            postingBusy={postingBusy}
-            applicationCount={applications?.length ?? 0}
-          />
         </div>
 
         <div className="scr-center">
-          <section className="scr-card scr-orbit-card">
-            <TalentOrbitView
-              data={orbitData}
-              selectedId={selectedId}
-              paused={paused}
-              onSelect={(candidate) => candidate && !candidate.pending && setSelectedId(candidate.id)}
-            />
-            <button type="button" className="scr-link" onClick={() => setPaused((value) => !value)}>
-              {paused ? "Resume orbits" : "Pause orbits"}
-            </button>
-          </section>
-
           <section className="scr-card">
             <div className="scr-row is-between">
               <h2>Ranking</h2>
@@ -380,6 +370,18 @@ export function ScreeningPage() {
               canDecide={finished}
               onDecide={decideOne}
             />
+          </section>
+
+          <section className="scr-card scr-orbit-card">
+            <TalentOrbitView
+              data={orbitData}
+              selectedId={selectedId}
+              paused={paused}
+              onSelect={(candidate) => candidate && !candidate.pending && setSelectedId(candidate.id)}
+            />
+            <button type="button" className="scr-link" onClick={() => setPaused((value) => !value)}>
+              {paused ? "Resume orbits" : "Pause orbits"}
+            </button>
           </section>
         </div>
 

@@ -27,6 +27,7 @@ through the approval queue.
 | Attack suite | `data/attacks/resumes/`, `tests/test_screener_attacks.py` | Done, tested |
 | Offer import and publishing | `job_extract.py`, `prompts/job_extract_system_v1.md` | Done, tested |
 | Attaching candidates to a posting | `service.py` | Done, tested |
+| CSV import with CVs and cover letters | `csv_import.py`, `cover_letter.py`, `prompts/cover_letter_system_v1.md` | Done, tested |
 | Offer and letter attacks | `data/attacks/applications/`, `tests/test_screener_applications.py` | Done, tested |
 | Graph score (Neo4j) | `graph_store/neo4j_writer.py` | Next; `NullGraphScorer` holds the slot |
 | Scheduler handoff | `services/scheduler` port `ScreenerResults` | Next; the scheduler still reads the mock |
@@ -41,8 +42,9 @@ requirements derived in code. HR uploads made with a posting selected are attach
 scores only those; a job without any scores the whole pool, as before. This is an HR-only interface: there is no public
 page or route for applying.
 
-`submit_application` and `cover_letter.py` remain in the service but nothing in the gateway calls them. A cover letter
-is display only and never feeds `rank_combined` or the rubric.
+HR can also drop a CSV of candidates with their CVs and cover letters (see `data/resumes/candidates_sample.csv`). A cover
+letter is display only and never feeds `rank_combined` or the rubric. `submit_application` remains in the service, but
+nothing in the gateway calls it.
 
 ## Inputs / Outputs
 

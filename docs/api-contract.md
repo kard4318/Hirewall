@@ -195,6 +195,14 @@ presets, hand-written jobs and published postings. `get_job` also resolves close
 | `title` | string | trusted, written by a recruiter |
 | `requirements` | `{text, kind}[]` | at least one; `kind` is `required`, `preferred` or `responsibility`. A line such as "3+ years of experience" sets the experience requirement |
 
+#### Candidates CSV
+
+Columns, with common spellings accepted: `name`, `email`, `cv` (required), `cover_letter`. Comma, semicolon or tab, up to
+100 rows. A `cv` or `cover_letter` cell ending in `.pdf` or `.docx` is a file uploaded in the same request, matched by base
+name; any other value is the document's text. Nothing is read from a path on disk. Results are per row: `index` is the row,
+and `reason_code` can be `cv_missing`, `cv_file_missing`, `cover_letter_file_missing` or `cover_letter_needs_posting`. A cover
+letter is kept only when a posting is selected, because it belongs to an application.
+
 #### `JobPosting`
 
 | Field | Type | Notes |
@@ -350,7 +358,7 @@ code and never echo client input.
 
 | Method and path | Body | Response |
 |---|---|---|
-| `POST /api/screener/candidates` | multipart `files`: 1-20 PDF or DOCX files, 5 MB each; optional `job_id` of a posting to attach them to | `202 {task_id}`; `429 too_many_uploads` above 10 uploads a minute |
+| `POST /api/screener/candidates` | multipart `files`: 1-20 PDF or DOCX files, 5 MB each, or one CSV with the files it names; optional `job_id` of a posting to attach them to | `202 {task_id}`; `429 too_many_uploads` above 10 uploads a minute; `422` with `csv_no_cv_column`, `csv_empty`, `csv_too_many_rows`, `csv_too_large`, `csv_unreadable` or `one_csv_only` |
 | `GET /api/screener/tasks/{task_id}` | | `IngestionTask` |
 | `GET /api/screener/candidates` | | `{candidates: CandidateSummary[]}` |
 | `POST /api/screener/candidates/demo` | | `202 {task_id}` |
