@@ -9,7 +9,10 @@ from services.scheduler import config
 from services.scheduler.calendar_source.factory import get_calendar_provider
 from services.scheduler.calendar_source.provider import ReadOnlyCalendar
 from services.scheduler.conversation.adapters.calendar_executor import CalendarBookingExecutor, DryRunBookingExecutor
-from services.scheduler.conversation.adapters.memory import MemoryAuditLog, MemoryEmailSender, SystemClock
+from core.integrations.email_provider import EmailDeliveryError, email_sender_from_env
+from core.paths import runtime_dir
+from services.scheduler.conversation.adapters.memory import MemoryAuditLog, SystemClock
+from services.scheduler.conversation.adapters.screener_handoff import ScreenerHandoff
 from services.scheduler.conversation.adapters.screener_mock import MockScreenerResults, ScreenerCandidateRepo
 from services.scheduler.conversation.deps import Deps
 from services.scheduler.conversation.formatting import format_slot
@@ -17,7 +20,7 @@ from services.scheduler.conversation.graph import build_graph, pending_approval,
 from services.scheduler.conversation.llm import get_llm
 from services.scheduler.conversation.state import state_to_slot
 from services.scheduler.conversation.tokens import TokenError, create_token, token_id, verify_token
-from services.scheduler.models import Booking
+from services.scheduler.models import Booking, Job, PassedCandidate
 from services.scheduler.scheduling_state import STATUSES, SchedulingStateStore
 
 COMPANY_NAME = "Northwind Labs"
@@ -95,20 +98,46 @@ class SchedulingService:
                 raise NotFound(candidate_id)
             if self.state.status(candidate_id) in ("booked", "pending_approval"):
                 raise Conflict("candidate already has a booking in progress")
-            hours = self.deps.config.token_ttl_hours
-            token = create_token(candidate_id, record.job_id, hours, self.deps.clock.now())
-            link = f"/candidate?token={quote(token, safe='')}"
-            self.state.set_status(candidate_id, "invited")
-            self.links[candidate_id] = link
-            self.threads[token_id(token)] = candidate_id
+            return self._send_invitation(record)[0]
+
+    def invite_shortlisted(self, job: Job, record: PassedCandidate) -> bool:
+        """Take over a candidate a recruiter shortlisted and approved. Returns whether the email went out."""
+        with self.lock:
+            if self.state.status(record.candidate_id) in ("booked", "pending_approval"):
+                raise Conflict("candidate already has a booking in progress")
+            self.screener.add(job, record)
+            return self._send_invitation(record)[1]
+
+    def withdraw_invitation(self, candidate_id: str) -> None:
+        """A rejected candidate's link stops working. A confirmed booking stays until HR cancels it."""
+        with self.lock:
+            if self.state.status(candidate_id) in ("booked", "pending_approval") or not hasattr(self.screener, "remove"):
+                return
+            self.screener.remove(candidate_id)
+            self.state.set_status(candidate_id, "passed")
+            self.links.pop(candidate_id, None)
+
+    def _send_invitation(self, record: PassedCandidate) -> tuple[str, bool]:
+        hours = self.deps.config.token_ttl_hours
+        token = create_token(record.candidate_id, record.job_id, hours, self.deps.clock.now())
+        link = f"/candidate?token={quote(token, safe='')}"
+        self.state.set_status(record.candidate_id, "invited")
+        self.links[record.candidate_id] = link
+        self.threads[token_id(token)] = record.candidate_id
+        delivered = True
+        try:
             self.deps.email.send(
                 record.email,
                 INVITE_SUBJECT.format(job_title=record.job_title, company=COMPANY_NAME),
                 INVITE_BODY.format(first_name=record.first_name, job_title=record.job_title, company=COMPANY_NAME,
                                    link=self.public_base_url + link, hours=hours),
             )
-            self.deps.audit.record("invitation_created", candidate_id=candidate_id, job_id=record.job_id)
-            return link
+        except EmailDeliveryError:
+            # HR can still copy the link from the dashboard.
+            delivered = False
+            self.deps.audit.record("email_failed", candidate_id=record.candidate_id, job_id=record.job_id)
+        self.deps.audit.record("invitation_created", candidate_id=record.candidate_id, job_id=record.job_id)
+        return link, delivered
 
     def cancel(self, booking_id: str) -> None:
         with self.lock:
@@ -229,10 +258,10 @@ def service_from_env() -> SchedulingService:
     allow_write = os.getenv("CALENDAR_ALLOW_WRITE", "false").lower() in ("1", "true", "yes")
     executor = CalendarBookingExecutor(provider) if (not google or allow_write) else DryRunBookingExecutor()
     mode = "google" if google and allow_write else "google-readonly" if google else "mock"
-    screener = MockScreenerResults()
+    screener = ScreenerHandoff(runtime_dir() / "scheduler_handoff.json", MockScreenerResults())
     state = SchedulingStateStore(config.REPO_ROOT / "data" / "runtime" / "scheduling_state.json")
     deps = Deps(llm=get_llm(), calendar=ReadOnlyCalendar(provider), executor=executor,
-                candidates=ScreenerCandidateRepo(screener, state), bookings=state, email=MemoryEmailSender(),
+                candidates=ScreenerCandidateRepo(screener, state), bookings=state, email=email_sender_from_env(),
                 audit=MemoryAuditLog(clock), clock=clock, config=settings)
     return SchedulingService(deps, screener, state, calendar_mode=mode,
                              public_base_url=os.getenv("PUBLIC_BASE_URL", "http://localhost:5173"))

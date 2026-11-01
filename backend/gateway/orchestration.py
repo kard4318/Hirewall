@@ -3,6 +3,8 @@ import threading
 
 from fastapi import FastAPI
 
+from core.integrations.email_provider import email_sender_from_env
+from gateway.candidate_notifier import CandidateNotifier
 from orchestrator.graph import Orchestrator
 from orchestrator.record_approval import RecordWorkflow
 from services.screener.node import SCREEN_TASK, screen_job_node
@@ -25,8 +27,9 @@ def shared_orchestrator(app: FastAPI) -> Orchestrator:
     if app.state.email_orchestrator is None:
         with _lock:
             if app.state.email_orchestrator is None:
+                notifier = CandidateNotifier(screening, app.state.scheduling, email_sender_from_env())
                 app.state.email_orchestrator = Orchestrator(
                     services={SCREEN_TASK: screen_job_node(screening)},
-                    record_workflow=RecordWorkflow(build_action=screening.build_proposed_action),
+                    record_workflow=RecordWorkflow(build_action=screening.build_proposed_action, notifier=notifier),
                 )
     return app.state.email_orchestrator

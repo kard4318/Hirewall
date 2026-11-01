@@ -770,6 +770,26 @@ class ScreeningService:
             idempotency_key=proposal_id,
         ).model_dump(mode="json")
 
+    def decision_contact(self, run_id: str, candidate_id: str, purpose: str) -> dict[str, Any]:
+        """Who to tell about an approved decision. The CV's address comes first; the form's is only a fallback."""
+        run = self._require_run(run_id)
+        ranked = next((c for c in run.candidates if c.candidate_id == candidate_id), None)
+        if ranked is None:
+            raise ScreenerError("unknown_candidate")
+        self._audit.record("screener.contact_used", candidate_id=candidate_id, run_id=run_id, purpose=purpose)
+        record = self._identity.get(candidate_id) or IdentityRecord(candidate_id=candidate_id)
+        form = next((c for c in self._identity.contacts_for(candidate_id) if c.job_id == run.job_id), None)
+        posting = self._store.get_posting(run.job_id)
+        return {
+            "email": record.emails[0] if record.emails else (form.email if form else None),
+            "full_name": record.full_name or (form.full_name if form else None),
+            "job_title": " ".join(self.get_job(run.job_id).title.split()),
+            "company": posting.details.company if posting else None,
+            "location": posting.details.location if posting else None,
+            "score": round(ranked.total_score * 100),
+            "matched_skills": ranked.matched_skills,
+        }
+
     def reveal_identity(self, candidate_id: str, reviewer: str) -> IdentityRecord:
         if self._store.get_candidate(candidate_id) is None:
             raise ScreenerError("candidate_not_found")

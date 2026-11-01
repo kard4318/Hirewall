@@ -27,6 +27,7 @@ class RecordWorkflow:
     queue: ApprovalQueue = field(default_factory=get_approval_queue)
     audit: AuditLog = field(default_factory=get_audit_sink)
     status_store: CandidateStatusStore = field(default_factory=get_candidate_status_store)
+    notifier: Any = None  # tells candidates about a decision after it is recorded; wired by the gateway
 
     def propose(self, proposal_id: str, thread_id: str) -> ApprovalItem:
         item = self.queue.submit(self.build_action(proposal_id), thread_id)
@@ -44,7 +45,9 @@ class RecordWorkflow:
         return item
 
     def execute(self, item_id: str) -> ExecutionResult:
-        return execute_record(item_id, queue=self.queue, status_store=self.status_store, audit=self.audit)
+        return execute_record(
+            item_id, queue=self.queue, status_store=self.status_store, audit=self.audit, notifier=self.notifier
+        )
 
 
 class RecordNodes:
