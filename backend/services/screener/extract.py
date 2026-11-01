@@ -58,7 +58,7 @@ def split_sections(text: str) -> list[ResumeSection]:
     return [section for section in built if section.text]
 
 
-def _clean_profile(profile: CandidateProfile) -> CandidateProfile:
+def clean_profile(profile: CandidateProfile) -> CandidateProfile:
     """Values copied from the resume could still carry an instruction, and they reach the rubric prompt."""
     return profile.model_copy(update={
         "skills": [skill for skill in profile.skills if skill.strip() and not find_injection_lines(skill)],
@@ -91,4 +91,4 @@ def extract_document(
     # A model that loses the experience block would silently zero that criterion, so keep the original split.
     if not any(s.kind == "experience" for s in sections) and any(s.kind == "experience" for s in fallback.sections):
         sections = fallback.sections
-    return Extraction(sections or fallback.sections, _clean_profile(output.profile), False)
+    return Extraction(sections or fallback.sections, clean_profile(output.profile), False)

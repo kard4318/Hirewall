@@ -132,3 +132,10 @@ def split_identity(text: str, known_name: str | None = None) -> tuple[Identity, 
     kept = [line for line in evidence.splitlines() if not line.strip() or not _ONLY_MASKS.match(line)]
     identity = Identity(full_name, emails, tuple(dict.fromkeys(phones)), links, tuple(other))
     return identity, re.sub(r"\n{3,}", "\n\n", "\n".join(kept)).strip()
+
+
+def mask_identity(text: str, identity: Identity) -> str:
+    """Remove one person's known details from a text, such as an excerpt shown to the reviewer."""
+    for value in (*identity.emails, *identity.links, *identity.phones):
+        text = text.replace(value, "[REMOVED]")
+    return _mask_name(text, identity.full_name) if identity.full_name else text
