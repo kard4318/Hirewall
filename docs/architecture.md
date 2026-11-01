@@ -52,6 +52,10 @@ flowchart TD
 
 A label can only lead to `draft`, which runs its own checks and pauses for a person. A wrong label cannot send anything. New applicants stop at `new_application`, and nothing adds them to the candidate list yet: that needs the screener to propose a record, and a person to approve it.
 
+### Daily digest workflow
+
+The `daily_digest` task runs one `digest` node and ends. It labels and summarizes the inbox, writes only its own files, and has no path to `draft` or `send`, so building a digest can never produce a reply.
+
 ### Rules
 
 1. **Code does the routing.** An email's text never chooses a route, so an attacker's email cannot pick a step.

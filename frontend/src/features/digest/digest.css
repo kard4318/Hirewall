@@ -1,0 +1,43 @@
+/* Daily digest: counts first, then emails needing a human answer, then every email by type (Ledger and Stamp theme) */
+.digest-controls { display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: center; }
+.digest-controls input { font: 0.95rem var(--font-ui); padding: 0.35rem 0.5rem; }
+.digest-headline { font-size: 1.15rem; font-weight: 600; margin: 0.4rem 0 0; }
+
+.digest-tiles { list-style: none; margin: 0.8rem 0; padding: 0; display: grid; gap: 0.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+.digest-tiles li { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.7rem 0.8rem;
+  border: 1.5px solid var(--ink); background: rgba(255, 253, 247, 0.7); }
+.digest-tiles li.is-strong { border-color: var(--vermilion); }
+.digest-count { font-size: 1.8rem; font-weight: 700; line-height: 1; }
+
+.digest-group-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; align-items: baseline; }
+.digest-list { list-style: none; margin: 0; padding: 0; }
+.digest-item { border-bottom: 1px solid var(--rule); border-left: 3px solid transparent; }
+.digest-item.urgency-high { border-left-color: var(--vermilion); }
+.digest-link { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.6rem 0.7rem; color: inherit; text-decoration: none; }
+.digest-link:hover { background: rgba(23, 21, 15, 0.04); }
+.digest-link:focus-visible { outline: 2px solid var(--vermilion); outline-offset: -2px; }
+.digest-line { display: flex; justify-content: space-between; gap: 0.6rem; font-size: 0.85rem; }
+.digest-summary { overflow-wrap: anywhere; }
+.digest-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; font-size: 0.78rem; margin-top: 0.15rem; }
+.urgency-tag-high { color: var(--vermilion-ink); border-color: var(--vermilion); font-weight: 600; }
+
+@media (max-width: 600px) {
+  .digest-line { flex-direction: column; gap: 0; }
+}
+
+.digest-saved {
+  display: flex;
+  flex-basis: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.digest-filters { display: flex; flex-wrap: wrap; gap: 0.7rem 1.2rem; align-items: center; }
+.digest-filter { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; min-width: 0; }
+.digest-filter select { font: 0.95rem var(--font-ui); max-width: 100%; min-height: 2.2rem; padding: 0.35rem 0.5rem;
+  color: var(--ink); background: var(--paper); border: 1.5px solid var(--ink); }
+.digest-filter select:focus-visible { outline: 2px solid var(--vermilion); outline-offset: 2px; }
+.digest-filter-result { display: flex; flex-wrap: wrap; flex-basis: 100%; gap: 0.6rem; align-items: center; margin: 0; }
+.digest-clear { font-size: 0.8rem; }

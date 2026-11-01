@@ -24,6 +24,20 @@ The drafter reads text written by outsiders, so it assumes the model can be mani
 | Malformed model output | Output is strictly validated with one repair attempt, then falls back to a fixed template or a human |
 | Sensitive data in logs | Logs and audit events hold only IDs, hashes, status, reason codes, prompt version, and latency |
 
+### Phishing detection
+
+`security/phishing_detector.py` checks each email for concrete warning signs, such as credential requests, dangerous attachments, payment changes, bulk personal data requests, and authority claims combined with secrecy. It works in three levels, and a known candidate's address does not excuse an email, because addresses can be forged or accounts taken over:
+
+| Verdict | Score | What happens |
+|---|---|---|
+| `phishing` | 4 or more | Quarantined with reason `phishing_suspected`, with no model call. The warning signs are shown to HR |
+| `suspicious` | 2 or 3 | The classifier sends it to a person, and the drafter adds a `phishing_signals` warning |
+| `clean` | 0 or 1 | Handled normally |
+
+To measure it, run `python scripts/evaluate_phishing.py --split tune` or `--split holdout`.
+
+We tested the pretrained model `aamoshdahal/email-phishing-distilbert-finetuned` and did not use it. On our emails, its default threshold flagged 36% of 96 ordinary emails and caught 46% of 24 phishing emails, and it missed most HR-specific scams. It also states no license.
+
 ### Known limits
 
 - **Sender identity:** the drafter trusts the `from_address` it receives. A forged sender matching a real candidate gets through, so the email integration must verify senders (SPF, DKIM, DMARC). The reply still goes only to the address on record.

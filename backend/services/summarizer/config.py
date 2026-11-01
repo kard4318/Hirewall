@@ -5,12 +5,18 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class ClassifierConfig:
-    max_email_chars: int = 6000
+    # The model reads this much of an email. A longer one keeps its start and end, as in classify.model_view.
+    max_email_chars: int = 12000
+    # Code rules read this much, so a topic in the part the model does not see still reaches a person.
+    max_scan_chars: int = 200000
     max_subject_chars: int = 200
     max_reason_chars: int = 200
     # A local model can take well over a minute to load on its first call.
     llm_timeout_s: float = 180.0
-    prompt_version: str = "classifier_system_v2"
+    prompt_version: str = "classifier_system_v3"
+    summary_prompt_version: str = "summary_system_v2"
+    max_summary_chars: int = 220
+    max_sender_chars: int = 100
     internal_email_domains: tuple[str, ...] = ("hirewall.example",)
     # A stranger's "unrelated" email matching these reaches a person, so impersonation and data requests are kept.
     stranger_request_patterns: tuple[str, ...] = (

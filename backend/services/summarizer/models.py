@@ -1,6 +1,7 @@
 # Data models used by the summarizer service
 
 from datetime import datetime
+
 try:
     from enum import StrEnum
 except ImportError:  # Python 3.10: same behaviour as 3.11's StrEnum
@@ -9,6 +10,8 @@ except ImportError:  # Python 3.10: same behaviour as 3.11's StrEnum
     class StrEnum(str, Enum):
         def __str__(self) -> str:
             return str(self.value)
+
+
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, StringConstraints
@@ -65,6 +68,12 @@ class LLMClassification(_Strict):
     urgency: Urgency
     needs_human: bool
     reason: str
+
+
+class LLMSummary(_Strict):
+    """The only shape accepted from the model for a digest line."""
+
+    summary: str
 
 
 class Classification(_Strict):

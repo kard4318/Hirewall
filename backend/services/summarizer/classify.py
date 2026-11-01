@@ -18,6 +18,7 @@ from .models import Classification, EmailType, InboundEmail, LLMClassification, 
 logger = logging.getLogger(__name__)
 
 _PROMPTS_DIR = Path(__file__).parent / "prompts"
+_QUOTED_LINE = re.compile(r"^\s*(?:>|On .{5,160} wrote:\s*$)")
 _SENDER_DESCRIPTIONS: dict[SenderKind, str] = {
     "candidate": "a person who has already applied and has a candidate file",
     "employee": "an employee of this company",
@@ -34,6 +35,7 @@ class ClassifierDeps:
     llm: Any = None
     candidates: CandidateDirectory | None = None
     detector: Callable[[str], bool] | None = None
+    phishing_detector: Callable[[str], Any] | None = None
     config: ClassifierConfig = DEFAULT_CONFIG
     boundary_factory: Callable[[], str] = new_boundary
 
@@ -65,6 +67,38 @@ def _is_suspicious(texts: list[str], deps: ClassifierDeps) -> bool:
     except Exception as error:
         logger.warning("classifier detector failed error_type=%s", type(error).__name__)
         return False
+
+
+def _assess_phishing(text: str, deps: ClassifierDeps) -> Any:
+    if deps.phishing_detector is None:
+        return None
+    try:
+        return deps.phishing_detector(text)
+    except Exception as error:
+        logger.warning("classifier phishing detector failed error_type=%s", type(error).__name__)
+        return None
+
+
+def _without_quoted_history(text: str) -> str:
+    kept = [line for line in text.split("\n") if not _QUOTED_LINE.match(line)]
+    # An email that is only quoted text keeps it, so the model is not given nothing to read.
+    return "\n".join(kept).strip() or text
+
+
+def partly_read(text: str, max_chars: int) -> bool:
+    """True when the model cannot read all of this email's own words, even without its quoted history."""
+    return len(text) > max_chars and len(_without_quoted_history(text)) > max_chars
+
+
+def model_view(text: str, max_chars: int) -> str:
+    """What the model reads. A long email loses its quoted history, then keeps its start and end if still too long."""
+    if len(text) <= max_chars:
+        return text
+    text = _without_quoted_history(text)
+    if len(text) <= max_chars:
+        return text
+    head = max_chars * 3 // 5
+    return f"{text[:head]}\n\n[... the middle of this long email was left out ...]\n\n{text[head - max_chars:]}"
 
 
 def build_messages(
@@ -126,14 +160,24 @@ def classify_email(email: InboundEmail, deps: ClassifierDeps) -> Classification:
         return code_only_result(email.email_id, EmailType.UNCLASSIFIED, "unknown", "candidate_lookup_unavailable")
 
     subject = clean_single_line(email.subject, config.max_subject_chars)
-    body = clean_untrusted_text(email.body, config.max_email_chars)
+    body = clean_untrusted_text(email.body, config.max_scan_chars)
     raw_text = f"{email.subject}\n{email.body}"
     if _is_suspicious([raw_text, f"{subject.text}\n{body.text}"], deps):
         return code_only_result(email.email_id, EmailType.SUSPICIOUS, sender_kind, "injection_suspected")
+    phishing = _assess_phishing(f"{raw_text}\n{subject.text}\n{body.text}", deps)
+    if phishing is not None and phishing.verdict == "phishing":
+        result = code_only_result(email.email_id, EmailType.SUSPICIOUS, sender_kind, "phishing_suspected")
+        return result.model_copy(
+            update={
+                "reason": f"Warning signs of phishing: {', '.join(phishing.signals)}.",
+                "rules_applied": [f"phishing:{','.join(phishing.signals)}"],
+            }
+        )
     if deps.llm is None:
         return code_only_result(email.email_id, EmailType.UNCLASSIFIED, sender_kind, "llm_unavailable")
 
-    system, user = build_messages(subject.text, body.text, sender_kind, config, deps.boundary_factory())
+    view = model_view(body.text, config.max_email_chars)
+    system, user = build_messages(subject.text, view, sender_kind, config, deps.boundary_factory())
     try:
         suggestion = generate_structured(
             deps.llm, LLMClassification, system=system, user=user, timeout_s=config.llm_timeout_s
@@ -155,6 +199,23 @@ def classify_email(email: InboundEmail, deps: ClassifierDeps) -> Classification:
         prompt_version=config.prompt_version,
     )
     result = _apply_topic_rules(result, f"{subject.text}\n{body.text}", config)
+    if phishing is not None and phishing.verdict == "suspicious":
+        result = result.model_copy(
+            update={
+                "needs_human": True,
+                "can_draft": False,
+                "rules_applied": [*result.rules_applied, f"phishing_signals:{','.join(phishing.signals)}"],
+            }
+        )
+    # A person must read what the model could not, so a partial reading never decides alone.
+    if partly_read(body.text, config.max_email_chars):
+        result = result.model_copy(
+            update={
+                "needs_human": True,
+                "can_draft": False,
+                "rules_applied": [*result.rules_applied, "partly_read"],
+            }
+        )
     # Hidden text is a warning sign in itself, so a person should look even if the model saw nothing wrong.
     if subject.hidden_removed or body.hidden_removed:
         result = result.model_copy(

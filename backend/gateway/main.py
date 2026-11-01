@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 
 from gateway.auth.hr_auth import LoginRateLimiter
-from gateway.routers import analytics, directory, employee_qa, hr_scheduling, inbox, scheduling
+from gateway.routers import analytics, digest, directory, employee_qa, hr_scheduling, inbox, scheduling
 from services.analytics.config import AnalyticsSettings
 from services.analytics.directory import Directory
 from services.analytics.reports import AnalyticsService
@@ -50,6 +50,7 @@ def create_app(scheduling_service: SchedulingService | None = None,
     app.include_router(employee_qa.hr)
     app.include_router(analytics.router)
     app.include_router(directory.router)
+    app.include_router(digest.router)
     app.include_router(inbox.router)
     return app
 

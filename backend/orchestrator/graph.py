@@ -10,7 +10,16 @@ from langgraph.types import Command, interrupt
 from pydantic import ValidationError
 
 from core.approval_queue.approval_queue import ApprovalError
+from core.paths import runtime_dir
 from services.summarizer.classify import ClassifierDeps
+from services.summarizer.digest import (
+    DigestStore,
+    assemble_digest,
+    build_record,
+    collect_items,
+    emails_in_scope,
+    valid_scope,
+)
 from services.summarizer.node import classify_node
 
 from .approval import DrafterWorkflow
@@ -33,6 +42,7 @@ ServiceNode = Callable[[WorkflowState], dict[str, Any]]
 
 DRAFT_TASK = "draft_reply"
 TRIAGE_TASK = "triage_email"
+DIGEST_TASK = "daily_digest"
 _RECURSION_LIMIT = 100
 # These outcomes stay final. Other outcomes, such as a model failure, can run again.
 _FINAL_STATUSES = {"sent", "rejected", "stale", "send_failed", "refused", APPROVED, "new_application", "no_action"}
@@ -149,7 +159,8 @@ class TriageNodes:
             return {"status": "needs_human", "reason_code": "email_not_found", "classification": None}
         result = classify_node({"email": email}, self._deps)["classification"]
         # Labels only. The model's reason can repeat the sender's words, so it is not saved in the workflow.
-        saved = {key: result[key] for key in ("type", "urgency", "needs_human", "can_draft", "sender_kind")}
+        labels = ("type", "urgency", "needs_human", "can_draft", "sender_kind", "rules_applied")
+        saved = {key: result[key] for key in labels}
         self._workflow.audit.record(
             "classifier.outcome", email_id=state["email_id"], reason_code=result["reason_code"], **saved
         )
@@ -164,6 +175,49 @@ def _triage_status(classification: dict[str, Any]) -> str:
     if classification["type"] == "new_application":
         return "new_application"
     return "needs_human" if classification["needs_human"] else "no_action"
+
+
+class DigestNode:
+    """Builds the daily digest. It reads the inbox and writes only its own digest files, and it sends nothing."""
+
+    def __init__(self, workflow: DrafterWorkflow, deps: ClassifierDeps, store: DigestStore) -> None:
+        self._workflow = workflow
+        self._deps = deps
+        self._store = store
+        self.email_state: Callable[[str], dict[str, Any]] = lambda email_id: {}
+
+    def __call__(self, state: WorkflowState) -> dict[str, Any]:
+        scope = state["email_id"]
+        if not valid_scope(scope):
+            return {"status": "needs_human", "reason_code": "invalid_digest_scope", "result": None}
+        emails = emails_in_scope(self._workflow.mailbox.inbound(), scope)
+        items = collect_items(emails, deps=self._deps, store=self._store, email_state=self.email_state)
+        record = build_record(items, scope)
+        self._store.save(scope, record)
+        digest = assemble_digest(record, self.email_state)
+        # Counts only. Summaries stay in the digest files, because workflow state is saved in checkpoints.
+        self._workflow.audit.record("digest.generated", scope=scope, total=digest["total"], counts=digest["counts"])
+        return {
+            "status": "completed",
+            "reason_code": None,
+            "result": {"scope": scope, "total": digest["total"], "counts": digest["counts"]},
+        }
+
+
+def _read_email_state(graph: Any, email_id: str) -> dict[str, Any]:
+    """Read where an email stands across its workflows. A paused draft comes first, then the latest outcome."""
+    states = []
+    for task in (TRIAGE_TASK, DRAFT_TASK):
+        snapshot = graph.get_state({"configurable": {"thread_id": f"{task}:{email_id}"}})
+        paused = any(item.interrupts for item in snapshot.tasks)
+        states.append((paused, snapshot.values))
+    classification = states[0][1].get("classification")
+    if any(paused for paused, _ in states):
+        return {"status": AWAITING_REVIEW, "classification": classification}
+    started = [values for _, values in states if values.get("status")]
+    final = next((values for values in started if values["status"] in _FINAL_STATUSES), None)
+    chosen = final or (started[-1] if started else {})
+    return {"status": chosen.get("status", "not_started"), "classification": classification}
 
 
 def _unsupported_task(state: WorkflowState) -> dict[str, Any]:
@@ -183,16 +237,23 @@ def build_graph(
     checkpointer: BaseCheckpointSaver,
     services: Mapping[str, ServiceNode] | None = None,
     classifier_deps: ClassifierDeps | None = None,
+    digest_store: DigestStore | None = None,
 ) -> Any:
     """Build the orchestrator. Each entry in `services` adds a task that runs that function and then ends."""
     nodes = DraftReplyNodes(workflow)
     deps = classifier_deps or ClassifierDeps(
-        llm=workflow.deps.llm, candidates=workflow.deps.candidates, detector=workflow.deps.detector
+        llm=workflow.deps.llm,
+        candidates=workflow.deps.candidates,
+        detector=workflow.deps.detector,
+        phishing_detector=workflow.deps.phishing_detector,
     )
     builder = StateGraph(WorkflowState)
 
     builder.add_node("classify", TriageNodes(workflow, deps).classify)
     builder.add_conditional_edges("classify", route_after_classify, {"draft": "draft", END: END})
+    digest_node = DigestNode(workflow, deps, digest_store or DigestStore(runtime_dir() / "digests"))
+    builder.add_node("digest", digest_node)
+    builder.add_edge("digest", END)
     builder.add_node("draft", nodes.draft)
     builder.add_node("human_review", nodes.human_review)
     builder.add_node("approve", nodes.approve)
@@ -227,7 +288,9 @@ def build_graph(
     builder.add_conditional_edges("edit", route_after_edit, {"human_review": "human_review", END: END})
     builder.add_edge("redraft", "draft")
     builder.add_edge("reject", END)
-    return builder.compile(checkpointer=checkpointer)
+    graph = builder.compile(checkpointer=checkpointer)
+    digest_node.email_state = lambda email_id: _read_email_state(graph, email_id)
+    return graph
 
 
 @dataclass(frozen=True)
@@ -251,11 +314,17 @@ class Orchestrator:
     checkpointer: BaseCheckpointSaver | None = None
     services: Mapping[str, ServiceNode] | None = None
     classifier_deps: ClassifierDeps | None = None
+    digest_store: DigestStore | None = None
 
     def __post_init__(self) -> None:
         self.checkpointer = self.checkpointer or open_checkpointer()
+        self.digest_store = self.digest_store or DigestStore(runtime_dir() / "digests")
         self.graph = build_graph(
-            self.workflow, checkpointer=self.checkpointer, services=self.services, classifier_deps=self.classifier_deps
+            self.workflow,
+            checkpointer=self.checkpointer,
+            services=self.services,
+            classifier_deps=self.classifier_deps,
+            digest_store=self.digest_store,
         )
 
     @staticmethod
@@ -295,6 +364,13 @@ class Orchestrator:
         # Wrapped because LangGraph does not treat an empty value as a resume, and the human would get no answer.
         self.graph.invoke(Command(resume={"decision": decision}), self._config(thread_id))
         return self.view(thread_id)
+
+    def digest(self, scope: str = "all") -> dict[str, Any] | None:
+        """Read the latest digest for a scope, with each email's current status. This never calls the model."""
+        record = self.digest_store.load(scope)
+        if record is None:
+            return None
+        return assemble_digest(record, lambda email_id: _read_email_state(self.graph, email_id))
 
     def paused_thread_for_email(self, email_id: str) -> str:
         """Find the paused workflow holding this email's draft, whichever task started it."""
