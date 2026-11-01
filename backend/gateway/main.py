@@ -14,6 +14,7 @@ from gateway.routers import (
     employee_qa,
     hr_scheduling,
     inbox,
+    jobs,
     scheduling,
     screener,
 )
@@ -46,6 +47,7 @@ def create_app(scheduling_service: SchedulingService | None = None,
     app.state.screening = screening_service  # resume screener; built lazily when None
     app.state.login_limiter = LoginRateLimiter()
     app.state.upload_limiter = LoginRateLimiter(limit=10)
+    app.state.apply_limiter = LoginRateLimiter(limit=5)  # public: must not use up HR's upload limit
 
     @app.middleware("http")
     async def security_headers(request: Request, call_next: Any) -> Any:
@@ -65,6 +67,7 @@ def create_app(scheduling_service: SchedulingService | None = None,
     app.include_router(directory.router)
     app.include_router(inbox.router)
     app.include_router(screener.router)
+    app.include_router(jobs.public)
     app.include_router(approvals.router)
     app.include_router(audit.router)
     return app

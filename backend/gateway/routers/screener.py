@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict
 from typing import Any, Literal
 
-from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from pydantic import BaseModel, ConfigDict, Field
 
 from core.approval_queue.approval_queue import ApprovalError
@@ -15,7 +15,7 @@ from gateway.routers.hr_scheduling import require_hr, service
 from gateway.routers.inbox import REVIEWER
 from orchestrator.record_approval import RECORD_TASK
 from security.file_validator import MAX_BYTES
-from services.screener.models import Requirement
+from services.screener.models import JobPostingDetails, Requirement
 from services.screener.node import SCREEN_TASK
 from services.screener.service import MAX_FILES, ScreenerError
 
@@ -46,19 +46,28 @@ def _error(error: ScreenerError) -> HTTPException:
     return HTTPException(404 if code.endswith("_not_found") else 409, code)
 
 
-@router.post("/candidates", status_code=202)
-async def upload(request: Request, files: list[UploadFile] = File(...)) -> dict[str, str]:
+def _check_upload_limit(request: Request) -> None:
     client = request.client.host if request.client else "unknown"
     limiter: LoginRateLimiter = request.app.state.upload_limiter
     if not limiter.allow(client, service(request).deps.clock.now()):
         raise HTTPException(429, "too_many_uploads")
+
+
+@router.post("/candidates", status_code=202)
+async def upload(
+    request: Request, files: list[UploadFile] = File(...), job_id: str | None = Form(default=None, max_length=64)
+) -> dict[str, str]:
+    _check_upload_limit(request)
     if not 1 <= len(files) <= MAX_FILES:
         raise HTTPException(422, "too_many_files")
     if int(request.headers.get("content-length") or 0) > _MAX_BODY_BYTES:
         raise HTTPException(413, "upload_too_large")
     # One byte over the limit is enough for the validator to refuse the file with a per-file result.
     items = [(file.filename or "", await file.read(MAX_BYTES + 1)) for file in files]
-    return {"task_id": screening_service(request.app).ingest_files(items).task_id}
+    try:
+        return {"task_id": screening_service(request.app).ingest_files(items, job_id).task_id}
+    except ScreenerError as error:
+        raise _error(error) from None
 
 
 @router.get("/tasks/{task_id}")
@@ -82,12 +91,68 @@ def load_demo(request: Request) -> dict[str, str]:
 
 @router.get("/jobs")
 def jobs(request: Request) -> dict[str, Any]:
-    return {"jobs": [job.model_dump(mode="json") for job in screening_service(request.app).list_jobs()]}
+    return {"jobs": screening_service(request.app).job_rows()}
 
 
 @router.post("/jobs", status_code=201)
 def create_job(request: Request, body: NewJob) -> dict[str, Any]:
     return screening_service(request.app).create_job(body.title, body.requirements).model_dump(mode="json")
+
+
+@router.post("/jobs/extract", status_code=202)
+async def extract_job(request: Request, file: UploadFile = File(...)) -> dict[str, str]:
+    _check_upload_limit(request)
+    data = await file.read(MAX_BYTES + 1)
+    task, job_id = screening_service(request.app).extract_posting(file.filename or "", data)
+    return {"task_id": task.task_id, "job_id": job_id}
+
+
+def _posting(call: Any, *args: Any) -> dict[str, Any]:
+    try:
+        return call(*args).model_dump(mode="json")
+    except ScreenerError as error:
+        raise _error(error) from None
+
+
+@router.get("/jobs/drafts/{job_id}")
+def draft(request: Request, job_id: str) -> dict[str, Any]:
+    return _posting(screening_service(request.app).get_posting, job_id)
+
+
+@router.get("/jobs/{job_id}/posting")
+def posting(request: Request, job_id: str) -> dict[str, Any]:
+    return _posting(screening_service(request.app).get_posting, job_id)
+
+
+@router.put("/jobs/{job_id}")
+def update_posting(request: Request, job_id: str, details: JobPostingDetails) -> dict[str, Any]:
+    return _posting(screening_service(request.app).update_posting, job_id, details)
+
+
+@router.post("/jobs/{job_id}/publish")
+def publish(request: Request, job_id: str) -> dict[str, Any]:
+    return _posting(screening_service(request.app).publish_posting, job_id)
+
+
+@router.post("/jobs/{job_id}/close")
+def close(request: Request, job_id: str) -> dict[str, Any]:
+    return _posting(screening_service(request.app).close_posting, job_id)
+
+
+@router.get("/jobs/{job_id}/applications")
+def applications(request: Request, job_id: str) -> dict[str, Any]:
+    try:
+        return {"applications": screening_service(request.app).list_applications(job_id)}
+    except ScreenerError as error:
+        raise _error(error) from None
+
+
+@router.get("/candidates/{candidate_id}/extracted")
+def extracted(request: Request, candidate_id: str) -> dict[str, Any]:
+    try:
+        return screening_service(request.app).get_extracted(candidate_id)
+    except ScreenerError as error:
+        raise _error(error) from None
 
 
 def _run_in_background(orchestrator: Any, run_id: str) -> None:
