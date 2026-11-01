@@ -4,7 +4,8 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from services.scheduler.conversation.deps import Deps
-from services.scheduler.conversation.guard import clean_message, screen
+from security.quarantine import screen_untrusted
+from services.scheduler.conversation.guard import clean_message
 from services.scheduler.conversation.state import SchedState
 from services.scheduler.conversation.tokens import TokenError, token_id, verify_token
 
@@ -18,12 +19,12 @@ TURN_RESET: dict[str, Any] = {
 }
 
 
-def external_security_check(text: str) -> str | None:
-    """HOOK: call backend/security (sanitizer, injection_detector) here once it exists.
-
-    Return a block reason string to block the message, or None to let it through.
-    """
-    return None
+def security_check(text: str) -> str | None:
+    """Shared backend/security screen (rules + local injection model). Returns a block reason or None."""
+    verdict = screen_untrusted(text, "candidate_chat")
+    if not verdict.blocked:
+        return None
+    return "injection_suspected" if any(r.startswith("rules:") for r in verdict.reasons) else "injection_model"
 
 
 def valid_ui_action(action: Any) -> bool:
@@ -85,7 +86,7 @@ def make_node(deps: Deps) -> Callable[[SchedState], dict[str, Any]]:
             return block(state, "empty_message", {**counters, "candidate": candidate})
         if len(text) > cfg.max_message_chars:
             return block(state, "message_too_long", {**counters, "candidate": candidate})
-        reason = screen(text) or external_security_check(text)
+        reason = security_check(text)
         if reason:
             return block(state, reason, {**counters, "candidate": candidate})
         return {**ok, "user_message": text}

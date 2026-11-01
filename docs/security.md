@@ -60,3 +60,25 @@ The drafter reads text written by outsiders, so it assumes the model can be mani
 - **Storage:** the queue, audit log, outbox, and workflow checkpoints are local files, and anyone with file access could replace them. Checkpoints hold IDs and outcomes, but a recruiter's edits, feedback, and short status messages from the model are saved there too.
 - **Tracing:** do not turn on LangSmith tracing, for example with `LANGSMITH_TRACING`. It would send workflow data to a cloud service, which breaks the local-only guarantee.
 - **Sending:** the email provider is a local outbox. A real provider needs its own credentials and tests.
+
+## Shared security layer (`backend/security/`)
+
+One screen for all untrusted text, so every service applies the same rules:
+
+- `security.quarantine.screen_untrusted(text, source) -> Verdict` (`allow` | `flag` | `block`, reasons, model score).
+  Used by the scheduler candidate chat and the knowledge assistant; `security.quarantine.is_suspicious` is a drop-in
+  replacement for `security.injection_detector.is_suspicious` that also asks the model.
+- `security.rules`: multilingual rules (EN/FR/AR), obfuscation folding (look-alikes, leetspeak, spaced letters,
+  invisible characters) plus the `injection_detector` patterns.
+- `security.injection_model`: local classifier `protectai/deberta-v3-base-prompt-injection-v2` (Apache-2.0), ONNX on
+  CPU via onnxruntime, fully offline after `python scripts/download_security_models.py`.
+- `security.pii_bias_filter`: `mask_pii` (emails, phones, IBAN, cards, URLs) and `strip_protected_attributes`
+  (age, gender, nationality, religion, family status... lines) for screening.
+- `security.output_validator.output_problems`: invisible characters, prompt leaks, unexpected emails or links.
+- Quarantine: blocked and flagged inputs are appended to `data/runtime/quarantine.jsonl` with a hash, reasons, the
+  model score and a PII-masked excerpt.
+
+Policy: rules always run and block on their own. The model is a second opinion controlled by
+`SECURITY_MODEL_MODE` (`off`, `monitor` = flag only, `block` = may block above `SECURITY_MODEL_THRESHOLD`).
+If the model fails, the rules still apply. Neither replaces the design: models have no tools and humans approve
+every action. Measure with `python scripts/eval_security.py` (report in `data/runtime/security_report.md`).

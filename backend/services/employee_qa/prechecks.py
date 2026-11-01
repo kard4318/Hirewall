@@ -2,6 +2,8 @@
 import re
 import unicodedata
 
+from security.quarantine import screen_untrusted
+
 _F = re.IGNORECASE
 
 INJECTION = [re.compile(p, _F) for p in (
@@ -49,7 +51,7 @@ def is_injection(text: str) -> bool:
 def precheck(question: str) -> str | None:
     """'blocked' | 'sensitive' | 'refused_personal' | None, decided without the LLM. Injection wins."""
     text = normalise(question)
-    if is_injection(text):
+    if is_injection(text) or screen_untrusted(text, "employee_question").blocked:  # shared rules + local model
         return "blocked"
     if any(p.search(text) for p in SENSITIVE):
         return "sensitive"

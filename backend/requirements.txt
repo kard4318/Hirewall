@@ -19,6 +19,10 @@ google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
 
+# Security: local prompt-injection classifier (ONNX, CPU)
+onnxruntime
+tokenizers
+
 # Screener: local multilingual embeddings
 sentence-transformers>=3.0
 

@@ -44,3 +44,6 @@ client_secret*.json
 
 # Scheduler demo runtime state
 data/runtime/
+
+# Downloaded local security models
+models/
