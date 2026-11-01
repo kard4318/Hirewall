@@ -1,0 +1,116 @@
+[
+  {
+    "job_id": "job-preset-backend",
+    "title": "Backend Python Developer",
+    "requirements": [
+      {
+        "text": "Experience with Python",
+        "kind": "required"
+      },
+      {
+        "text": "Experience with FastAPI",
+        "kind": "required"
+      },
+      {
+        "text": "Experience with PostgreSQL",
+        "kind": "required"
+      },
+      {
+        "text": "Experience with Docker",
+        "kind": "required"
+      },
+      {
+        "text": "Experience with REST API",
+        "kind": "required"
+      },
+      {
+        "text": "At least 3 years of experience",
+        "kind": "required"
+      },
+      {
+        "text": "Comfortable working in an agile team",
+        "kind": "preferred"
+      },
+      {
+        "text": "Design REST services in Python with FastAPI, model data in PostgreSQL, ship with Docker and review code with the team.",
+        "kind": "responsibility"
+      }
+    ]
+  },
+  {
+    "job_id": "job-preset-data",
+    "title": "Data Analyst",
+    "requirements": [
+      {
+        "text": "Experience with SQL",
+        "kind": "required"
+      },
+      {
+        "text": "Experience with Power BI",
+        "kind": "required"
+      },
+      {
+        "text": "Experience with Python",
+        "kind": "required"
+      },
+      {
+        "text": "Experience with Pandas",
+        "kind": "required"
+      },
+      {
+        "text": "Experience with Statistics",
+        "kind": "required"
+      },
+      {
+        "text": "At least 2 years of experience",
+        "kind": "required"
+      },
+      {
+        "text": "Can present insights to non-technical managers",
+        "kind": "preferred"
+      },
+      {
+        "text": "Query sales data with SQL, build Power BI dashboards and run analyses in Python to support business decisions.",
+        "kind": "responsibility"
+      }
+    ]
+  },
+  {
+    "job_id": "job-preset-frontend",
+    "title": "Frontend Developer (React)",
+    "requirements": [
+      {
+        "text": "Experience with JavaScript",
+        "kind": "required"
+      },
+      {
+        "text": "Experience with TypeScript",
+        "kind": "required"
+      },
+      {
+        "text": "Experience with React",
+        "kind": "required"
+      },
+      {
+        "text": "Experience with CSS",
+        "kind": "required"
+      },
+      {
+        "text": "Experience with HTML",
+        "kind": "required"
+      },
+      {
+        "text": "At least 2 years of experience",
+        "kind": "required"
+      },
+      {
+        "text": "Attention to accessibility",
+        "kind": "preferred"
+      },
+      {
+        "text": "Own a customer-facing web app in React and TypeScript, working closely with designers.",
+        "kind": "responsibility"
+      }
+    ]
+  }
+]

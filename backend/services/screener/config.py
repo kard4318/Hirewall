@@ -1,7 +1,9 @@
 # Configuration for the screener service
 """Screener settings. Values can be overridden with environment variables."""
+import math
 import os
 from dataclasses import dataclass, field
+from datetime import date
 
 import numpy as np
 
@@ -30,3 +32,37 @@ class SemanticConfig:
 
     def calibrate(self, sims: np.ndarray) -> np.ndarray:
         return np.clip((sims - self.floor) / (self.ceiling - self.floor), 0.0, 1.0)
+
+
+@dataclass(frozen=True)
+class RankingWeights:
+    # Weights of the combined score. A criterion that does not apply to a
+    # candidate (score None) is left out and the others are renormalized.
+    semantic: float = float(os.getenv("SCREENER_WEIGHT_SEMANTIC", "0.35"))
+    experience: float = float(os.getenv("SCREENER_WEIGHT_EXPERIENCE", "0.2"))
+    graph: float = float(os.getenv("SCREENER_WEIGHT_GRAPH", "0"))
+    rubric: float = float(os.getenv("SCREENER_WEIGHT_RUBRIC", "0.45"))
+
+    def __post_init__(self) -> None:
+        values = self.as_dict().values()
+        if any(not math.isfinite(v) or v < 0 for v in values):
+            raise ValueError("ranking weights must be finite and non-negative")
+        if not any(v > 0 for v in values):
+            raise ValueError("at least one ranking weight must be positive")
+
+    def as_dict(self) -> dict[str, float]:
+        return {
+            "semantic": self.semantic, "rubric": self.rubric, "experience": self.experience, "graph": self.graph,
+        }
+
+
+def as_of_date() -> date:
+    """Reference date for "present" in resumes. Fixed, so a ranking can be reproduced."""
+    return date.fromisoformat(os.getenv("SCREENER_AS_OF", "2026-01-01"))
+
+
+EXTRACT_PROMPT_VERSION = "extract_system_v1"
+RUBRIC_PROMPT_VERSION = "rubric_system_v1"
+LLM_TIMEOUT_S = float(os.getenv("SCREENER_LLM_TIMEOUT_SECONDS", "120"))
+# "sentence-transformers" (default, downloads the model once) or "hashing" (bag of words, offline, for demos).
+EMBEDDER = os.getenv("SCREENER_EMBEDDER", "sentence-transformers")
