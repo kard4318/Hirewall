@@ -131,9 +131,6 @@ export function CandidatePage() {
 
         <footer className="ticket-foot">
           <span>Times shown in the office's local time.</span>
-          {meta?.dev_mode && (
-            <a className="dev-link" href={`/candidate?token=${encodeURIComponent(`${token}x9`)}`}>Tamper link (dev)</a>
-          )}
         </footer>
       </article>
     </div>

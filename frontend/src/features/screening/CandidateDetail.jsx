@@ -1,6 +1,7 @@
 // Detail panel. Resume and model text is rendered as plain text only
 import { percent } from "./api.js";
 import { DecisionButtons } from "./DecisionButtons.jsx";
+import { ScoreBar } from "./ScoreBar.jsx";
 
 const CRITERIA = [["semantic", "Semantic match"], ["rubric", "Rubric"], ["experience", "Experience"]];
 const SUB_SCORES = [
@@ -89,7 +90,14 @@ function Skills({ title, items, tone }) {
 }
 
 export function CandidateDetail({ candidate, label, identity, blind, onReveal, extracted, application, status, proposal, canDecide, onDecide }) {
-  if (!candidate && !extracted) return <section className="scr-card scr-detail"><p className="scr-muted">Select a candidate in the orbit or the table.</p></section>;
+  if (!candidate && !extracted) {
+    return (
+      <section className="scr-card scr-detail scr-empty">
+        <p><strong>No candidate selected.</strong></p>
+        <p className="scr-muted">Pick someone in the ranking or click a moon in the orbit to see the evidence behind the score.</p>
+      </section>
+    );
+  }
   if (!candidate) {
     // An applicant who has not been scored yet: what was extracted is all there is to read.
     const excerpts = application?.injection_excerpts ?? [];
@@ -114,8 +122,13 @@ export function CandidateDetail({ candidate, label, identity, blind, onReveal, e
 
   return (
     <section className="scr-card scr-detail" aria-label={`Details for ${label}`}>
-      <h2>{label}</h2>
-      <p className="scr-muted">{candidate.profile} · rank {candidate.rank}</p>
+      <div className="scr-detail-head">
+        <div>
+          <p className="label">Rank {candidate.rank} · {candidate.profile}</p>
+          <h2>{label}</h2>
+        </div>
+        <p className="scr-total"><strong className="num">{percent(candidate.total_score)}</strong><span className="scr-muted">total</span></p>
+      </div>
       <DecisionButtons
         candidateId={candidate.candidate_id}
         status={status}
@@ -138,14 +151,13 @@ export function CandidateDetail({ candidate, label, identity, blind, onReveal, e
         </div>
       )}
 
-      <p className="scr-total"><strong>{percent(candidate.total_score)}</strong> total</p>
       <table className="scr-subscores">
-        <thead><tr><th scope="col">Criterion</th><th scope="col" className="is-num">Score</th><th scope="col" className="is-num">Weight used</th></tr></thead>
+        <thead><tr><th scope="col">Criterion</th><th scope="col">Score</th><th scope="col" className="is-num">Weight used</th></tr></thead>
         <tbody>
           {CRITERIA.map(([key, name]) => (
             <tr key={key}>
               <td>{name}</td>
-              <td className="is-num">{percent(scores[key])}</td>
+              <td><ScoreBar value={scores[key]} label={name} /></td>
               <td className="is-num">{weights[key] === undefined ? "Not applied" : percent(weights[key])}</td>
             </tr>
           ))}

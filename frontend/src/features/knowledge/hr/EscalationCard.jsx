@@ -1,10 +1,7 @@
 // One question an employee passed to the People Team: reply by email (when they left an address) or resolve
 import { useState } from "react";
 
-const DELIVERY = {
-  smtp: "Sent by email",
-  outbox: "Saved to the demo outbox (EMAIL_MODE=outbox, not delivered)",
-};
+const DELIVERY = { smtp: "Sent by email" };
 const ERRORS = {
   409: "This employee stayed anonymous, so there is no address to reply to.",
   422: "Write a reply of up to 2000 characters.",
@@ -55,7 +52,7 @@ export function EscalationCard({ entry, withheldLabel, onResolve, onReply, when 
         <div className="handoff-reply">
           <p className="label">Your reply · {when(escalation.reply.at)}</p>
           <p className="reply-text">{escalation.reply.message}</p>
-          <p className="reply-delivery">{DELIVERY[escalation.reply.delivery] || escalation.reply.delivery}</p>
+          {DELIVERY[escalation.reply.delivery] && <p className="reply-delivery">{DELIVERY[escalation.reply.delivery]}</p>}
         </div>
       )}
 

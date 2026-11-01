@@ -19,7 +19,7 @@ export function CalendarWall({ embed, reloadKey, onRefresh }) {
         ) : (
           <div className="wall-empty">
             <p className="display-small">{embed ? embed.hint : "Loading the calendar…"}</p>
-            <p>Calendar blank? Open it in a normal window signed in to the demo Google account.</p>
+            <p>Calendar blank? Open it in a normal window signed in to the HR Google account.</p>
           </div>
         )}
       </div>

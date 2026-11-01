@@ -284,6 +284,8 @@ export function ScreeningPage() {
   const propose = (kind) => proposeFor([...checked], kind);
   const decideOne = (id, kind) => proposeFor([id], kind);
 
+  const flaggedCount = scored.filter((c) => c.injection_flag).length;
+  const waitingCount = new Set(Object.values(proposals).map((p) => p.approval_id)).size;
   const taskBusy = Boolean(task && task.status !== "done");
   const finished = run?.status === "done";
 
@@ -291,13 +293,22 @@ export function ScreeningPage() {
     <main className="scr-page">
       <header className="scr-header">
         <div>
+          <p className="label">Hiring · Screening</p>
           <h1>Talent Orbit</h1>
           <p className="scr-muted">Scores are a reading aid. Every shortlist or rejection needs a person's approval.</p>
         </div>
-        <label className="scr-toggle">
-          <input type="checkbox" checked={blind} onChange={(event) => setBlind(event.target.checked)} /> Blind review
+        <label className={`scr-toggle${blind ? " is-on" : ""}`}>
+          <input type="checkbox" checked={blind} onChange={(event) => setBlind(event.target.checked)} />
+          <span className="scr-switch" aria-hidden="true" />
+          Blind review {blind ? "on" : "off"}
         </label>
       </header>
+      <dl className="scr-stats" aria-label="Screening summary">
+        <div><dt>Candidates in the pool</dt><dd className="num">{candidates.length}</dd></div>
+        <div><dt>Scored for this job</dt><dd className="num">{run ? `${run.done} of ${run.total}` : "–"}</dd></div>
+        <div className={flaggedCount ? "is-alert" : ""}><dt>Flagged CVs</dt><dd className="num">{run ? flaggedCount : "–"}</dd></div>
+        <div><dt>Awaiting approval</dt><dd className="num">{waitingCount}</dd></div>
+      </dl>
       {error && <p className="scr-alert" role="alert">{UPLOAD_REASONS[error] ?? error.replaceAll("_", " ")}</p>}
 
       <JobPanel
