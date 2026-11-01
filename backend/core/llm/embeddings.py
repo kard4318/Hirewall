@@ -38,7 +38,9 @@ class SentenceTransformerEmbedder:
 
         self.model_id = model_name
         self._model = SentenceTransformer(model_name, device=device)
-        self._dim = self._model.get_sentence_embedding_dimension()
+        # requirements.txt allows versions from before the method was renamed.
+        get_dimension = getattr(self._model, "get_embedding_dimension", None) or self._model.get_sentence_embedding_dimension
+        self._dim = get_dimension()
         self._query_prefix = query_prefix
         self._passage_prefix = passage_prefix
         self._batch_size = batch_size
