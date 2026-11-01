@@ -34,6 +34,9 @@ class ScreenerHandoff:
         if self._candidates.pop(candidate_id, None) is not None:
             self._save()
 
+    def candidate_ids(self) -> list[str]:
+        return list(self._candidates)
+
     def list_jobs(self) -> list[Job]:
         known = {job.job_id for job in self._base.list_jobs()}
         return [*self._base.list_jobs(), *(job for job in self._jobs.values() if job.job_id not in known)]

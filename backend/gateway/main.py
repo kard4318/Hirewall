@@ -27,6 +27,7 @@ from gateway.routers import (
     scheduling,
     screener,
 )
+from gateway.routers import candidates as candidates_router
 from gateway.routers import users as users_router
 from services.analytics.config import AnalyticsSettings
 from services.analytics.directory import Directory
@@ -96,6 +97,7 @@ def create_app(scheduling_service: SchedulingService | None = None,
     app.include_router(approvals.router)
     app.include_router(audit.router)
     app.include_router(users_router.router)
+    app.include_router(candidates_router.router)
     return app
 
 

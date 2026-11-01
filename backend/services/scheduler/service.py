@@ -124,6 +124,15 @@ class SchedulingService:
             self.state.set_status(candidate_id, "passed")
             self.links.pop(candidate_id, None)
 
+    def erase_screened(self, screener_candidate_id: str) -> int:
+        """Forget a screened candidate for every job they were handed over for. Refused while an interview is booked."""
+        with self.lock:
+            removed, ids = erase_screened_records(screener_candidate_id, self.state, self.screener)
+            for cid in ids:
+                self.links.pop(cid, None)
+                self.threads = {token: owner for token, owner in self.threads.items() if owner != cid}
+            return removed
+
     def _send_invitation(self, record: PassedCandidate) -> tuple[str, bool]:
         hours = self.deps.config.token_ttl_hours
         token = create_token(record.candidate_id, record.job_id, hours, self.deps.clock.now())
@@ -258,6 +267,25 @@ class SchedulingService:
     def _short_name(self, candidate_id: str | None) -> str | None:
         record = self.screener.find(candidate_id) if candidate_id else None
         return f"{record.first_name} {record.last_name[:1]}." if record else None
+
+
+
+def erase_screened_records(screener_candidate_id: str, state: SchedulingStateStore, handoff: Any) -> tuple[int, list[str]]:
+    """Remove status, bookings and handoff records for every `<id>--<job>`. Raises Conflict if one is booked."""
+    prefix = f"{screener_candidate_id}--"
+    snapshot = state.snapshot()
+    ids = {cid for cid in snapshot["status"] if cid.startswith(prefix)}
+    ids |= {b["candidate_id"] for b in snapshot["bookings"] if b["candidate_id"].startswith(prefix)}
+    ids |= {cid for cid in getattr(handoff, "candidate_ids", lambda: [])() if cid.startswith(prefix)}
+    if any(state.status(cid) in ("booked", "pending_approval") for cid in ids):
+        raise Conflict("interview_booked")
+    removed = 0
+    for cid in sorted(ids):
+        removed += state.forget(cid)
+        if hasattr(handoff, "remove") and handoff.find(cid) is not None:
+            handoff.remove(cid)
+            removed += 1
+    return removed, sorted(ids)
 
 
 def service_from_env(email: Any = None) -> SchedulingService:

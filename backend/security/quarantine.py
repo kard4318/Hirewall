@@ -71,6 +71,26 @@ class QuarantineLog:
                     handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
+    def erase_matching(self, terms: list[str]) -> int:
+        """Drop entries whose excerpt contains any of `terms` (a person's name or address). Best effort: excerpts are
+        masked and cut, so an entry about someone that names them differently can remain."""
+        needles = [term.casefold() for term in terms if term and len(term.strip()) >= 3]
+        if not needles:
+            return 0
+        with self._lock:
+            entries = self.entries
+            if self.path and self.path.exists():
+                entries = [json.loads(line) for line in self.path.read_text(encoding="utf-8").splitlines() if line.strip()]
+            kept = [e for e in entries if not any(n in str(e.get("excerpt", "")).casefold() for n in needles)]
+            removed = len(entries) - len(kept)
+            self.entries = [e for e in self.entries if e in kept]
+            if self.path and removed:
+                temporary = self.path.with_suffix(".tmp")
+                temporary.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in kept), encoding="utf-8")
+                temporary.replace(self.path)
+        return removed
+
+
 def mostly_latin(text: str) -> bool:
     """The classifier was trained on English; on other scripts (e.g. Arabic) it over-flags, so it may only flag there."""
     letters = [c for c in text if c.isalpha()]
