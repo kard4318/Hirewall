@@ -106,15 +106,15 @@ export function ApprovalsPage() {
   const render = (item) => <Item key={item.approval_id} item={item} target={item.approval_id === target} busy={busy} onDecide={decide} delivery={delivery} />;
 
   return (
-    <main className="scr-page">
+    <main className="scr-page apr-page">
       <header className="scr-header">
         <div>
           <h1>Approval queue</h1>
           <p className="scr-muted">Nothing is recorded or sent until a person approves it here.</p>
         </div>
       </header>
-      {error && <p className="scr-alert" role="alert">{label(error)}</p>}
-      {items === null && !error && <p className="scr-muted" aria-busy="true">Loading...</p>}
+      {error && <p className="scr-alert apr-column" role="alert">{label(error)}</p>}
+      {items === null && !error && <p className="scr-muted apr-column" aria-busy="true">Loading...</p>}
       {items !== null && (
         <div className="scr-center apr-column">
           <section className="scr-card">
