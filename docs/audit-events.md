@@ -36,6 +36,22 @@ Never put names, emails, message text, questions, answers or scores in an audit 
 | `kb_question` | employee_qa | agent | `kb` | `answered` \| `escalated` (plus `topic`) |
 | `message_blocked` | any security gate | agent | `injection_suspected`, `rate_limited`, `message_too_long`, `invalid_token`, ... | |
 
+## Screener events in the audit log
+
+These go to the hash-chained log in `core/audit`, shown on the approvals page. They are not part of the analytics feed
+above. Each entry holds IDs, flags and counts only, never text or file names.
+
+| Event | When | Fields |
+|---|---|---|
+| `screener.candidate_ingested` | a resume is accepted | `candidate_id`, `source`, `injection_flag`, `hidden_text_removed`, `extraction_failed` |
+| `screener.run_finished` | a scoring run ends | `run_id`, `job_id`, `status`, `scored`, `reason_code` |
+| `screener.identity_revealed` | HR reveals an identity | `candidate_id`, `reviewer` |
+| `screener.job_extracted` | an offer becomes a draft | `job_id`, `extraction_failed`, `flagged_requirements`, `injection_flag`, `hidden_text_removed` |
+| `screener.job_published` | HR publishes an offer | `job_id`, `flagged_requirements` |
+| `screener.job_closed` | HR closes an offer | `job_id` |
+| `screener.application_received` | an application is linked | `application_id`, `job_id`, `candidate_id`, `source`, `repeat`; for applicants also `reference_id`, `cover_letter`, `cover_letter_failed`, `injection_flag`, `hidden_text_removed` |
+| `screener.application_rejected` | a CV fails after the applicant was answered | `reference_id`, `job_id`, `reason_code` |
+
 ## Example
 
 ```json

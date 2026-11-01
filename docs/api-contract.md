@@ -171,10 +171,22 @@ stored apart, and never reach the scoring code, the model, logs or audit events.
 | `prepare_proposal(run_id, candidate_ids, kind)` | `kind` is `shortlist` or `rejection` | `proposal_id` |
 | `build_proposed_action(proposal_id)` | id | `ProposedRecordAction` as JSON-compatible data |
 | `reveal_identity(candidate_id, reviewer)` | id, the authenticated reviewer | `Identity`; writes a `screener.identity_revealed` audit event |
+| `extract_posting(filename, data)` | an offer document | `(IngestionTask, job_id)`; makes a draft in the background |
+| `get_posting(job_id)` / `list_postings()` | id / none | `JobPosting` / `JobPosting[]` |
+| `update_posting(job_id, details)` | id, `JobPostingDetails` | `JobPosting`; drafts only, requirements derived again |
+| `publish_posting(job_id)` / `close_posting(job_id)` | id | `JobPosting` |
+| `public_postings()` / `public_posting(job_id)` | none / id | details only, for the public pages |
+| `check_application_files(cv, cover_letter)` | `(filename, bytes)` pairs | raises `cv_<reason>` or `cover_letter_<reason>`; no model involved |
+| `submit_application(job_id, cv, cover_letter, full_name, email)` | files and form values | `reference_id`; processed in the background |
+| `list_applications(job_id)` | id | application rows with the candidate summary and merged flags |
+| `get_extracted(candidate_id)` | id | profile, sections and flags, pseudonymous |
 
 Errors raise `ScreenerError` with a short code: `job_not_found`, `run_not_found`, `task_not_found`,
 `candidate_not_found`, `proposal_not_found`, `no_candidates`, `unknown_candidate`, `empty_selection`,
-`run_not_finished`.
+`run_not_finished`, `no_requirements`, `posting_draft`, `posting_published`, `posting_closed`, `job_closed`, `try_later`.
+
+`start_run` scores only the job's applicants if it has any, otherwise the whole pool. `list_jobs` returns samples,
+presets, hand-written jobs and published postings. `get_job` also resolves closed postings, so their runs stay readable.
 
 #### `JobOffer`
 
@@ -183,6 +195,44 @@ Errors raise `ScreenerError` with a short code: `job_not_found`, `run_not_found`
 | `job_id` | string | from `data/job_offers/*.json`, or `job-` and 8 hex characters for a created job |
 | `title` | string | trusted, written by a recruiter |
 | `requirements` | `{text, kind}[]` | at least one; `kind` is `required`, `preferred` or `responsibility`. A line such as "3+ years of experience" sets the experience requirement |
+
+#### `JobPosting`
+
+| Field | Type | Notes |
+|---|---|---|
+| `job_id` | string | `job-` and 8 hex characters |
+| `status` | string | `draft`, `published`, `closed` |
+| `details` | `JobPostingDetails` | below |
+| `requirements` | `{text, kind}[]` | derived in code from `details`, deduped, at most 40 |
+| `extraction_failed` | boolean | the model failed: HR fills in the draft by hand |
+| `flagged_requirements` | string[] | lines naming a protected attribute. They are not dropped: HR decides |
+| `injection_excerpts` | string[] | lines removed from the document, hidden ones prefixed `[hidden] ` |
+| `hidden_text_removed` | boolean | |
+| `source_hash`, `created_at`, `published_at` | string | |
+
+`JobPostingDetails`: `title` (required), `company`, `contract_type` (`internship`, `full_time`, `part_time`,
+`fixed_term`, `freelance`, `other`), `location`, `remote` (`onsite`, `hybrid`, `remote`), `duration`, `start_date`,
+`department`, `summary`, `responsibilities`, `required_skills`, `preferred_skills`, `min_years_experience`,
+`education_level`, `languages`, `benefits`, `application_deadline`.
+
+Requirements: `min_years_experience` gives "At least N years of experience" (`required`), `required_skills` and
+`preferred_skills` give "Experience with X", and `responsibilities` are used as written.
+
+#### `Application`
+
+| Field | Type | Notes |
+|---|---|---|
+| `application_id` | string | stable for one job and candidate. The first application wins |
+| `job_id`, `candidate_id` | string | one CV applying to two jobs is one candidate with two applications |
+| `cover_letter` | `CoverLetterProfile` or null | display only, never scored |
+| `cover_letter_text` | string or null | pseudonymized letter, at most 8,000 characters |
+| `cover_letter_failed` | boolean | |
+| `injection_excerpts`, `hidden_text_removed` | | from the letter, and they stay with this application |
+| `submitted_at` | string | |
+| `source` | string | `applicant` or `hr_upload` |
+
+`CoverLetterProfile`: `motivation_summary`, `skills_mentioned`, `relevant_experiences`, `availability`, `start_date`,
+`desired_duration`, `languages`, `mobility`.
 
 #### `IngestionTask`
 
@@ -256,8 +306,9 @@ Scoring rules:
 
 #### `Identity`
 
-`candidate_id`, `full_name`, `emails`, `phones`, `links`, `other` (removed address and protected-attribute lines).
-Returned only by `reveal_identity`.
+`candidate_id`, `full_name`, `emails`, `phones`, `links`, `other` (removed address and protected-attribute lines),
+`contacts` (`reference_id`, `job_id`, `full_name`, `email`, `consent_at` per form submission). Returned only by
+`reveal_identity`. Form contacts never replace what was found in the CV.
 
 #### `ProposedRecordAction`
 
@@ -294,11 +345,18 @@ code and never echo client input.
 
 | Method and path | Body | Response |
 |---|---|---|
-| `POST /api/screener/candidates` | multipart `files`: 1-20 PDF or DOCX files, 5 MB each | `202 {task_id}`; `429 too_many_uploads` above 10 uploads a minute |
+| `POST /api/screener/candidates` | multipart `files`: 1-20 PDF or DOCX files, 5 MB each; optional `job_id` of a posting to attach them to | `202 {task_id}`; `429 too_many_uploads` above 10 uploads a minute |
 | `GET /api/screener/tasks/{task_id}` | | `IngestionTask` |
 | `GET /api/screener/candidates` | | `{candidates: CandidateSummary[]}` |
 | `POST /api/screener/candidates/demo` | | `202 {task_id}` |
-| `GET /api/screener/jobs` | | `{jobs: JobOffer[]}` |
+| `GET /api/screener/jobs` | | `{jobs: [...]}`: `JobOffer` fields plus `status` (null if not a posting) and `application_count`, including draft and closed postings |
+| `POST /api/screener/jobs/extract` | multipart `file` | `202 {task_id, job_id}`; poll the task, then read the draft |
+| `GET /api/screener/jobs/drafts/{job_id}`, `GET /api/screener/jobs/{job_id}/posting` | | `JobPosting` |
+| `PUT /api/screener/jobs/{job_id}` | `JobPostingDetails` | `JobPosting`; `409 posting_published` or `posting_closed` if not a draft |
+| `POST /api/screener/jobs/{job_id}/publish` | | `JobPosting`; `409 no_requirements` |
+| `POST /api/screener/jobs/{job_id}/close` | | `JobPosting` |
+| `GET /api/screener/jobs/{job_id}/applications` | | `{applications: [...]}`, pseudonymous |
+| `GET /api/screener/candidates/{candidate_id}/extracted` | | profile, sections and flags, pseudonymous |
 | `POST /api/screener/jobs` | `{title, requirements: [{text, kind}]}` | `201 JobOffer` |
 | `POST /api/screener/jobs/{job_id}/runs` | | `202 {run_id}` |
 | `GET /api/screener/runs/{run_id}` | | `ScreeningRun` |
@@ -307,6 +365,18 @@ code and never echo client input.
 | `GET /api/hr/approvals?status=` | | `{items: [{approval_id, status, action_type, thread_id, payload_hash, summary, created_at, decided_by, decided_at}]}`; `summary` holds IDs only |
 | `POST /api/hr/approvals/{approval_id}/decision` | `{action: "approve" or "reject", reviewed_hash}` | `WorkflowView` |
 | `GET /api/hr/audit-log?limit=` | | `{entries: [...], verified: boolean}`, newest first, IDs only |
+
+#### Public endpoints (no login)
+
+| Method and path | Body | Response |
+|---|---|---|
+| `GET /api/jobs` | | `{jobs: [{job_id, published_at, details}]}`, published only |
+| `GET /api/jobs/{job_id}` | | `{job_id, published_at, details}`; `404 job_not_found` for a draft, `409 job_closed` |
+| `POST /api/jobs/{job_id}/applications` | multipart `cv`, optional `cover_letter`, `full_name`, `email`, `consent` | `202 {reference_id}` and nothing else |
+
+Application errors: `429 too_many_applications` (5 a minute), `429 try_later` (20 waiting), `411 length_required`,
+`413 upload_too_large`, `422 consent_required`, `invalid_name`, `invalid_email`, `cv_required`, `cv_<file reason>`,
+`cover_letter_<file reason>`.
 
 ### LLM client (`core.llm`)
 
