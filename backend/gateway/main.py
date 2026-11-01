@@ -6,7 +6,17 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 
 from gateway.auth.hr_auth import LoginRateLimiter
-from gateway.routers import analytics, directory, employee_qa, hr_scheduling, inbox, scheduling
+from gateway.routers import (
+    analytics,
+    approvals,
+    audit,
+    directory,
+    employee_qa,
+    hr_scheduling,
+    inbox,
+    scheduling,
+    screener,
+)
 from services.analytics.config import AnalyticsSettings
 from services.analytics.directory import Directory
 from services.analytics.reports import AnalyticsService
@@ -19,7 +29,8 @@ from services.scheduler.service import SchedulingService, service_from_env
 def create_app(scheduling_service: SchedulingService | None = None,
                knowledge_desk: KnowledgeDesk | None = None,
                analytics_service: AnalyticsService | None = None,
-               email_orchestrator: Any = None) -> FastAPI:
+               email_orchestrator: Any = None,
+               screening_service: Any = None) -> FastAPI:
     """App factory. Tests pass services built from fakes; with no arguments everything is built from .env."""
     if scheduling_service is None:
         load_dotenv(REPO_ROOT / ".env")
@@ -32,7 +43,9 @@ def create_app(scheduling_service: SchedulingService | None = None,
     app.state.analytics = analytics_service or AnalyticsService(PeopleRepository(AnalyticsSettings()))
     app.state.directory = Directory(app.state.analytics.repo)  # identified records, HR only
     app.state.email_orchestrator = email_orchestrator  # drafter/classifier workflows; built lazily when None
+    app.state.screening = screening_service  # resume screener; built lazily when None
     app.state.login_limiter = LoginRateLimiter()
+    app.state.upload_limiter = LoginRateLimiter(limit=10)
 
     @app.middleware("http")
     async def security_headers(request: Request, call_next: Any) -> Any:
@@ -51,6 +64,9 @@ def create_app(scheduling_service: SchedulingService | None = None,
     app.include_router(analytics.router)
     app.include_router(directory.router)
     app.include_router(inbox.router)
+    app.include_router(screener.router)
+    app.include_router(approvals.router)
+    app.include_router(audit.router)
     return app
 
 

@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
 
 from core.approval_queue.approval_queue import ApprovalError
+from gateway.orchestration import shared_orchestrator
 from gateway.routers.hr_scheduling import require_hr
 from orchestrator.graph import TRIAGE_TASK, Orchestrator, draft_thread_id
 
@@ -29,8 +30,7 @@ def orchestrator(request: Request) -> Orchestrator:
     """Built on first use, so the gateway starts even when the email service is not configured."""
     if request.app.state.email_orchestrator is None:
         with _lock:
-            if request.app.state.email_orchestrator is None:
-                request.app.state.email_orchestrator = Orchestrator()
+            return shared_orchestrator(request.app)
     return request.app.state.email_orchestrator
 
 

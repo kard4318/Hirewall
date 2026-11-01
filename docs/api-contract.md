@@ -306,7 +306,7 @@ code and never echo client input.
 | `GET /api/screener/candidates/{candidate_id}/identity` | | `Identity`; audited |
 | `GET /api/hr/approvals?status=` | | `{items: [{approval_id, status, action_type, thread_id, payload_hash, summary, created_at, decided_by, decided_at}]}`; `summary` holds IDs only |
 | `POST /api/hr/approvals/{approval_id}/decision` | `{action: "approve" or "reject", reviewed_hash}` | `WorkflowView` |
-| `GET /api/hr/audit?limit=` | | `{entries: [...], verified: boolean}`, newest first, IDs only |
+| `GET /api/hr/audit-log?limit=` | | `{entries: [...], verified: boolean}`, newest first, IDs only |
 
 ### LLM client (`core.llm`)
 
