@@ -1,4 +1,4 @@
-// /hr/approvals: proposed shortlists and rejections awaiting a person, past decisions, and the audit log
+// /hr/approvals: proposed shortlists and rejections awaiting a person, and past decisions
 import { useCallback, useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useHrSession } from "../analytics/HrSession.jsx";
@@ -8,12 +8,6 @@ import "../screening/screening.css";
 const TITLES = { record_shortlist: "Shortlist", record_rejection: "Rejection", send_email: "Email reply" };
 const label = (text) => (text ?? "").replaceAll("_", " ");
 const when = (iso) => (iso ? new Date(iso).toLocaleString() : "");
-
-function auditLine(entry) {
-  const { status, reason, outcome, approval_id: approval, candidate_id: candidate, run_id: run } = entry.fields;
-  const id = candidate ?? approval ?? run;
-  return [label(entry.event), status && label(status), outcome && label(outcome), reason && label(reason), id && String(id).slice(0, 12)].filter(Boolean).join(" · ");
-}
 
 const OUTCOMES = {
   sent: "Email sent",
@@ -72,7 +66,6 @@ export function ApprovalsPage() {
   const [params] = useSearchParams();
   const [items, setItems] = useState(null);
   const [delivery, setDelivery] = useState("outbox");
-  const [audit, setAudit] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const target = params.get("id");
@@ -84,10 +77,9 @@ export function ApprovalsPage() {
 
   const refresh = useCallback(async () => {
     try {
-      const [queue, log] = await Promise.all([approvalsApi.list(token), approvalsApi.audit(token)]);
+      const queue = await approvalsApi.list(token);
       setItems(queue.items);
       setDelivery(queue.delivery);
-      setAudit(log);
     } catch (err) {
       fail(err);
     }
@@ -124,33 +116,17 @@ export function ApprovalsPage() {
       {error && <p className="scr-alert" role="alert">{label(error)}</p>}
       {items === null && !error && <p className="scr-muted" aria-busy="true">Loading...</p>}
       {items !== null && (
-        <div className="apr-grid">
-          <div className="scr-center">
-            <section className="scr-card">
-              <h2>Waiting for a decision ({pending.length})</h2>
-              {pending.length ? <ul className="apr-list">{pending.map(render)}</ul> : <p className="scr-muted">Nothing is waiting. Propose a shortlist from <Link to="/hr/screening">Talent Orbit</Link>.</p>}
-            </section>
-            {past.length > 0 && (
-              <section className="scr-card">
-                <h2>Decided</h2>
-                <ul className="apr-list">{past.map(render)}</ul>
-              </section>
-            )}
-          </div>
+        <div className="scr-center apr-column">
           <section className="scr-card">
-            <h2>Audit log</h2>
-            {audit && !audit.verified && (
-              <p className="scr-alert" role="alert">The audit log failed verification: an entry was changed or removed.</p>
-            )}
-            <ul className="apr-audit">
-              {(audit?.entries ?? []).map((entry) => (
-                <li key={entry.hash}>
-                  <span className="scr-muted">{when(entry.at)}</span><br />
-                  {auditLine(entry)}
-                </li>
-              ))}
-            </ul>
+            <h2>Waiting for a decision ({pending.length})</h2>
+            {pending.length ? <ul className="apr-list">{pending.map(render)}</ul> : <p className="scr-muted">Nothing is waiting. Propose a shortlist from <Link to="/hr/screening">Talent Orbit</Link>.</p>}
           </section>
+          {past.length > 0 && (
+            <section className="scr-card">
+              <h2>Decided</h2>
+              <ul className="apr-list">{past.map(render)}</ul>
+            </section>
+          )}
         </div>
       )}
     </main>

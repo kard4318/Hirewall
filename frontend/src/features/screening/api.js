@@ -51,7 +51,6 @@ export const approvalsApi = {
   list: (token) => request("/api/hr/approvals", { token }),
   decide: (token, id, decision) =>
     request(`/api/hr/approvals/${enc(id)}/decision`, { method: "POST", token, body: decision }),
-  audit: (token) => request("/api/hr/audit-log?limit=30", { token }),
 };
 
 export const percent = (value) => (value === null || value === undefined ? "N/A" : `${Math.round(value * 100)}%`);
