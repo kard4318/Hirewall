@@ -7,9 +7,9 @@ upstream, because semantic similarity is exactly what keyword stuffing targets.
 Outputs identify candidates by candidate_id only.
 """
 from datetime import date
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 RequirementKind = Literal["required", "preferred", "responsibility"]
 SectionKind = Literal["summary", "experience", "education", "project", "skills", "other"]
@@ -225,6 +225,15 @@ class ScreeningRun(BaseModel):
     statuses: dict[str, str] = Field(default_factory=dict)  # filled when read, from the executor's records
 
 
+class ApplicantContact(BaseModel):
+    """What an applicant typed in the form. Kept per application: it never replaces the identity found in a CV."""
+    reference_id: str
+    job_id: str
+    full_name: str
+    email: str
+    consent_at: str
+
+
 class IdentityRecord(BaseModel):
     candidate_id: str
     full_name: str | None = None
@@ -232,6 +241,7 @@ class IdentityRecord(BaseModel):
     phones: list[str] = Field(default_factory=list)
     links: list[str] = Field(default_factory=list)
     other: list[str] = Field(default_factory=list)
+    contacts: list[ApplicantContact] = Field(default_factory=list)
 
 
 class RecordPayload(BaseModel):
@@ -247,3 +257,73 @@ class ProposedRecordAction(BaseModel):
     in_reply_to: str              # scope key: a newer pending proposal for the same job supersedes this one
     payload_hash: str
     idempotency_key: str
+
+
+_Line = Annotated[str, StringConstraints(max_length=500)]
+ContractType = Literal["internship", "full_time", "part_time", "fixed_term", "freelance", "other"]
+RemoteMode = Literal["onsite", "hybrid", "remote"]
+
+
+class JobPostingDetails(BaseModel):
+    """A job offer as structured data. Values are copied as written, never invented."""
+    model_config = ConfigDict(extra="forbid")
+
+    title: str = Field(min_length=1, max_length=200)
+    company: str | None = Field(default=None, max_length=200)
+    contract_type: ContractType | None = None
+    location: str | None = Field(default=None, max_length=200)
+    remote: RemoteMode | None = None
+    duration: str | None = Field(default=None, max_length=100)
+    start_date: str | None = Field(default=None, max_length=100)
+    department: str | None = Field(default=None, max_length=200)
+    summary: str | None = Field(default=None, max_length=2000)
+    responsibilities: list[_Line] = Field(default_factory=list, max_length=40)
+    required_skills: list[_Line] = Field(default_factory=list, max_length=40)
+    preferred_skills: list[_Line] = Field(default_factory=list, max_length=40)
+    min_years_experience: float | None = Field(default=None, ge=0, le=50)
+    education_level: str | None = Field(default=None, max_length=200)
+    languages: list[_Line] = Field(default_factory=list, max_length=20)
+    benefits: list[_Line] = Field(default_factory=list, max_length=30)
+    application_deadline: str | None = Field(default=None, max_length=100)
+
+
+class JobPosting(BaseModel):
+    job_id: str
+    status: Literal["draft", "published", "closed"] = "draft"
+    details: JobPostingDetails
+    requirements: list[Requirement] = Field(default_factory=list)  # derived in code from the details
+    extraction_failed: bool = False
+    flagged_requirements: list[str] = Field(default_factory=list)  # protected attributes: HR decides
+    injection_excerpts: list[str] = Field(default_factory=list)
+    hidden_text_removed: bool = False
+    source_hash: str | None = None
+    created_at: str
+    published_at: str | None = None
+
+
+class CoverLetterProfile(BaseModel):
+    """Display only: it never feeds the ranking or the rubric."""
+    model_config = ConfigDict(extra="forbid")
+
+    motivation_summary: str | None = Field(default=None, max_length=2000)
+    skills_mentioned: list[_Line] = Field(default_factory=list, max_length=50)
+    relevant_experiences: list[_Line] = Field(default_factory=list, max_length=20)
+    availability: str | None = Field(default=None, max_length=200)
+    start_date: str | None = Field(default=None, max_length=100)
+    desired_duration: str | None = Field(default=None, max_length=100)
+    languages: list[_Line] = Field(default_factory=list, max_length=20)
+    mobility: str | None = Field(default=None, max_length=200)
+
+
+class Application(BaseModel):
+    """One candidate applying to one job. Flags live here so they stay with this application."""
+    application_id: str
+    job_id: str
+    candidate_id: str
+    cover_letter: CoverLetterProfile | None = None
+    cover_letter_text: str | None = None  # pseudonymized, for when the model could not extract a profile
+    cover_letter_failed: bool = False
+    injection_excerpts: list[str] = Field(default_factory=list)
+    hidden_text_removed: bool = False
+    submitted_at: str
+    source: Literal["applicant", "hr_upload"]

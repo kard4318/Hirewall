@@ -1,5 +1,6 @@
 # Masks PII and filters bias-inducing attributes: regex-based, local, used before storing or scoring text
 import re
+import unicodedata
 from dataclasses import dataclass
 
 PII_PATTERNS = {
@@ -139,3 +140,28 @@ def mask_identity(text: str, identity: Identity) -> str:
     for value in (*identity.emails, *identity.links, *identity.phones):
         text = text.replace(value, "[REMOVED]")
     return _mask_name(text, identity.full_name) if identity.full_name else text
+
+
+# Requirement lines that ask for a protected attribute. Matched on lowercase text without accents.
+_PROTECTED_REQUIREMENT = re.compile(
+    r"\b(?:age|aged|years old|gender|sex|male|female|nationality|citizenship|religion|religious|marital|married|"
+    r"pregnan\w*|disability|disabled|photo|photos|photograph|picture|"
+    r"sexe|homme|femme|nationalite|situation familiale|situation matrimoniale|celibataire|handicap)\b"
+    r"|\bhealth\b(?! insurance| care| benefits)|(?<!mutuelle )\bsante\b"
+    r"|العمر|السن|الجنس|الجنسية|الديانة|الحالة الاجتماعية|صورة"
+)
+# Equal-opportunity statements name these attributes in order to rule them out.
+_EQUAL_OPPORTUNITY = re.compile(
+    r"\b(?:regardless of|without regard|equal opportunit\w*|sans distinction|egalite des chances)\b"
+)
+
+
+def find_protected_requirements(lines: list[str]) -> list[str]:
+    """Lines that mention age, gender, nationality, religion, family status, health or photo, for HR to review."""
+    found: list[str] = []
+    for line in lines:
+        decomposed = unicodedata.normalize("NFKD", line.casefold())
+        folded = "".join(char for char in decomposed if not unicodedata.combining(char))
+        if _PROTECTED_REQUIREMENT.search(folded) and not _EQUAL_OPPORTUNITY.search(folded):
+            found.append(line.strip()[:300])
+    return list(dict.fromkeys(found))

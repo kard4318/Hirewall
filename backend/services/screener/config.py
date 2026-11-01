@@ -68,6 +68,8 @@ def as_of_date() -> date:
 
 EXTRACT_PROMPT_VERSION = "extract_system_v1"
 RUBRIC_PROMPT_VERSION = "rubric_system_v1"
+JOB_EXTRACT_PROMPT_VERSION = "job_extract_system_v1"
+COVER_LETTER_PROMPT_VERSION = "cover_letter_system_v1"
 
 
 def llm_timeout_s() -> float:
