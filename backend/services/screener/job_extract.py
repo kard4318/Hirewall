@@ -58,6 +58,7 @@ def build_requirements(details: JobPostingDetails) -> list[Requirement]:
 def flagged_requirements(details: JobPostingDetails, source_text: str = "") -> list[str]:
     """Scans the source too: a model could leave out the very line HR most needs to see."""
     lines = [requirement.text for requirement in build_requirements(details)]
+    lines += (details.summary or "").splitlines() + [details.education_level or ""]
     return find_protected_requirements([*lines, *source_text.splitlines()])
 
 

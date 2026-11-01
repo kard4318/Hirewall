@@ -25,11 +25,24 @@ through the approval queue.
 | HTTP routes | `gateway/routers/screener.py`, `approvals.py`, `audit.py` | Done, tested |
 | Talent Orbit UI | `frontend/src/features/screening/` | Done, built; no automated UI tests |
 | Attack suite | `data/attacks/resumes/`, `tests/test_screener_attacks.py` | Done, tested |
+| Offer import and publishing | `job_extract.py`, `prompts/job_extract_system_v1.md` | Done, tested |
+| Applications and cover letters | `service.py`, `cover_letter.py`, `prompts/cover_letter_system_v1.md` | Done, tested |
+| Public offers and applying | `gateway/routers/jobs.py`, `frontend/src/features/apply/` | Done, tested; no automated UI tests |
+| Offer and letter attacks | `data/attacks/applications/`, `tests/test_screener_applications.py` | Done, tested |
 | Graph score (Neo4j) | `graph_store/neo4j_writer.py` | Next; `NullGraphScorer` holds the slot |
 | Scheduler handoff | `services/scheduler` port `ScreenerResults` | Next; the scheduler still reads the mock |
 | Rasch scoring | `scoring/rasch_scoring.py` | Not planned (see below) |
 
 The contract is in `docs/api-contract.md` and the threat model in `docs/security.md`. To run it, see "Run the screener" in the root README.
+
+## Offers and applications
+
+HR imports an offer document, reviews the extracted fields, and publishes it. Publishing gives a normal `JobOffer`, with
+requirements derived in code. Applicants apply on the public `/jobs` pages. A job with applications scores only its
+applicants; a job without any scores the whole pool, as before.
+
+**A cover letter is display only.** It never feeds `rank_combined` or the rubric, so it cannot change a score. Its
+injection flags are shown to HR on that application only.
 
 ## Inputs / Outputs
 

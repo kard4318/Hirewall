@@ -7,7 +7,7 @@ from core.llm.client import LLMError
 from security.pii_bias_filter import find_protected_requirements
 from services.screener.cover_letter import extract_cover_letter
 from services.screener.job_extract import build_requirements, extract_job, flagged_requirements, guess_title
-from services.screener.models import JobPostingDetails, Requirement
+from services.screener.models import CoverLetterProfile, JobPostingDetails, Requirement
 from services.screener.service import ScreenerError
 
 from .helpers import REPO_ROOT, FakeLLM, make_service
@@ -123,6 +123,14 @@ def test_job_extraction_failure_leaves_a_draft_to_fill_in(llm):
     assert result.details.required_skills == []
 
 
+@pytest.mark.parametrize("model", [JobPostingDetails, CoverLetterProfile])
+def test_model_is_asked_for_every_field_but_may_omit_them(model):
+    schema = model.model_json_schema()
+    assert set(schema["required"]) == set(schema["properties"])
+    fields = {"title": "x"} if model is JobPostingDetails else {}
+    assert model(**fields)
+
+
 def test_title_guess_has_a_fallback():
     assert guess_title("  \n") == "Untitled offer"
 
@@ -153,6 +161,10 @@ def test_flagged_lines_are_kept_for_hr_to_decide():
     details = JobPostingDetails(title="x", responsibilities=["Must be male"])
     assert flagged_requirements(details) == ["Must be male"]
     assert build_requirements(details)[0].text == "Must be male"
+
+
+def test_summary_is_scanned_too():
+    assert flagged_requirements(JobPostingDetails(title="x", summary="Young male candidates")) == ["Young male candidates"]
 
 
 def test_source_lines_are_scanned_when_the_model_leaves_them_out():

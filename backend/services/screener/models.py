@@ -264,9 +264,17 @@ ContractType = Literal["internship", "full_time", "part_time", "fixed_term", "fr
 RemoteMode = Literal["onsite", "hybrid", "remote"]
 
 
+def _model_must_answer_every_field(schema: dict) -> None:
+    """Small local models skip optional fields, so the schema sent to them asks for all of them.
+
+    Only the JSON schema changes. Validation still accepts a missing field.
+    """
+    schema["required"] = list(schema["properties"])
+
+
 class JobPostingDetails(BaseModel):
     """A job offer as structured data. Values are copied as written, never invented."""
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", json_schema_extra=_model_must_answer_every_field)
 
     title: str = Field(min_length=1, max_length=200)
     company: str | None = Field(default=None, max_length=200)
@@ -303,7 +311,7 @@ class JobPosting(BaseModel):
 
 class CoverLetterProfile(BaseModel):
     """Display only: it never feeds the ranking or the rubric."""
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", json_schema_extra=_model_must_answer_every_field)
 
     motivation_summary: str | None = Field(default=None, max_length=2000)
     skills_mentioned: list[_Line] = Field(default_factory=list, max_length=50)
