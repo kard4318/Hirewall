@@ -11,6 +11,7 @@ from core.approval_queue.approval_queue import ApprovalError, ApprovalItem
 from gateway.auth.jwt import Principal
 from gateway.orchestration import shared_orchestrator
 from gateway.routers.hr_scheduling import require_hr, require_permission
+from security.permissions import may_approve
 
 _lock = threading.Lock()
 
@@ -76,6 +77,11 @@ def decide(
     try:
         with _lock:
             item = orchestrator.workflow.queue.get(approval_id)
+            if not may_approve(_action_type(item), principal.role):
+                orchestrator.workflow.audit.record(
+                    "approval.refused", approval_id=approval_id, user=principal.username, reason="not_allowed"
+                )
+                raise HTTPException(403, "forbidden")
             is_email = _action_type(item) == "send_email"
             thread_id = orchestrator.paused_thread_for_email(item.in_reply_to) if is_email else item.thread_id
             return asdict(orchestrator.resume(thread_id, decision))

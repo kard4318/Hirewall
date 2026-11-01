@@ -174,6 +174,18 @@ def test_strict_mode_approve_and_decline(world) -> None:
         assert client.post(f"/api/hr/bookings/{row['pending_booking_id']}/{verb}").json() == {"ok": True}
         assert candidate(client, "job-da", cid)["status"] == ("booked" if approve else "invited")
     assert len(mock._events) == 1
+    decisions = [e for e in world["svc"].deps.audit.entries if e["event"] == "booking_decided"]
+    assert [(d["approved"], d["reviewer"]) for d in decisions] == [(True, "recruiter.sam"), (False, "recruiter.sam")]
+
+
+def test_approval_cannot_be_switched_off(world) -> None:
+    client = world["client"]
+    assert client.post("/api/hr/settings/strict", json={"enabled": False}).json() == {"detail": "approval_required"}
+    assert client.post("/api/hr/settings/strict", json={"enabled": True}).json() == {"strict": True}
+
+
+def test_bookings_need_approval_by_default() -> None:
+    assert ConversationSettings().strict_booking is True
 
 
 def test_state_snapshot_survives_restart(world) -> None:

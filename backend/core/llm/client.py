@@ -29,6 +29,14 @@ KEEP_ALIVE = "10m"
 _LOCAL_HOSTS = {"127.0.0.1", "localhost", "::1", "host.docker.internal"}
 
 
+def is_local_url(url: str | None) -> bool:
+    """True only for a model server on this machine. Candidate data must never reach a cloud model."""
+    try:
+        return bool(url) and urlsplit(url).hostname in _LOCAL_HOSTS
+    except ValueError:
+        return False
+
+
 class LLMError(Exception):
     """A failed model call. Holds only a short code, never prompt or response text."""
 

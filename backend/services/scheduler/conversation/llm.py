@@ -8,10 +8,9 @@ from typing import Any, Protocol, TypeVar
 
 from pydantic import BaseModel, ValidationError
 
+from core.llm.client import is_local_url
+
 T = TypeVar("T", bound=BaseModel)
-
-DEFAULT_ANTHROPIC_MODEL = "claude-opus-5-5"
-
 
 def request_timeout() -> float:
     """Seconds per LLM request from LLM_TIMEOUT (raise it for slow local models)."""
@@ -52,31 +51,8 @@ class FakeLLM:
         return self._responses.pop(0)
 
 
-class AnthropicLLM:
-    def __init__(self, api_key: str, model: str) -> None:
-        import anthropic  # optional dependency, imported only when selected
-
-        self._client = anthropic.Anthropic(api_key=api_key, timeout=request_timeout())
-        self._model = model
-
-    def generate(self, system: str, user: str) -> str:
-        # Current Claude models reject sampling params (temperature); low effort keeps output terse.
-        response = self._client.beta.messages.create(
-            model=self._model,
-            max_tokens=8000,
-            system=system,
-            messages=[{"role": "user", "content": user}],
-            output_config={"effort": "low"},
-            betas=["server-side-fallback-2026-07-01"],
-            extra_body={"fallbacks": "default"},
-        )
-        if response.stop_reason == "refusal":
-            raise LLMError("model declined the request")
-        return "".join(block.text for block in response.content if block.type == "text")
-
-
 class OpenAILLM:
-    """OpenAI or any OpenAI-compatible server (LLM_BASE_URL), e.g. Ollama at http://localhost:11434/v1."""
+    """An OpenAI-compatible server on this machine (LLM_BASE_URL), e.g. Ollama at http://localhost:11434/v1."""
 
     def __init__(self, api_key: str, model: str, base_url: str | None) -> None:
         import openai  # optional dependency, imported only when selected
@@ -100,7 +76,7 @@ class OpenAILLM:
 
 
 def get_llm(provider: str | None = None) -> LLMClient:
-    """Builds the client named by `provider` or LLM_PROVIDER (fake | anthropic | openai)."""
+    """Builds the client named by `provider` or LLM_PROVIDER (fake | openai). Only local model servers are allowed."""
     name = (provider or os.getenv("LLM_PROVIDER") or "fake").strip().lower()
     if name == "fake":
         from services.scheduler.conversation.demo_llm import demo_rules
@@ -111,12 +87,17 @@ def get_llm(provider: str | None = None) -> LLMClient:
     if not api_key:
         raise LLMConfigError(f"LLM_PROVIDER={name} needs LLM_API_KEY in .env.")
     if name == "anthropic":
-        return AnthropicLLM(api_key, model or DEFAULT_ANTHROPIC_MODEL)
+        raise LLMConfigError("Cloud models are not allowed: candidate data stays on this machine. Use LLM_PROVIDER=openai "
+                             "with a local LLM_BASE_URL such as http://localhost:11434/v1.")
     if name == "openai":
         if not model:
             raise LLMConfigError("LLM_PROVIDER=openai needs LLM_MODEL in .env.")
-        return OpenAILLM(api_key, model, os.getenv("LLM_BASE_URL") or None)
-    raise LLMConfigError(f"Unknown LLM_PROVIDER {name!r}; use fake, anthropic or openai.")
+        base_url = os.getenv("LLM_BASE_URL", "").strip()
+        if not is_local_url(base_url):
+            raise LLMConfigError("LLM_BASE_URL must point to a model server on this machine, e.g. "
+                                 "http://localhost:11434/v1. Cloud APIs are not allowed.")
+        return OpenAILLM(api_key, model, base_url)
+    raise LLMConfigError(f"Unknown LLM_PROVIDER {name!r}; use fake or openai.")
 
 
 PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"

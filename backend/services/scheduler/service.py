@@ -9,9 +9,8 @@ from services.scheduler import config
 from services.scheduler.calendar_source.factory import get_calendar_provider
 from services.scheduler.calendar_source.provider import ReadOnlyCalendar
 from services.scheduler.conversation.adapters.calendar_executor import CalendarBookingExecutor, DryRunBookingExecutor
-from core.integrations.email_provider import EmailDeliveryError, email_sender_from_env
 from core.paths import runtime_dir
-from services.scheduler.conversation.adapters.memory import MemoryAuditLog, SystemClock
+from services.scheduler.conversation.adapters.memory import MemoryAuditLog, MemoryEmailSender, SystemClock
 from services.scheduler.conversation.adapters.screener_handoff import ScreenerHandoff
 from services.scheduler.conversation.adapters.screener_mock import MockScreenerResults, ScreenerCandidateRepo
 from services.scheduler.conversation.deps import Deps
@@ -141,8 +140,7 @@ class SchedulingService:
                                    at_company=at_company(company_name()),
                                    link=self.public_base_url + link, hours=hours),
             )
-        except EmailDeliveryError:
-            # HR can still copy the link from the dashboard.
+        except Exception:  # noqa: BLE001 - a mail failure must not undo the invitation; HR can copy the link
             delivered = False
             self.deps.audit.record("email_failed", candidate_id=record.candidate_id, job_id=record.job_id)
         self.deps.audit.record("invitation_created", candidate_id=record.candidate_id, job_id=record.job_id)
@@ -159,11 +157,12 @@ class SchedulingService:
             self.links.pop(booking.candidate_id, None)
             self.deps.audit.record("booking_cancelled", candidate_id=booking.candidate_id, booking_id=booking_id)
 
-    def decide(self, booking_id: str, approved: bool) -> None:
+    def decide(self, booking_id: str, approved: bool, reviewer: str | None = None) -> None:
         with self.lock:
             token = self.pending.pop(booking_id, None)
             if token is None:
                 raise NotFound(booking_id)
+            self.deps.audit.record("booking_decided", booking_id=booking_id, approved=approved, reviewer=reviewer)
             result = resume_booking(self.graph, token, approved=approved)
             candidate_id = self.threads.get(token_id(token))
             if candidate_id and self.state.status(candidate_id) == "pending_approval":
@@ -171,7 +170,10 @@ class SchedulingService:
             self._remember(token, "agent", result.get("reply") or "")
 
     def set_strict(self, enabled: bool) -> None:
-        self.deps.config = dataclasses.replace(self.deps.config, strict_booking=enabled)
+        """Approval can be switched on, never off: every booking needs a person."""
+        if not enabled:
+            raise Conflict("bookings always need HR approval")
+        self.deps.config = dataclasses.replace(self.deps.config, strict_booking=True)
 
     def audit(self, limit: int = 30) -> dict[str, Any]:
         entries = self.deps.audit.entries  # type: ignore[attr-defined]
@@ -258,7 +260,7 @@ class SchedulingService:
         return f"{record.first_name} {record.last_name[:1]}." if record else None
 
 
-def service_from_env() -> SchedulingService:
+def service_from_env(email: Any = None) -> SchedulingService:
     """Real wiring from environment variables (.env); tests build SchedulingService with fakes instead."""
     settings = config.ConversationSettings()
     clock = SystemClock(settings.tz)
@@ -270,7 +272,7 @@ def service_from_env() -> SchedulingService:
     screener = ScreenerHandoff(runtime_dir() / "scheduler_handoff.json", MockScreenerResults())
     state = SchedulingStateStore(config.REPO_ROOT / "data" / "runtime" / "scheduling_state.json")
     deps = Deps(llm=get_llm(), calendar=ReadOnlyCalendar(provider), executor=executor,
-                candidates=ScreenerCandidateRepo(screener, state), bookings=state, email=email_sender_from_env(),
+                candidates=ScreenerCandidateRepo(screener, state), bookings=state, email=email or MemoryEmailSender(),
                 audit=MemoryAuditLog(clock), clock=clock, config=settings)
     return SchedulingService(deps, screener, state, calendar_mode=mode,
                              public_base_url=os.getenv("PUBLIC_BASE_URL", "http://localhost:5173"))

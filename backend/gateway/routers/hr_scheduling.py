@@ -123,18 +123,18 @@ def cancel(booking_id: str, request: Request) -> dict[str, bool]:
 
 
 @router.post("/bookings/{booking_id}/approve")
-def approve(booking_id: str, request: Request) -> dict[str, bool]:
-    return _decide(request, booking_id, approved=True)
+def approve(booking_id: str, request: Request, principal: Principal = Depends(require_permission("approve"))) -> dict[str, bool]:
+    return _decide(request, booking_id, True, principal)
 
 
 @router.post("/bookings/{booking_id}/decline")
-def decline(booking_id: str, request: Request) -> dict[str, bool]:
-    return _decide(request, booking_id, approved=False)
+def decline(booking_id: str, request: Request, principal: Principal = Depends(require_permission("approve"))) -> dict[str, bool]:
+    return _decide(request, booking_id, False, principal)
 
 
-def _decide(request: Request, booking_id: str, approved: bool) -> dict[str, bool]:
+def _decide(request: Request, booking_id: str, approved: bool, principal: Principal) -> dict[str, bool]:
     try:
-        service(request).decide(booking_id, approved)
+        service(request).decide(booking_id, approved, reviewer=principal.username)
     except NotFound:
         raise HTTPException(404, "no_pending_approval") from None
     return {"ok": True}
@@ -147,8 +147,11 @@ def settings(request: Request) -> dict[str, bool]:
 
 @router.post("/settings/strict")
 def set_strict(body: StrictSetting, request: Request) -> dict[str, bool]:
-    service(request).set_strict(body.enabled)
-    return {"strict": body.enabled}
+    try:
+        service(request).set_strict(body.enabled)
+    except Conflict:
+        raise HTTPException(409, "approval_required") from None
+    return {"strict": True}
 
 
 @router.get("/audit")

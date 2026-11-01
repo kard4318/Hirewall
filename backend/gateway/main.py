@@ -7,6 +7,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from core.audit.audit_log import AuditLog, get_audit_sink
+from core.integrations.email_provider import email_sender_from_env
 from gateway.auth.hr_auth import LoginRateLimiter
 from gateway.auth.login import LoginGuard, UserStore
 from gateway.routers import (
@@ -47,8 +48,8 @@ def create_app(scheduling_service: SchedulingService | None = None,
     """App factory. Tests pass services built from fakes; with no arguments everything is built from .env."""
     if scheduling_service is None:
         load_dotenv(REPO_ROOT / ".env")
-        scheduling_service = service_from_env()
-        knowledge_desk = knowledge_desk or desk_from_env()
+        scheduling_service = service_from_env(email_sender_from_env())
+        knowledge_desk = knowledge_desk or desk_from_env(email_sender_from_env())
     app = FastAPI(title="Hirewall gateway", docs_url=None, redoc_url=None, openapi_url=None,
                   default_response_class=Utf8JSONResponse)
     app.state.scheduling = scheduling_service
