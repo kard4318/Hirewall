@@ -85,7 +85,7 @@ def test_full_flow(api):
     job_id, task = draft(api)
     assert task["files"][0]["status"] == "accepted"
     posting = api.client.get(f"/api/screener/jobs/drafts/{job_id}", headers=api.hr).json()
-    assert posting["status"] == "draft" and posting["details"]["company"] == "Northwind Labs"
+    assert posting["status"] == "draft" and posting["details"]["company"] == "Fictional Company"
 
     details = {**posting["details"], "title": "Backend Developer (edited)", "required_skills": ["Python", "FastAPI"]}
     edited = api.client.put(f"/api/screener/jobs/{job_id}", json=details, headers=api.hr).json()

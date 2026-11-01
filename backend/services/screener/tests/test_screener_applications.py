@@ -19,7 +19,7 @@ EXPECTED = json.loads((ATTACKS / "expected.json").read_text(encoding="utf-8"))
 OFFER = (OFFERS / "backend_developer_full_time.pdf").read_bytes()
 LETTER = (ATTACKS / "letter_clean.pdf").read_bytes()
 DETAILS = {
-    "title": "Backend Python Developer", "company": "Northwind Labs", "contract_type": "full_time",
+    "title": "Backend Python Developer", "company": "Fictional Company", "contract_type": "full_time",
     "required_skills": ["Python", "Go"], "preferred_skills": ["Redis"], "min_years_experience": 3,
     "responsibilities": ["Build REST APIs"], "languages": ["French"],
 }
@@ -104,7 +104,7 @@ def test_derived_years_are_understood_by_the_experience_parser():
 def test_job_extraction_fences_the_offer():
     llm = OfferLLM()
     result = extract_job("Backend Developer\nPython", llm, boundary_factory=lambda: "UNTRUSTED_abc")
-    assert not result.extraction_failed and result.details.company == "Northwind Labs"
+    assert not result.extraction_failed and result.details.company == "Fictional Company"
     call = llm.calls[0]
     assert call["user"].startswith("BEGIN_UNTRUSTED_abc\n") and "untrusted" in call["system"].lower()
 

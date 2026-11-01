@@ -12,7 +12,7 @@ from services.employee_qa.fallbacks.messages import PEOPLE_TEAM
 from services.employee_qa.question_log import QuestionLog
 
 
-REPLY_SUBJECT = "Re: your question to the Northwind Labs People Team"
+REPLY_SUBJECT = "Re: your question to the People Team"
 REPLY_BODY = (
     "Hello,\n\n"
     "{quote}"

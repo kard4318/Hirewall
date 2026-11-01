@@ -5,7 +5,7 @@ const compact = (iso) => new Date(iso).toISOString().replace(/[-:]/g, "").replac
 function addToCalendarUrl(booking, jobTitle, company) {
   const params = new URLSearchParams({
     action: "TEMPLATE",
-    text: `Interview: ${jobTitle} at ${company}`,
+    text: `Interview: ${jobTitle}${company ? ` at ${company}` : ""}`,
     dates: `${compact(booking.start)}/${compact(booking.end)}`,
     details: "Interview booked through the Hirewall scheduling assistant.",
   });

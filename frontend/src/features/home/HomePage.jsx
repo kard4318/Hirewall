@@ -32,7 +32,7 @@ export function HomePage() {
   return (
     <div className="home paper">
       <header className="home-head">
-        <Wordmark subtitle="Northwind Labs" />
+        <Wordmark />
         <h1 className="display">The agent executes, the human decides.</h1>
         <p className="home-lede">Pick a door.</p>
       </header>

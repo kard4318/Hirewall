@@ -45,7 +45,6 @@ function Item({ item, target, busy, onDecide, delivery }) {
         Proposed {when(item.created_at)}
         {item.decided_by && ` · decided by ${item.decided_by} ${when(item.decided_at)}`}
       </p>
-      <p className="scr-muted">Hash <code>{item.payload_hash.slice(0, 16)}</code></p>
       {pending && isEmail && <Link to="/hr/inbox">Review this draft in the inbox</Link>}
       {pending && !isEmail && <p>{EFFECTS[item.action_type]}</p>}
       {pending && !isEmail && delivery !== "smtp" && (
@@ -140,10 +139,8 @@ export function ApprovalsPage() {
           </div>
           <section className="scr-card">
             <h2>Audit log</h2>
-            {audit && (
-              <p className={audit.verified ? "scr-note" : "scr-alert"}>
-                {audit.verified ? "Hash chain verified." : "The audit log failed verification."}
-              </p>
+            {audit && !audit.verified && (
+              <p className="scr-alert" role="alert">The audit log failed verification: an entry was changed or removed.</p>
             )}
             <ul className="apr-audit">
               {(audit?.entries ?? []).map((entry) => (

@@ -23,16 +23,24 @@ from services.scheduler.conversation.tokens import TokenError, create_token, tok
 from services.scheduler.models import Booking, Job, PassedCandidate
 from services.scheduler.scheduling_state import STATUSES, SchedulingStateStore
 
-COMPANY_NAME = "Northwind Labs"
+def company_name() -> str:
+    """Optional, from COMPANY_NAME in .env. Read when used, because the gateway loads .env after importing this."""
+    return os.getenv("COMPANY_NAME", "").strip()
+
+
+def at_company(company: str) -> str:
+    return f" at {company}" if company else ""
+
+
 HISTORY_LIMIT = 30
 AWAITING_HR = "Thanks! Your chosen time is with HR for approval. You'll see the confirmation here."
-INVITE_SUBJECT = "Book your interview for {job_title} at {company}"
+INVITE_SUBJECT = "Book your interview for {job_title}{at_company}"
 INVITE_BODY = (
     "Hi {first_name},\n\n"
-    "Thank you for applying for the {job_title} position at {company}. We'd like to invite you to an interview.\n"
+    "Thank you for applying for the {job_title} position{at_company}. We'd like to invite you to an interview.\n"
     "Please choose a time that suits you here:\n{link}\n\n"
     "The link is personal and expires in {hours} hours.\n\n"
-    "The {company} HR team"
+    "The HR team"
 )
 
 
@@ -128,8 +136,9 @@ class SchedulingService:
         try:
             self.deps.email.send(
                 record.email,
-                INVITE_SUBJECT.format(job_title=record.job_title, company=COMPANY_NAME),
-                INVITE_BODY.format(first_name=record.first_name, job_title=record.job_title, company=COMPANY_NAME,
+                INVITE_SUBJECT.format(job_title=record.job_title, at_company=at_company(company_name())),
+                INVITE_BODY.format(first_name=record.first_name, job_title=record.job_title,
+                                   at_company=at_company(company_name()),
                                    link=self.public_base_url + link, hours=hours),
             )
         except EmailDeliveryError:
@@ -188,7 +197,7 @@ class SchedulingService:
     def conversation(self, token: str) -> dict[str, Any]:
         candidate = self.check_link(token)
         return {"first_name": candidate["first_name"], "job_title": candidate["job_title"],
-                "company_name": COMPANY_NAME, **self._view(token, candidate)}
+                "company_name": company_name(), **self._view(token, candidate)}
 
     def message(self, token: str, text: str | None, action: dict[str, Any] | None) -> dict[str, Any]:
         with self.lock:

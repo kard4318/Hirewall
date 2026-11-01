@@ -34,7 +34,7 @@ export function EmployeeGate({ onToken }) {
       <form className="gate-card" onSubmit={submit}>
         <Wordmark subtitle="Handbook desk" />
         <h1 className="display">Ask the handbook.</h1>
-        <p className="gate-lede">Answers come only from Northwind Labs policies, with the exact section quoted.</p>
+        <p className="gate-lede">Answers come only from company policies, with the exact section quoted.</p>
         <label className="label" htmlFor="staff-passcode">Staff passcode</label>
         <input id="staff-passcode" type="password" autoComplete="current-password" value={passcode}
           onChange={(e) => setPasscode(e.target.value)} autoFocus required />

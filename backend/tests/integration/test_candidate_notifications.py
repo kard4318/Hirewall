@@ -105,11 +105,20 @@ def test_rejection_emails_the_address_in_the_cv(world):
     assert decide(world, "record_rejection", [ines]).status == "recorded"
     message = world.mail.outbox[0]
     assert message["to"] == "ines@example.test"
-    assert message["subject"] == REJECTION_SUBJECT.format(job_title="Backend Python Developer", company="Northwind Labs")
+    assert message["subject"] == "Your application for Backend Python Developer"
     assert message["body"].startswith("Hello Ines,")
     assert notifications(world) == {ines: "outbox"}
     assert world.status.statuses_for(JOB) == {ines: "rejected"}
     assert world.scheduling_mail.outbox == []
+
+
+def test_company_name_comes_from_the_environment(world, monkeypatch):
+    monkeypatch.setenv("COMPANY_NAME", "Acme")
+    ines, walid = world.by_name[:2]
+    decide(world, "record_rejection", [ines], key="p1")
+    decide(world, "record_shortlist", [walid], key="p2")
+    assert world.mail.outbox[0]["subject"] == "Your application for Backend Python Developer at Acme"
+    assert world.scheduling_mail.outbox[0]["subject"] == "Book your interview for Backend Python Developer at Acme"
 
 
 def test_rejection_gives_no_score_or_reason(world):

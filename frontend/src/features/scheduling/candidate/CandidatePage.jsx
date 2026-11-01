@@ -70,7 +70,7 @@ export function CandidatePage() {
     <div className="desk paper">
       <article className={`ticket${booked ? " is-booked" : ""}`}>
         <header className="ticket-head">
-          <p className="label">{meta?.company_name || ticket.company_name} · Interview appointment</p>
+          <p className="label">{[meta?.company_name || ticket.company_name, "Interview appointment"].filter(Boolean).join(" · ")}</p>
           <h1 className="display">Hello, {ticket.first_name}.</h1>
           <p className="ticket-role">{ticket.job_title}</p>
         </header>

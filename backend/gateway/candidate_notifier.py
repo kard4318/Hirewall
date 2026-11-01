@@ -7,18 +7,18 @@ from typing import Any
 
 from core.integrations.email_provider import EmailDeliveryError, EmailSender
 from services.scheduler.models import Job, PassedCandidate
-from services.scheduler.service import COMPANY_NAME, Conflict, SchedulingService
+from services.scheduler.service import Conflict, SchedulingService, at_company, company_name
 from services.screener.service import ScreeningService
 
 logger = logging.getLogger(__name__)
 
-REJECTION_SUBJECT = "Your application for {job_title} at {company}"
+REJECTION_SUBJECT = "Your application for {job_title}{at_company}"
 REJECTION_BODY = (
     "Hello{name},\n\n"
-    "Thank you for applying for {job_title} at {company}. After reviewing your application, we will not be moving "
+    "Thank you for applying for {job_title}{at_company}. After reviewing your application, we will not be moving "
     "forward with it.\n\n"
     "This decision was made by a member of our recruiting team. We wish you all the best in your search.\n\n"
-    "The recruiting team\n{company}\n"
+    "The recruiting team\n"
 )
 SHORTLIST_REASON = "Shortlisted by a recruiter after reviewing the application."
 
@@ -61,11 +61,11 @@ class CandidateNotifier:
         # Anyone shortlisted earlier must not keep a working booking link. An existing booking stays for HR to cancel.
         self._scheduling.withdraw_invitation(scheduler_id(candidate_id, job_id))
         first, _ = _names(contact["full_name"])
-        company = contact["company"] or COMPANY_NAME
+        where = at_company(company_name())
         self._email.send(
             contact["email"],
-            REJECTION_SUBJECT.format(job_title=contact["job_title"], company=company),
-            REJECTION_BODY.format(name=f" {first}" if first else "", job_title=contact["job_title"], company=company),
+            REJECTION_SUBJECT.format(job_title=contact["job_title"], at_company=where),
+            REJECTION_BODY.format(name=f" {first}" if first else "", job_title=contact["job_title"], at_company=where),
         )
         return self._delivered(self._email)
 
