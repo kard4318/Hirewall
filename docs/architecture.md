@@ -60,6 +60,10 @@ A label can only lead to `draft`, which runs its own checks and pauses for a per
 4. **Nodes must be safe to repeat.** A node can run again after a crash. The approval queue's atomic claim is what stops a second send.
 5. **Keep email and draft text out of `WorkflowState`.** It is saved in checkpoints. Store IDs and outcomes, and keep the text in the mailbox and queue.
 
+### Screener workflows
+
+`screen_job` is a task that runs and finishes: it scores one run and saves progress in the screener's store. `propose_shortlist` is an outgoing action with its own nodes in `orchestrator/record_approval.py`: `record_propose` queues the action, `record_review` pauses at `interrupt()`, and only `record_approve` leads to `record_execute`, which calls `core.executor.execute_record`. `record_reject` ends the workflow with nothing recorded. State holds IDs only, and the same rules apply as for email.
+
 ### Add a service
 
 For a task that runs and finishes, write a function that takes the state and returns the fields to update, then pass it to `Orchestrator`:

@@ -78,6 +78,35 @@ python scripts/run_drafter_demo.py reset
 
 The script runs the LangGraph orchestrator described in [docs/architecture.md](docs/architecture.md), which also explains how to add a service. It also has `show`, `edit`, `reject`, `redraft`, and `graph` commands. Run the backend tests from `backend/` with `python -m pytest .`. They use no API key and make no network calls.
 
+## Run the screener
+
+The screener reads resumes, scores candidates against a job and shows them in the Talent Orbit view. It only ranks and explains: a recruiter proposes a shortlist, and a person approves it in the approval queue before anything is recorded. Everything runs locally. See [its README](backend/services/screener/README.md).
+
+Follow the setup in "Run the drafter locally" for Python, Ollama and `.env`. In `.env`, also set `HR_PASSCODE`, `HR_TOKEN_SECRET` and `SCHEDULER_TOKEN_SECRET` (two different random values), and set `LLM_MODEL` if you pulled another model. The first scoring run downloads the embedding model once (about 450 MB). To skip that for a quick look, set `SCREENER_EMBEDDER=hashing`, which gives rough semantic scores.
+
+```bash
+# Terminal 1, from backend/
+python -m gateway.main
+
+# Terminal 2, from frontend/
+npm install
+npm run dev
+```
+
+Open http://localhost:5173/hr/screening and sign in with `HR_PASSCODE`. Then:
+
+1. Choose **Load demo candidates**, or drop PDF and DOCX resumes.
+2. Pick a job and choose **Score candidates**. Grey moons glide inward as results arrive.
+3. Open a candidate. Review is blind by default; **Reveal identity** is recorded in the audit log.
+4. Tick candidates and choose **Propose shortlist**, then follow the link to the approval queue.
+5. Approve it. The decision and the audit event appear on the same page.
+
+To run it with no gateway, no Ollama and no download, with a placeholder rubric:
+
+```bash
+python scripts/demo_screener.py --demo --job job-preset-backend --fake-llm
+```
+
 ## Credits
 
 See [docs/CREDITS.md](docs/CREDITS.md).

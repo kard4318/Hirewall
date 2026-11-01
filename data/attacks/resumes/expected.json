@@ -1,0 +1,11 @@
+{
+  "visible_en.pdf": {"baseline": "clean.pdf", "flagged": true, "hidden": false},
+  "visible_fr.docx": {"baseline": "clean.docx", "flagged": true, "hidden": false},
+  "visible_ar.docx": {"baseline": "clean.docx", "flagged": true, "hidden": false},
+  "white_text.pdf": {"baseline": "clean.pdf", "flagged": true, "hidden": true},
+  "white_text.docx": {"baseline": "clean.docx", "flagged": true, "hidden": true},
+  "vanished_text.docx": {"baseline": "clean.docx", "flagged": true, "hidden": true},
+  "tiny_text.pdf": {"baseline": "clean.pdf", "flagged": true, "hidden": true},
+  "off_page.pdf": {"baseline": "clean.pdf", "flagged": true, "hidden": true},
+  "zero_width.docx": {"baseline": "clean.docx", "flagged": true, "hidden": true}
+}

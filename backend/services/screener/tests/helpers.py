@@ -8,6 +8,7 @@ from core.audit.audit_log import AuditLog
 from core.candidate_status.store import CandidateStatusStore
 from core.llm.embeddings import HashingEmbedder
 from services.screener.config import RankingWeights, SemanticConfig
+from services.screener.extract import split_sections
 from services.screener.service import ScreeningService
 from services.screener.storage import IdentityStore, ScreenerStore
 
@@ -32,8 +33,8 @@ class FakeLLM:
         if self.extraction_fails:
             return "not json"
         fence = re.search(r"BEGIN_\S+\n(.*)\nEND_", kwargs["user"], re.S).group(1)
-        return json.dumps({"sections": [{"kind": "experience", "text": fence}],
-                           "profile": {"current_title": "Developer", "skills": ["Python"]}})
+        sections = [section.model_dump() for section in split_sections(fence)]
+        return json.dumps({"sections": sections, "profile": {"current_title": "Developer", "skills": ["Python"]}})
 
     def prompts(self) -> str:
         return "\n".join(call["system"] + call["user"] for call in self.calls)

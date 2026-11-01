@@ -1,8 +1,8 @@
-# Developer shortcuts for Hirewall (placeholders only)
-.PHONY: help install dev test attack-suite seed reset
+# Developer shortcuts for Hirewall (some are still placeholders)
+.PHONY: help install dev test attack-suite screener-demo seed reset
 
 help:
-	@echo "Targets: install dev test attack-suite seed reset"
+	@echo "Targets: install dev test attack-suite screener-demo seed reset"
 
 install:
 	@echo "install: placeholder, not implemented yet"
@@ -10,11 +10,14 @@ install:
 dev:
 	@echo "dev: placeholder, not implemented yet"
 
+screener-demo:
+	python scripts/demo_screener.py --demo --job job-preset-backend --fake-llm
+
 test:
-	@echo "test: placeholder, not implemented yet"
+	cd backend && python -m pytest .
 
 attack-suite:
-	@echo "attack-suite: placeholder, not implemented yet"
+	cd backend && python -m pytest services/screener/tests/test_screener_attacks.py
 
 seed:
 	@echo "seed: placeholder, not implemented yet"

@@ -58,7 +58,7 @@ through human approval.
 | Words split with zero-width characters | Invisible and format characters are removed before detection and scoring |
 | Breaking out of the data block | The resume is wrapped in a random per-request boundary, removed from the resume text, and the system prompt says the block is data |
 | The model is told to give a high score | The model only gives three integers against anchored scales and short evidence texts. Code computes the criterion and the total. Two other criteria do not involve the model |
-| Keyword stuffing | Repeated lines are deduplicated before embedding, experience counts only dated positions, and skills outside the job never add to the score |
+| Keyword stuffing | Repeated lines are deduplicated before embedding, experience counts only dated positions, and skills outside the job never add to the score. See Known limits |
 | Bias from identity | Name, contact details, profile links, photo, age, gender, nationality and date of birth are split off at ingestion and stored apart. The model, scores, logs and audit events see only a pseudonymous `candidate_id` |
 | Unlogged identity access | Identity is returned only by an HR-authenticated endpoint that writes an audit event |
 | Approving something else than what was reviewed | Shortlists and rejections are queued with a hash of the action. Approval needs that hash, the executor checks it again, and a claim makes it run once |
@@ -74,12 +74,17 @@ through human approval.
   approval are what protect the decision.
 - **Model judgement:** a small local model can misread a resume. The rubric shows its evidence texts so a recruiter
   can check them, and the semantic and experience criteria do not depend on it.
+- **Keyword stuffing:** a list of the job's skills can still raise the semantic score and may mislead the model. The
+  same words written under a dated job make that job count as relevant experience, because relevance is judged by
+  the words in the position. A recruiter should compare the evidence quotes with the score.
 - **Bias:** removing identity does not remove every proxy (school names, places, career gaps). Recruiters must not
   treat the ranking as a decision.
 
 ## Approval and sending
 
-`core/executor` is the only code that sends. It enforces these rules for every send:
+`core/executor` is the only code that sends or records. `execute_approved` sends emails and `execute_record` records
+shortlists and rejections in the candidate status store, under the same approval, hash, claim and audit rules. It
+enforces these rules for every send:
 
 | Rule | How it works |
 |---|---|

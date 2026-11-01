@@ -8,15 +8,28 @@ through the approval queue.
 
 | Part | File | Status |
 |---|---|---|
-| Data models | `models.py` | Done (semantic part) |
-| Config | `config.py` | Done (semantic part) |
+| Public facade | `service.py` | Done, tested |
+| Data models | `models.py` | Done |
+| Config | `config.py` | Done |
+| Storage | `storage.py` | Done, tested |
+| Validation, visible text, identity split | `security/file_validator.py`, `text_extractor.py`, `pii_bias_filter.py` | Done, tested |
+| Injection excerpts (EN/FR/AR) | `security/injection_detector.py` | Done, tested |
+| Profile extraction | `extract.py`, `prompts/extract_system_v1.md` | Done, tested |
 | Semantic score | `scoring/semantic.py`, `scoring/chunking.py` | Done, tested |
 | Embeddings (shared) | `core/llm/embeddings.py` | Done, tested |
-| Graph score (Neo4j) | `graph_store/`, `scoring/ranking_engine.py` | Next |
+| Experience score | `scoring/experience.py` | Done, tested |
+| Skill taxonomy | `graph_store/taxonomy.py` | Done, tested |
+| LLM rubric | `justify.py`, `prompts/rubric_system_v1.md` | Done, tested |
+| Combined ranking | `scoring/ranking_engine.py` | Done, tested |
+| Orchestrator node | `node.py`, `orchestrator/record_approval.py` | Done, tested |
+| HTTP routes | `gateway/routers/screener.py`, `approvals.py`, `audit.py` | Done, tested |
+| Talent Orbit UI | `frontend/src/features/screening/` | Done, built; no automated UI tests |
+| Attack suite | `data/attacks/resumes/`, `tests/test_screener_attacks.py` | Done, tested |
+| Graph score (Neo4j) | `graph_store/neo4j_writer.py` | Next; `NullGraphScorer` holds the slot |
+| Scheduler handoff | `services/scheduler` port `ScreenerResults` | Next; the scheduler still reads the mock |
 | Rasch scoring | `scoring/rasch_scoring.py` | Not planned (see below) |
-| Profile extraction | `extract.py` | Todo, needs `security/` output |
-| Justification | `justify.py` | Todo |
-| Orchestrator node | `node.py` | Todo |
+
+The contract is in `docs/api-contract.md` and the threat model in `docs/security.md`. To run it, see "Run the screener" in the root README.
 
 ## Inputs / Outputs
 

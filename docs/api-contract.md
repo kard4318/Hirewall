@@ -144,7 +144,7 @@ An invalid decision pauses the workflow again with an explanation in `message`, 
 
 Workflow statuses are `awaiting_review`, `sent`, `rejected`, `needs_human`, `quarantined`, `new_application`, `no_action`, `stale`, `send_failed`, `refused`, `completed`, and `not_started`.
 
-Queue statuses are `pending`, `approved`, `rejected`, `superseded`, `sending`, `sent`, `stale`, and `send_failed`.
+Queue statuses are `pending`, `approved`, `rejected`, `superseded`, `sending`, `sent`, `stale`, `send_failed`, `recorded`, and `record_failed`.
 
 ### Screener (`services.screener`)
 
@@ -256,8 +256,8 @@ Scoring rules:
 
 #### `Identity`
 
-`candidate_id`, `full_name`, `emails`, `phones`, `links`, `other` (removed protected-attribute lines). Returned
-only by `reveal_identity`.
+`candidate_id`, `full_name`, `emails`, `phones`, `links`, `other` (removed address and protected-attribute lines).
+Returned only by `reveal_identity`.
 
 #### `ProposedRecordAction`
 
