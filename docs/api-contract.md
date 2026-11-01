@@ -315,7 +315,7 @@ Scoring rules:
 |---|---|---|
 | `action_type` | string | `record_shortlist` or `record_rejection` |
 | `payload` | object | `job_id`, `run_id`, `candidate_ids` (sorted, unique) |
-| `in_reply_to` | string | scope key `<action_type>:<job_id>`; a newer pending proposal for the same job supersedes an older one |
+| `in_reply_to` | string | scope key `<action_type>:<proposal_id>`, so proposals for different candidates all stay pending |
 | `payload_hash` | string | `action_hash(action_type, payload)`: SHA-256 of canonical JSON of `{"action_type", "payload"}` |
 | `idempotency_key` | string | the `proposal_id`: a stable hash of `action_type`, `job_id`, `run_id` and `candidate_ids` |
 

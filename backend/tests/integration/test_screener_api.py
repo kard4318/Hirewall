@@ -174,6 +174,23 @@ def test_full_flow_from_demo_to_recorded_shortlist(api):
     assert outcome["fields"]["status"] == "recorded" and outcome["fields"]["approver"] == "HR desk"
 
 
+def test_proposals_for_different_candidates_all_stay_pending(api):
+    run = load_and_score(api)
+    url = f"/api/screener/runs/{run['run_id']}/shortlist-proposals"
+    first, second = (c["candidate_id"] for c in run["candidates"][:2])
+    a = api.client.post(url, json={"candidate_ids": [first], "kind": "shortlist"}, headers=api.hr).json()
+    b = api.client.post(url, json={"candidate_ids": [second], "kind": "shortlist"}, headers=api.hr).json()
+    c = api.client.post(url, json={"candidate_ids": [second], "kind": "rejection"}, headers=api.hr).json()
+    pending = {i["approval_id"] for i in api.client.get("/api/hr/approvals?status=pending", headers=api.hr).json()["items"]}
+    assert pending == {a["approval_id"], b["approval_id"], c["approval_id"]}
+    for proposal in (a, b):
+        decision = {"action": "approve", "reviewed_hash": proposal["payload_hash"]}
+        url2 = f"/api/hr/approvals/{proposal['approval_id']}/decision"
+        assert api.client.post(url2, json=decision, headers=api.hr).json()["status"] == "recorded"
+    statuses = api.client.get(f"/api/screener/runs/{run['run_id']}", headers=api.hr).json()["statuses"]
+    assert statuses == {first: "shortlisted", second: "shortlisted"}
+
+
 def test_client_cannot_set_the_reviewer(api):
     response = api.client.post(
         "/api/hr/approvals/x/decision", json={"action": "reject", "reviewer": "Someone"}, headers=api.hr

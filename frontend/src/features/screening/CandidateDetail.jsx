@@ -1,5 +1,6 @@
 // Detail panel. Resume and model text is rendered as plain text only
 import { percent } from "./api.js";
+import { DecisionButtons } from "./DecisionButtons.jsx";
 
 const CRITERIA = [["semantic", "Semantic match"], ["rubric", "Rubric"], ["experience", "Experience"]];
 const SUB_SCORES = [
@@ -87,7 +88,7 @@ function Skills({ title, items, tone }) {
   );
 }
 
-export function CandidateDetail({ candidate, label, identity, blind, onReveal, extracted, application }) {
+export function CandidateDetail({ candidate, label, identity, blind, onReveal, extracted, application, status, proposal, canDecide, onDecide }) {
   if (!candidate && !extracted) return <section className="scr-card scr-detail"><p className="scr-muted">Select a candidate in the orbit or the table.</p></section>;
   if (!candidate) {
     // An applicant who has not been scored yet: what was extracted is all there is to read.
@@ -115,6 +116,13 @@ export function CandidateDetail({ candidate, label, identity, blind, onReveal, e
     <section className="scr-card scr-detail" aria-label={`Details for ${label}`}>
       <h2>{label}</h2>
       <p className="scr-muted">{candidate.profile} · rank {candidate.rank}</p>
+      <DecisionButtons
+        candidateId={candidate.candidate_id}
+        status={status}
+        proposal={proposal}
+        disabled={!canDecide}
+        onDecide={onDecide}
+      />
 
       <Identity identity={identity} blind={blind} onReveal={onReveal} />
 

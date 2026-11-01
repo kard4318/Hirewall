@@ -765,7 +765,7 @@ class ScreeningService:
         return ProposedRecordAction(
             action_type=action_type,
             payload=RecordPayload(**payload),
-            in_reply_to=f"{action_type}:{payload['job_id']}",
+            in_reply_to=f"{action_type}:{proposal_id}",  # its own scope: one candidate's proposal must not replace another's
             payload_hash=action_hash(action_type, payload),
             idempotency_key=proposal_id,
         ).model_dump(mode="json")

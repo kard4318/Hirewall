@@ -53,7 +53,7 @@
 .scr-header p { margin: 0; }
 .scr-toggle { display: inline-flex; gap: 6px; align-items: center; }
 
-.scr-grid { display: grid; grid-template-columns: minmax(250px, 300px) minmax(0, 1fr) minmax(280px, 360px); gap: 14px; align-items: start; }
+.scr-grid { display: grid; grid-template-columns: minmax(230px, 270px) minmax(0, 1fr) minmax(270px, 320px); gap: 14px; align-items: start; }
 .scr-side, .scr-center { display: grid; gap: 14px; min-width: 0; }
 @media (max-width: 1180px) {
   .scr-grid { grid-template-columns: minmax(240px, 300px) minmax(0, 1fr); }
@@ -110,7 +110,7 @@
 .scr-orbit-card { padding: 0; overflow: hidden; }
 .scr-orbit-card > .scr-link { margin: 8px 12px; }
 /* The orbit is a night sky in both themes: its stars and labels are drawn for a dark background. */
-.scr-orbit { width: 100%; height: clamp(320px, 52vh, 560px); background: #04060b; }
+.scr-orbit { width: 100%; height: clamp(440px, 76vh, 960px); background: #04060b; }
 
 .scr-table-wrap { overflow-x: auto; }
 .scr-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -120,6 +120,10 @@
 .scr-table tbody tr:not(.is-pending):hover, .scr-table tr.is-selected { background: var(--s-select); }
 .is-num { text-align: right !important; font-variant-numeric: tabular-nums; }
 
+.scr-decide { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 5px; }
+.scr-btn.is-small { padding: 2px 9px; font-size: 12px; }
+.scr-btn.is-danger { color: var(--s-danger); border-color: var(--s-danger); }
+.scr-decide a { font-size: 12px; }
 .scr-pill { display: inline-block; font-size: 11px; line-height: 1.5; padding: 0 6px; margin: 0 3px 3px; border-radius: 3px; border: 1px solid var(--s-line); }
 .scr-pill.is-ok { background: var(--s-ok-soft); color: var(--s-ok); }
 .scr-pill.is-warn { background: var(--s-warn-soft); color: var(--s-warn); }

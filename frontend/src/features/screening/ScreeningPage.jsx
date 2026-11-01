@@ -28,6 +28,7 @@ export function ScreeningPage() {
   const [identities, setIdentities] = useState({});
   const [paused, setPaused] = useState(() => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false);
   const [proposal, setProposal] = useState(null);
+  const [proposals, setProposals] = useState({});
   const polling = useRef(null);
   const [posting, setPosting] = useState(null);
   const [postingBusy, setPostingBusy] = useState(false);
@@ -119,6 +120,7 @@ export function ScreeningPage() {
     setSelectedId(null);
     setChecked(new Set());
     setProposal(null);
+    setProposals({});
   };
 
   const savePosting = async (details) => {
@@ -207,6 +209,7 @@ export function ScreeningPage() {
     if (started) {
       setChecked(new Set());
       setProposal(null);
+      setProposals({});
       const first = await call((t) => screeningApi.run(t, started.run_id));
       if (first) setRun(first);
     }
@@ -266,13 +269,19 @@ export function ScreeningPage() {
     return next;
   });
 
-  const propose = async (kind) => {
-    const ids = [...checked];
-    const flagged = scored.filter((c) => checked.has(c.candidate_id) && c.injection_flag).length;
+  const proposeFor = async (ids, kind) => {
+    const flagged = scored.filter((c) => ids.includes(c.candidate_id) && c.injection_flag).length;
     if (kind === "shortlist" && flagged && !window.confirm(`${flagged} selected candidate(s) are flagged for possible prompt injection. Propose anyway?`)) return;
     const created = await call((t) => screeningApi.propose(t, run.run_id, ids, kind));
-    if (created) setProposal({ ...created, kind, count: ids.length });
+    if (!created) return;
+    setProposal({ ...created, kind, count: ids.length });
+    if (created.status === "awaiting_review") {
+      setProposals((current) => ({ ...current, ...Object.fromEntries(ids.map((id) => [id, { kind, approval_id: created.approval_id }])) }));
+    }
   };
+
+  const propose = (kind) => proposeFor([...checked], kind);
+  const decideOne = (id, kind) => proposeFor([id], kind);
 
   const taskBusy = Boolean(task && task.status !== "done");
   const finished = run?.status === "done";
@@ -351,7 +360,9 @@ export function ScreeningPage() {
             </div>
             {proposal && (
               <p className="scr-note" aria-live="polite">
-                {proposal.kind === "shortlist" ? "Shortlist" : "Rejection"} of {proposal.count} proposed. Nothing has been sent yet.{" "}
+                {proposal.status === "awaiting_review"
+                  ? `${proposal.kind === "shortlist" ? "Shortlist" : "Rejection"} of ${proposal.count} proposed. Nothing has been sent yet. `
+                  : `This exact proposal was already decided (${proposal.status.replaceAll("_", " ")}). `}
                 <Link to={`/hr/approvals?id=${encodeURIComponent(proposal.approval_id)}`}>Approve it in the approval queue</Link>
                 {proposal.kind === "shortlist" ? " to invite them through the Scheduler." : " to email the rejection."}
               </p>
@@ -365,6 +376,9 @@ export function ScreeningPage() {
               checked={checked}
               onSelect={setSelectedId}
               onToggle={toggle}
+              proposals={proposals}
+              canDecide={finished}
+              onDecide={decideOne}
             />
           </section>
         </div>
@@ -377,6 +391,10 @@ export function ScreeningPage() {
           onReveal={() => reveal(selectedId)}
           extracted={extracted}
           application={applications?.find((a) => a.candidate_id === selectedId) ?? null}
+          status={statuses[selectedId]}
+          proposal={proposals[selectedId]}
+          canDecide={finished}
+          onDecide={decideOne}
         />
       </div>
     </main>
