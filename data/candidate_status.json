@@ -103,5 +103,136 @@
     "decisions": [],
     "screening_score": 83,
     "internal_notes": "Fictional note: must stay private from other candidates."
+  },
+  {
+    "candidate_id": "C-1007",
+    "first_name": "Amira",
+    "last_name": "Ben Salah",
+    "email": "amira.bensalah@example.com",
+    "job_title": "Frontend Developer",
+    "stage": "interview_scheduled",
+    "documents_received": [
+      "CV",
+      "Portfolio"
+    ],
+    "documents_missing": [],
+    "interview": {
+      "scheduled_at": "2026-11-04T14:00:00+01:00",
+      "location": "Video call (link sent by email)"
+    },
+    "decisions": [
+      {
+        "type": "advance",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-28T11:00:00+01:00",
+        "details": "first interview"
+      }
+    ],
+    "screening_score": 88,
+    "internal_notes": "Fictional note: strong React portfolio."
+  },
+  {
+    "candidate_id": "C-1008",
+    "first_name": "Lucas",
+    "last_name": "Moreau",
+    "email": "lucas.moreau@example.com",
+    "job_title": "Backend Engineer",
+    "stage": "under_review",
+    "documents_received": [
+      "CV"
+    ],
+    "documents_missing": [
+      "Diploma"
+    ],
+    "interview": null,
+    "decisions": [],
+    "screening_score": 79,
+    "internal_notes": "Fictional note: asked about remote work."
+  },
+  {
+    "candidate_id": "C-1009",
+    "first_name": "Yasmine",
+    "last_name": "Trabelsi",
+    "email": "yasmine.trabelsi@example.com",
+    "job_title": "Data Analyst",
+    "stage": "screening_complete",
+    "documents_received": [
+      "CV",
+      "Cover letter"
+    ],
+    "documents_missing": [],
+    "interview": null,
+    "decisions": [],
+    "screening_score": 84,
+    "internal_notes": "Fictional note: good SQL test."
+  },
+  {
+    "candidate_id": "C-1010",
+    "first_name": "Daniel",
+    "last_name": "Okafor",
+    "email": "daniel.okafor@example.com",
+    "job_title": "HR Coordinator",
+    "stage": "closed",
+    "documents_received": [
+      "CV"
+    ],
+    "documents_missing": [],
+    "interview": null,
+    "decisions": [
+      {
+        "type": "reject",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-30T16:00:00+01:00",
+        "details": "role filled internally"
+      }
+    ],
+    "screening_score": 71,
+    "internal_notes": "Fictional note: keep for future HR roles."
+  },
+  {
+    "candidate_id": "C-1011",
+    "first_name": "Sofia",
+    "last_name": "Rossi",
+    "email": "sofia.rossi@example.com",
+    "job_title": "UX Designer",
+    "stage": "interview_scheduled",
+    "documents_received": [
+      "CV",
+      "Portfolio"
+    ],
+    "documents_missing": [],
+    "interview": {
+      "scheduled_at": "2026-11-06T11:00:00+01:00",
+      "location": "Meeting Room 2"
+    },
+    "decisions": [
+      {
+        "type": "advance",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-29T10:00:00+01:00",
+        "details": "portfolio review interview"
+      }
+    ],
+    "screening_score": 90,
+    "internal_notes": "Fictional note: top UX candidate."
+  },
+  {
+    "candidate_id": "C-1012",
+    "first_name": "Karim",
+    "last_name": "Jaziri",
+    "email": "karim.jaziri@example.com",
+    "job_title": "Backend Engineer",
+    "stage": "under_review",
+    "documents_received": [
+      "CV",
+      "Diploma"
+    ],
+    "documents_missing": [
+      "References"
+    ],
+    "interview": null,
+    "decisions": [],
+    "screening_score": 82,
+    "internal_notes": "Fictional note: references pending."
   }
 ]

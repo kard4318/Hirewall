@@ -70,5 +70,165 @@
     "subject": "Open positions",
     "body": "Hello,\n\nI have not applied yet. Do you have any open positions?\n\nMorgan",
     "received_at": "2026-11-02T15:30:00+01:00"
+  },
+  {
+    "email_id": "e-110",
+    "thread_id": "t-110",
+    "from_address": "Sam Rivera <sam.rivera@example.com>",
+    "subject": "Portfolio for the Data Analyst role",
+    "body": "Hello,\n\nI have just finished the portfolio you asked for. Should I send it to this address or upload it somewhere?\n\nBest,\nSam",
+    "received_at": "2026-11-02T16:00:00+01:00"
+  },
+  {
+    "email_id": "e-111",
+    "thread_id": "t-111",
+    "from_address": "Amira Ben Salah <amira.bensalah@example.com>",
+    "subject": "Interview on Wednesday",
+    "body": "Hi Nadia,\n\nThank you for the invitation. Could you confirm the time of my interview on Wednesday and whether I should prepare anything specific?\n\nKind regards,\nAmira",
+    "received_at": "2026-11-02T16:20:00+01:00"
+  },
+  {
+    "email_id": "e-112",
+    "thread_id": "t-112",
+    "from_address": "Lucas Moreau <lucas.moreau@example.com>",
+    "subject": "Remote work for the Backend Engineer role",
+    "body": "Hello,\n\nI applied for the Backend Engineer position. Is the role open to remote work, or is it based in the Tunis office?\n\nThanks,\nLucas Moreau",
+    "received_at": "2026-11-02T16:45:00+01:00"
+  },
+  {
+    "email_id": "e-113",
+    "thread_id": "t-113",
+    "from_address": "Yasmine Trabelsi <yasmine.trabelsi@example.com>",
+    "subject": "Next steps after the SQL test",
+    "body": "Dear recruiting team,\n\nI completed the SQL exercise last Friday. When can I expect to hear about the next steps?\n\nThank you,\nYasmine",
+    "received_at": "2026-11-02T17:10:00+01:00"
+  },
+  {
+    "email_id": "e-114",
+    "thread_id": "t-114",
+    "from_address": "Daniel Okafor <daniel.okafor@example.com>",
+    "subject": "Feedback on my application",
+    "body": "Hello,\n\nI received the email saying the HR Coordinator role is no longer available. Could you share any feedback on my profile for future openings?\n\nRegards,\nDaniel",
+    "received_at": "2026-11-02T17:30:00+01:00"
+  },
+  {
+    "email_id": "e-115",
+    "thread_id": "t-115",
+    "from_address": "Sofia Rossi <sofia.rossi@example.com>",
+    "subject": "Need to move my interview",
+    "body": "Hi,\n\nI am very sorry, but I have a medical appointment on Friday morning that I cannot move. Would it be possible to reschedule my interview to another day next week?\n\nBest regards,\nSofia Rossi",
+    "received_at": "2026-11-02T18:05:00+01:00"
+  },
+  {
+    "email_id": "e-116",
+    "thread_id": "t-116",
+    "from_address": "Karim Jaziri <karim.jaziri@example.com>",
+    "subject": "References",
+    "body": "Hello,\n\nYou asked for references. My two former managers agreed to be contacted. Do you need a letter from them, or are names and phone numbers enough?\n\nThanks,\nKarim",
+    "received_at": "2026-11-03T08:40:00+01:00"
+  },
+  {
+    "email_id": "e-117",
+    "thread_id": "t-117",
+    "from_address": "Ines Mansouri <ines.mansouri@example.com>",
+    "subject": "Application for the Frontend Developer position",
+    "body": "Hello,\n\nI would like to apply for the Frontend Developer position I saw on your careers page. I have four years of experience with React and TypeScript. My CV is attached.\n\nBest,\nInes Mansouri",
+    "received_at": "2026-11-03T08:55:00+01:00"
+  },
+  {
+    "email_id": "e-118",
+    "thread_id": "t-118",
+    "from_address": "Ahmed Gharbi <ahmed.gharbi@example.com>",
+    "subject": "Candidature spontanée",
+    "body": "Bonjour,\n\nJe souhaite proposer ma candidature pour un poste d'analyste de données. Vous trouverez mon CV en pièce jointe.\n\nCordialement,\nAhmed Gharbi",
+    "received_at": "2026-11-03T09:10:00+01:00"
+  },
+  {
+    "email_id": "e-119",
+    "thread_id": "t-119",
+    "from_address": "Jordan Lee <jordan.lee@example.com>",
+    "subject": "Status of my Data Analyst application",
+    "body": "Hi,\n\nI applied for the Data Analyst role two weeks ago and have not heard back yet. Is my application still being considered?\n\nThank you,\nJordan",
+    "received_at": "2026-11-03T09:25:00+01:00"
+  },
+  {
+    "email_id": "e-120",
+    "thread_id": "t-120",
+    "from_address": "Lucas Moreau <lucas.moreau@example.com>",
+    "subject": "Salary range for Backend Engineer",
+    "body": "Hello again,\n\nCould you tell me the salary range for the Backend Engineer role before we go further?\n\nThanks,\nLucas",
+    "received_at": "2026-11-03T09:40:00+01:00"
+  },
+  {
+    "email_id": "e-121",
+    "thread_id": "t-121",
+    "from_address": "Leo Martin <leo.martin@example.com>",
+    "subject": "Deadline for the Data Analyst decision",
+    "body": "Hello,\n\nI am writing about my Data Analyst application. I have another offer and need to answer them by Friday.\n\nBest,\nLeo",
+    "received_at": "2026-11-03T10:00:00+01:00"
+  },
+  {
+    "email_id": "e-122",
+    "thread_id": "t-122",
+    "from_address": "Hana Bouzid <hana.bouzid@hirewall.example>",
+    "subject": "Question about my leave balance",
+    "body": "Hi People Team,\n\nHow many days of annual leave do I have left this year? I would like to plan a week off in December.\n\nThanks,\nHana",
+    "received_at": "2026-11-03T10:15:00+01:00"
+  },
+  {
+    "email_id": "e-123",
+    "thread_id": "t-123",
+    "from_address": "Tom Becker <tom.becker@hirewall.example>",
+    "subject": "Training budget",
+    "body": "Hello,\n\nIs there a training budget I can use for a cloud certification course? Who needs to approve it?\n\nThanks,\nTom",
+    "received_at": "2026-11-03T10:35:00+01:00"
+  },
+  {
+    "email_id": "e-124",
+    "thread_id": "t-124",
+    "from_address": "Priya Nair <priya.nair@example.com>",
+    "subject": "Out of office",
+    "body": "Thank you for your email. I am travelling until 5 November with limited access to email. I will reply when I am back.\n\nPriya Nair",
+    "received_at": "2026-11-03T10:50:00+01:00"
+  },
+  {
+    "email_id": "e-125",
+    "thread_id": "t-125",
+    "from_address": "Events Team <events@techconf.example.com>",
+    "subject": "Exhibitor packages for the 2027 job fair",
+    "body": "Hello,\n\nRegistration is now open for exhibitors at our 2027 technology job fair. Packages start at a standard booth. Reply to this email to receive the brochure.\n\nThe Events Team",
+    "received_at": "2026-11-03T11:05:00+01:00"
+  },
+  {
+    "email_id": "e-126",
+    "thread_id": "t-126",
+    "from_address": "Amira Ben Salah <amira.bensalah@example.com>",
+    "subject": "Portfolio link",
+    "body": "Hi Nadia,\n\nAs promised, here is the updated portfolio with the two case studies we talked about. It is attached as a PDF.\n\nThanks again,\nAmira",
+    "received_at": "2026-11-03T11:30:00+01:00"
+  },
+  {
+    "email_id": "e-127",
+    "thread_id": "t-127",
+    "from_address": "Karim Jaziri <karim.jaziri@example.com>",
+    "subject": "Withdrawing from the process",
+    "body": "Hello,\n\nAfter careful thought I have decided to accept another offer, so I would like to withdraw my application for the Backend Engineer role. Thank you for your time.\n\nKind regards,\nKarim Jaziri",
+    "received_at": "2026-11-03T12:00:00+01:00"
+  },
+  {
+    "email_id": "e-128",
+    "thread_id": "t-128",
+    "from_address": "Sofia Rossi <sofia.rossi@example.com>",
+    "subject": "Interview format",
+    "body": "Hi again,\n\nOne more question: will the interview include a design exercise, and should I bring my laptop?\n\nThanks,\nSofia",
+    "received_at": "2026-11-03T12:20:00+01:00"
+  },
+  {
+    "email_id": "e-129",
+    "thread_id": "t-129",
+    "from_address": "Yasmine Trabelsi <yasmine.trabelsi@example.com>",
+    "subject": "Start date question",
+    "body": "Hello,\n\nIn case my application goes ahead, I wanted to mention that my notice period is one month. Would a start date in early January work for the team?\n\nBest regards,\nYasmine",
+    "received_at": "2026-11-03T13:00:00+01:00"
   }
 ]
