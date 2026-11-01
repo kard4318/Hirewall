@@ -1,16 +1,38 @@
-# Helpers for schema-validated structured LLM output: extract JSON, validate, one retry with the error
+# Helpers for schema-validated structured LLM output: generate_structured (JSON-schema calls) and
+# structured (plain-text calls with JSON extraction), both with one repair attempt
+
 import json
+from collections.abc import Mapping
 from typing import Any, TypeVar
 
 from pydantic import BaseModel, ValidationError
 
-from core.llm.client import LLMClient
+from .client import LLMClient, TextLLM
+
+Model = TypeVar("Model", bound=BaseModel)
+
+_REPAIR_INSTRUCTION = "\n\nYour previous response did not match the required JSON schema. Return only valid JSON."
+
+
+class StructuredOutputError(Exception):
+    """The model kept returning invalid output. Holds no prompt or response text."""
+
+
+def generate_structured(client: LLMClient, schema: type[Model], *, system: str, user: str, timeout_s: float) -> Model:
+    """Call the model and validate the result, allowing one repair attempt."""
+    json_schema = schema.model_json_schema()
+    for prompt in (user, user + _REPAIR_INSTRUCTION):
+        raw = client.complete_json(system=system, user=prompt, json_schema=json_schema, timeout_s=timeout_s)
+        try:
+            if isinstance(raw, Mapping):
+                return schema.model_validate(raw)
+            return schema.model_validate_json(raw)
+        except (ValidationError, ValueError):
+            continue
+    raise StructuredOutputError("invalid_output")
+
 
 T = TypeVar("T", bound=BaseModel)
-
-
-class StructuredOutputError(RuntimeError):
-    """The model did not return valid JSON for the schema, even after one retry."""
 
 
 def extract_json(text: str) -> dict[str, Any]:
@@ -27,7 +49,7 @@ def extract_json(text: str) -> dict[str, Any]:
     raise ValueError("no JSON object found in the model output")
 
 
-def structured(llm: LLMClient, system: str, user: str, schema: type[T]) -> T:
+def structured(llm: TextLLM, system: str, user: str, schema: type[T]) -> T:
     """Validated output. Connection or model errors propagate at once (retrying cannot fix them)."""
     system_full = (f"{system}\n\nReply with one JSON object only, matching this JSON schema:\n"
                    f"{json.dumps(schema.model_json_schema(), separators=(',', ':'))}")

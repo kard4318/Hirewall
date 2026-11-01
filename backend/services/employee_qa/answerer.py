@@ -4,7 +4,7 @@ import re
 import time
 from pathlib import Path
 
-from core.llm.client import LLMClient, LLMError, LLMUnavailableError, estimate_tokens
+from core.llm.client import LLMError, LLMUnavailableError, TextLLM, estimate_tokens
 from core.llm.structured_output import StructuredOutputError, structured
 from services.employee_qa.access_control import accessible_sections, forbidden_documents
 from services.employee_qa.audit import AuditLog, MemoryAuditLog
@@ -35,7 +35,7 @@ def build_prompt(sections: list[Section], question: str) -> str:
 
 
 class KnowledgeAssistant:
-    def __init__(self, llm: LLMClient, settings: KnowledgeSettings | None = None, audit: AuditLog | None = None,
+    def __init__(self, llm: TextLLM, settings: KnowledgeSettings | None = None, audit: AuditLog | None = None,
                  documents: list[Document] | None = None) -> None:
         self.llm = llm
         self.settings = settings or KnowledgeSettings()

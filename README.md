@@ -48,6 +48,36 @@ Hirewall provides secure AI agents for HR: the agent executes, the human decides
 | `scripts/` | TBD |
 | `deploy/` | TBD |
 
+## Run the drafter locally
+
+The drafter runs a local model through [Ollama](https://ollama.com), so it is free, needs no API key, and sends no data to a cloud service. Sending is simulated: approved emails are written to a local outbox file, `.runtime/outbox.jsonl`.
+
+Install Ollama, then download the default model (about 4 GB, and a GPU with 6 GB of memory is enough):
+
+```bash
+winget install Ollama.Ollama   # or download it from ollama.com
+ollama pull qwen3.5:4b
+```
+
+```bash
+python -m venv .venv
+.venv/Scripts/python -m pip install -r backend/requirements.txt   # .venv/bin/python on macOS and Linux
+cp .env.example .env
+```
+
+Then, using that Python:
+
+```bash
+python scripts/run_drafter_demo.py draft --all          # draft replies for the fictional inbox and attack emails
+python scripts/run_drafter_demo.py list --status pending
+python scripts/run_drafter_demo.py approve <id> --by "Nadia Karim"
+python scripts/run_drafter_demo.py outbox
+python scripts/run_drafter_demo.py audit
+python scripts/run_drafter_demo.py reset
+```
+
+The script runs the LangGraph orchestrator described in [docs/architecture.md](docs/architecture.md), which also explains how to add a service. It also has `show`, `edit`, `reject`, `redraft`, and `graph` commands. Run the backend tests from `backend/` with `python -m pytest .`. They use no API key and make no network calls.
+
 ## Credits
 
 See [docs/CREDITS.md](docs/CREDITS.md).
