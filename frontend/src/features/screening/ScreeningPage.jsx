@@ -11,6 +11,7 @@ import { UploadPanel } from "./UploadPanel.jsx";
 import "./screening.css";
 
 const POLL_MS = 1500;
+const APPLICATIONS_POLL_MS = 5000;
 
 export function ScreeningPage() {
   const { token, signOut } = useHrSession();
@@ -28,6 +29,12 @@ export function ScreeningPage() {
   const [paused, setPaused] = useState(() => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false);
   const [proposal, setProposal] = useState(null);
   const polling = useRef(null);
+  const [posting, setPosting] = useState(null);
+  const [postingBusy, setPostingBusy] = useState(false);
+  const [importState, setImportState] = useState(null);
+  const [importError, setImportError] = useState(null);
+  const [applications, setApplications] = useState(null);
+  const [extracted, setExtracted] = useState(null);
 
   const call = useCallback(async (action) => {
     setError(null);
@@ -35,7 +42,7 @@ export function ScreeningPage() {
       return await action(token);
     } catch (err) {
       if (err.status === 401) signOut();
-      else setError(err.message || "Request failed");
+      else setError(err.message?.includes("[object") ? "Some values are not valid" : err.message || "Request failed");
       return null;
     }
   }, [token, signOut]);
@@ -45,15 +52,100 @@ export function ScreeningPage() {
     if (data) setCandidates(data.candidates);
   }, [call]);
 
+  const refreshJobs = useCallback(async () => {
+    const data = await call((t) => screeningApi.jobs(t));
+    if (data) {
+      setJobs(data.jobs);
+      setJobId((current) => current ?? data.jobs[0]?.job_id ?? null);
+    }
+  }, [call]);
+
   useEffect(() => {
     refreshCandidates();
-    call((t) => screeningApi.jobs(t)).then((data) => {
-      if (data) {
-        setJobs(data.jobs);
-        setJobId((current) => current ?? data.jobs[0]?.job_id ?? null);
+    refreshJobs();
+  }, [refreshCandidates, refreshJobs]);
+
+  const jobStatus = jobs.find((j) => j.job_id === jobId)?.status ?? null;
+
+  const refreshApplications = useCallback(async () => {
+    if (!jobId) return;
+    const data = await call((t) => screeningApi.applications(t, jobId));
+    if (data) {
+      setApplications(data.applications);
+      refreshCandidates();
+    }
+  }, [call, jobId, refreshCandidates]);
+
+  // Sample jobs and hand-written jobs have no posting. Applicants arrive at any time while an offer is open.
+  useEffect(() => {
+    setPosting(null);
+    setApplications(null);
+    if (!jobId || !jobStatus) return undefined;
+    call((t) => screeningApi.posting(t, jobId)).then((data) => data && setPosting(data));
+    if (jobStatus === "draft") return undefined;
+    refreshApplications();
+    if (jobStatus !== "published") return undefined;
+    const timer = setInterval(refreshApplications, APPLICATIONS_POLL_MS);
+    return () => clearInterval(timer);
+  }, [jobId, jobStatus, call, refreshApplications]);
+
+  useEffect(() => {
+    if (!importState) return undefined;
+    const timer = setInterval(async () => {
+      const next = await call((t) => screeningApi.task(t, importState.task_id));
+      if (next?.status !== "done") return;
+      setImportState(null);
+      const file = next.files[0];
+      if (file.status === "accepted") {
+        await refreshJobs();
+        setJobId(importState.job_id);
+        setRun(null);
+      } else {
+        setImportError(file.reason_code ?? "ingest_failed");
       }
-    });
-  }, [call, refreshCandidates]);
+    }, POLL_MS);
+    return () => clearInterval(timer);
+  }, [importState, call, refreshJobs]);
+
+  const importOffer = async (file) => {
+    setImportError(null);
+    const started = await call((t) => screeningApi.extractOffer(t, file));
+    if (started) setImportState(started);
+  };
+
+  const pickJob = (id) => {
+    setJobId(id);
+    setRun(null);
+    setSelectedId(null);
+    setChecked(new Set());
+    setProposal(null);
+  };
+
+  const savePosting = async (details) => {
+    setPostingBusy(true);
+    const saved = await call((t) => screeningApi.updatePosting(t, jobId, details));
+    setPostingBusy(false);
+    if (saved) {
+      setPosting(saved);
+      refreshJobs();
+    }
+    return saved;
+  };
+
+  const changePostingStatus = async (action) => {
+    setPostingBusy(true);
+    const updated = await call((t) => action(t, jobId));
+    setPostingBusy(false);
+    if (updated) {
+      setPosting(updated);
+      refreshJobs();
+    }
+  };
+
+  useEffect(() => {
+    setExtracted(null);
+    if (selectedId) call((t) => screeningApi.extracted(t, selectedId)).then((data) => data && setExtracted(data));
+  }, [selectedId, call]);
 
   const taskId = task?.status === "done" ? null : task?.task_id;
   useEffect(() => {
@@ -63,10 +155,14 @@ export function ScreeningPage() {
       if (next) {
         setTask(next);
         refreshCandidates();
+        if (next.status === "done") {
+          refreshJobs();
+          if (attachId.current) refreshApplications();
+        }
       }
     }, POLL_MS);
     return () => clearInterval(polling.current);
-  }, [taskId, call, refreshCandidates]);
+  }, [taskId, call, refreshCandidates, refreshJobs, refreshApplications]);
 
   const runId = run && run.status !== "done" && run.status !== "failed" ? run.run_id : null;
   useEffect(() => {
@@ -78,8 +174,11 @@ export function ScreeningPage() {
     return () => clearInterval(timer);
   }, [runId, call]);
 
+  const attachId = useRef(null);
+  attachId.current = jobStatus === "published" || jobStatus === "closed" ? jobId : null;
+
   const upload = async (files) => {
-    const started = await call((t) => screeningApi.upload(t, files));
+    const started = await call((t) => screeningApi.upload(t, files, attachId.current));
     if (started) {
       // File names stay in this browser: the server never stores them.
       setNames(files.map((file) => file.name));
@@ -144,7 +243,8 @@ export function ScreeningPage() {
       warning: c.hidden_text_removed && !c.injection_flag,
       label: labelFor(c.candidate_id),
     }));
-    const waiting = (run ? pendingIds : candidates.map((c) => c.candidate_id)).map((id) => ({
+    const applicants = applications?.length ? applications.map((a) => a.candidate_id) : null;
+    const waiting = (run ? pendingIds : applicants ?? candidates.map((c) => c.candidate_id)).map((id) => ({
       id,
       score: 0,
       profile: profiles[id]?.profile ?? "Other",
@@ -152,7 +252,7 @@ export function ScreeningPage() {
       label: labelFor(id),
     }));
     return [...done, ...waiting];
-  }, [scored, pendingIds, statuses, run, candidates, profiles, labelFor]);
+  }, [scored, pendingIds, statuses, run, candidates, profiles, labelFor, applications]);
 
   // Polling returns new objects every time, so the scene only updates when something it draws has changed.
   const signature = JSON.stringify([job?.title, orbitRows]);
@@ -192,15 +292,35 @@ export function ScreeningPage() {
 
       <div className="scr-grid">
         <div className="scr-side">
-          <UploadPanel task={task} names={names} count={candidates.length} busy={taskBusy} onFiles={upload} onDemo={loadDemo} />
+          <UploadPanel
+            task={task}
+            names={names}
+            count={candidates.length}
+            busy={taskBusy}
+            onFiles={upload}
+            onDemo={loadDemo}
+            applications={applications}
+            labelFor={labelFor}
+            attachTitle={attachId.current ? job?.title : null}
+            onSelect={setSelectedId}
+          />
           <JobPanel
             jobs={jobs}
             jobId={jobId}
-            onPick={setJobId}
+            onPick={pickJob}
             onCreate={createJob}
             onScore={score}
-            canScore={candidates.length > 0 && !taskBusy && Boolean(jobId)}
+            canScore={candidates.length > 0 && !taskBusy && Boolean(jobId) && jobStatus !== "draft"}
             run={run}
+            posting={posting}
+            importing={Boolean(importState)}
+            importError={importError}
+            onImport={importOffer}
+            onSavePosting={savePosting}
+            onPublish={() => changePostingStatus(screeningApi.publish)}
+            onClosePosting={() => changePostingStatus(screeningApi.closeOffer)}
+            postingBusy={postingBusy}
+            applicationCount={applications?.length ?? 0}
           />
         </div>
 
@@ -250,10 +370,12 @@ export function ScreeningPage() {
 
         <CandidateDetail
           candidate={selected}
-          label={selected ? labelFor(selected.candidate_id) : ""}
-          identity={selected ? identities[selected.candidate_id] : null}
+          label={selectedId ? labelFor(selectedId) : ""}
+          identity={selectedId ? identities[selectedId] : null}
           blind={blind}
-          onReveal={() => reveal(selected.candidate_id)}
+          onReveal={() => reveal(selectedId)}
+          extracted={extracted}
+          application={applications?.find((a) => a.candidate_id === selectedId) ?? null}
         />
       </div>
     </main>

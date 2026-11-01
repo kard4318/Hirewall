@@ -147,6 +147,21 @@
 .scr-evidence li { margin-bottom: 8px; }
 .scr-evidence blockquote { margin: 3px 0 0; padding-left: 8px; border-left: 2px solid var(--s-line); color: var(--s-muted); white-space: pre-wrap; }
 
+.scr-review { margin: 10px 0; padding-top: 10px; border-top: 1px solid var(--s-line); }
+.scr-review h3 { margin-top: 0; }
+.scr-fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.scr-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.scr-json { font: 11.5px/1.45 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; max-height: 280px; overflow: auto; padding: 8px; background: var(--s-bg); border-radius: 4px; }
+.scr-letter { margin: 6px 0 0; padding-left: 8px; border-left: 2px solid var(--s-line); white-space: pre-wrap; font-size: 13px; }
+.scr-contents { display: contents; }
+.scr-applicants { margin-top: 12px; }
+.scr-applicants h3 { margin: 0 0 4px; }
+.scr-applicants ul { list-style: none; margin: 0; padding: 0; max-height: 200px; overflow: auto; }
+.scr-applicants li { padding: 2px 0; }
+.scr-pill.is-status-draft { background: var(--s-warn-soft); color: var(--s-warn); }
+.scr-pill.is-status-published { background: var(--s-ok-soft); color: var(--s-ok); }
+.scr-link:disabled { opacity: 0.6; cursor: wait; }
+
 .apr-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .apr-item { border: 1px solid var(--s-line); border-radius: 4px; padding: 10px 12px; overflow-wrap: anywhere; }
 .apr-item.is-target { border-color: var(--s-accent); box-shadow: 0 0 0 1px var(--s-accent); }

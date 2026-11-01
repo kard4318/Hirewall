@@ -1,5 +1,7 @@
 // Step 2: pick a job offer or write one, then start scoring
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { JobReviewForm } from "./JobReviewForm.jsx";
+import { FILE_REASONS } from "./reasons.js";
 
 const EMPTY = { title: "", skills: "", years: "", description: "" };
 
@@ -11,8 +13,14 @@ function toRequirements(form) {
   return [...requirements, ...lines.map((text) => ({ text, kind: "responsibility" }))];
 }
 
-export function JobPanel({ jobs, jobId, onPick, onCreate, onScore, canScore, run }) {
+const STATUS = { draft: " [draft]", published: " [published]", closed: " [closed]" };
+
+export function JobPanel({
+  jobs, jobId, onPick, onCreate, onScore, canScore, run, posting, importing, importError, onImport, onSavePosting,
+  onPublish, onClosePosting, postingBusy, applicationCount,
+}) {
   const [form, setForm] = useState(null);
+  const fileInput = useRef(null);
   const set = (field) => (event) => setForm({ ...form, [field]: event.target.value });
   const requirements = form ? toRequirements(form) : [];
   const job = jobs.find((j) => j.job_id === jobId);
@@ -29,14 +37,17 @@ export function JobPanel({ jobs, jobId, onPick, onCreate, onScore, canScore, run
       <label className="scr-field">
         Job
         <select value={jobId ?? ""} onChange={(event) => onPick(event.target.value)}>
-          {jobs.map((j) => <option key={j.job_id} value={j.job_id}>{j.title}</option>)}
+          {jobs.map((j) => <option key={j.job_id} value={j.job_id}>{j.title}{STATUS[j.status] ?? ""}</option>)}
         </select>
       </label>
-      {job && (
+      {job && !posting && (
         <details className="scr-requirements">
           <summary>{job.requirements.length} requirements</summary>
           <ul>{job.requirements.map((r) => <li key={r.text}>{r.text} <span className="scr-muted">({r.kind})</span></li>)}</ul>
         </details>
+      )}
+      {posting && (
+        <JobReviewForm posting={posting} busy={postingBusy} onSave={onSavePosting} onPublish={onPublish} onClose={onClosePosting} />
       )}
       {form ? (
         <form className="scr-form" onSubmit={submit}>
@@ -50,7 +61,27 @@ export function JobPanel({ jobs, jobId, onPick, onCreate, onScore, canScore, run
           </div>
         </form>
       ) : (
-        <button type="button" className="scr-link" onClick={() => setForm(EMPTY)}>Write a new job</button>
+        <div className="scr-row">
+          <button type="button" className="scr-link" onClick={() => setForm(EMPTY)}>Write a new job</button>
+          <button type="button" className="scr-link" disabled={importing} onClick={() => fileInput.current.click()}>
+            {importing ? "Reading offer..." : "Import offer from PDF"}
+          </button>
+          <input
+            ref={fileInput}
+            type="file"
+            hidden
+            accept=".pdf,.docx"
+            aria-label="Offer document"
+            onChange={(event) => {
+              if (event.target.files[0]) onImport(event.target.files[0]);
+              event.target.value = "";
+            }}
+          />
+        </div>
+      )}
+      {importError && <p className="scr-alert" role="alert">{FILE_REASONS[importError] ?? "The offer could not be read"}.</p>}
+      {posting && posting.status !== "draft" && applicationCount === 0 && (
+        <p className="scr-note">No applications yet, so scoring uses the whole candidate pool.</p>
       )}
       <button type="button" className="scr-btn is-primary" disabled={!canScore || running} onClick={onScore}>
         {running ? "Scoring..." : "Score candidates"}

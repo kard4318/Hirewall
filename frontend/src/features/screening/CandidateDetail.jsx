@@ -8,6 +8,76 @@ const SUB_SCORES = [
   ["field_closeness", "Field and role", "field_text"],
 ];
 
+function Values({ data, labels }) {
+  const rows = labels
+    .map(([key, name]) => [name, Array.isArray(data[key]) ? data[key].join(", ") : data[key]])
+    .filter(([, value]) => value);
+  if (!rows.length) return <p className="scr-muted">Nothing extracted.</p>;
+  return <dl className="scr-identity">{rows.map(([name, value]) => <div key={name} className="scr-contents"><dt>{name}</dt><dd>{value}</dd></div>)}</dl>;
+}
+
+const LETTER_LABELS = [["motivation_summary", "Motivation"], ["skills_mentioned", "Skills"], ["relevant_experiences", "Experience"],
+  ["availability", "Availability"], ["start_date", "Start date"], ["desired_duration", "Duration"], ["languages", "Languages"], ["mobility", "Mobility"]];
+
+function ExtractedData({ extracted, application }) {
+  if (!extracted) return null;
+  const { profile } = extracted;
+  const letter = application?.cover_letter;
+  return (
+    <>
+      <h3>Extracted data</h3>
+      <h4>CV</h4>
+      {profile ? (
+        <>
+          <Values data={profile} labels={[["current_title", "Current title"], ["skills", "Skills"]]} />
+          <ul className="scr-evidence">
+            {profile.positions.map((p) => (
+              <li key={`${p.title}${p.organization}${p.end}`}>{[p.title, p.organization].filter(Boolean).join(", ")} {[p.start, p.end].filter(Boolean).join(" - ")}</li>
+            ))}
+          </ul>
+        </>
+      ) : <p className="scr-muted">The model could not structure this CV. The sections below came from its headings.</p>}
+      <details className="scr-requirements">
+        <summary>View CV JSON</summary>
+        <pre className="scr-json">{JSON.stringify({ profile, sections: extracted.sections }, null, 2)}</pre>
+      </details>
+      {application && (
+        <>
+          <h4>Cover letter (display only, not scored)</h4>
+          {letter && <Values data={letter} labels={LETTER_LABELS} />}
+          {application.cover_letter_failed && <p className="scr-muted">The model could not structure this letter.</p>}
+          {!letter && !application.cover_letter_text && !application.cover_letter_failed && <p className="scr-muted">No cover letter.</p>}
+          {(letter || application.cover_letter_text) && (
+            <details className="scr-requirements" open={!letter}>
+              <summary>{letter ? "View letter JSON and text" : "View letter text"}</summary>
+              {letter && <pre className="scr-json">{JSON.stringify(letter, null, 2)}</pre>}
+              {application.cover_letter_text && <blockquote className="scr-letter">{application.cover_letter_text}</blockquote>}
+            </details>
+          )}
+        </>
+      )}
+    </>
+  );
+}
+
+function Identity({ identity, blind, onReveal }) {
+  if (!identity) {
+    return <button type="button" className="scr-btn" onClick={onReveal}>Reveal identity (recorded in the audit log)</button>;
+  }
+  if (blind) return null;
+  return (
+    <dl className="scr-identity">
+      <dt>Name</dt><dd>{identity.full_name || "Not found"}</dd>
+      {identity.emails.length > 0 && <><dt>Email</dt><dd>{identity.emails.join(", ")}</dd></>}
+      {identity.phones.length > 0 && <><dt>Phone</dt><dd>{identity.phones.join(", ")}</dd></>}
+      {identity.links.length > 0 && <><dt>Links</dt><dd>{identity.links.join(", ")}</dd></>}
+      {identity.contacts.map((contact) => (
+        <div key={contact.reference_id} className="scr-contents"><dt>From the form</dt><dd>{contact.full_name}, {contact.email}</dd></div>
+      ))}
+    </dl>
+  );
+}
+
 function Skills({ title, items, tone }) {
   if (!items.length) return null;
   return (
@@ -18,8 +88,27 @@ function Skills({ title, items, tone }) {
   );
 }
 
-export function CandidateDetail({ candidate, label, identity, blind, onReveal }) {
-  if (!candidate) return <section className="scr-card scr-detail"><p className="scr-muted">Select a candidate in the orbit or the table.</p></section>;
+export function CandidateDetail({ candidate, label, identity, blind, onReveal, extracted, application }) {
+  if (!candidate && !extracted) return <section className="scr-card scr-detail"><p className="scr-muted">Select a candidate in the orbit or the table.</p></section>;
+  if (!candidate) {
+    // An applicant who has not been scored yet: what was extracted is all there is to read.
+    const excerpts = application?.injection_excerpts ?? [];
+    const lines = [...extracted.injection_excerpts, ...excerpts];
+    return (
+      <section className="scr-card scr-detail" aria-label={`Details for ${label}`}>
+        <h2>{label}</h2>
+        <p className="scr-muted">Not scored yet</p>
+        <Identity identity={identity} blind={blind} onReveal={onReveal} />
+        {lines.length > 0 && (
+          <div className="scr-alert" role="alert">
+            <strong>Possible prompt injection.</strong> These lines were removed.
+            <ul>{lines.map((line) => <li key={line}><code>{line}</code></li>)}</ul>
+          </div>
+        )}
+        <ExtractedData extracted={extracted} application={application} />
+      </section>
+    );
+  }
   const { rubric, experience, weights_used: weights, scores } = candidate;
   const chunks = Object.fromEntries(candidate.evidence_chunks.map((chunk) => [chunk.chunk_id, chunk.text]));
 
@@ -28,17 +117,7 @@ export function CandidateDetail({ candidate, label, identity, blind, onReveal })
       <h2>{label}</h2>
       <p className="scr-muted">{candidate.profile} · rank {candidate.rank}</p>
 
-      {!identity && (
-        <button type="button" className="scr-btn" onClick={onReveal}>Reveal identity (recorded in the audit log)</button>
-      )}
-      {identity && !blind && (
-        <dl className="scr-identity">
-          <dt>Name</dt><dd>{identity.full_name || "Not found"}</dd>
-          {identity.emails.length > 0 && <><dt>Email</dt><dd>{identity.emails.join(", ")}</dd></>}
-          {identity.phones.length > 0 && <><dt>Phone</dt><dd>{identity.phones.join(", ")}</dd></>}
-          {identity.links.length > 0 && <><dt>Links</dt><dd>{identity.links.join(", ")}</dd></>}
-        </dl>
-      )}
+      <Identity identity={identity} blind={blind} onReveal={onReveal} />
 
       {(candidate.injection_flag || candidate.hidden_text_removed) && (
         <div className="scr-alert" role="alert">
@@ -87,6 +166,8 @@ export function CandidateDetail({ candidate, label, identity, blind, onReveal })
       <Skills title="Matched" items={candidate.matched_skills} tone="is-ok" />
       <Skills title="Missing" items={candidate.missing_skills} tone="is-warn" />
       <Skills title="Additional (not scored)" items={candidate.additional_skills} tone="" />
+
+      <ExtractedData extracted={extracted} application={application} />
 
       <h3>Evidence</h3>
       <ul className="scr-evidence">

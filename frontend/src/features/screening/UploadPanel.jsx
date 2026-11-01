@@ -1,21 +1,7 @@
 // Step 1: upload resumes or load the demo set, with one result per file
 import { useRef, useState } from "react";
 import { shortId } from "./api.js";
-
-const REASONS = {
-  unsupported_type: "Only PDF and DOCX are accepted",
-  file_too_large: "Larger than 5 MB",
-  bad_signature: "The content does not match the file type",
-  encrypted_pdf: "Password-protected PDF",
-  too_many_pages: "More than 10 pages",
-  zip_bomb: "Unsafe DOCX archive",
-  bad_archive_path: "Unsafe DOCX archive",
-  no_text: "No readable text",
-  empty_file: "Empty file",
-  unreadable_pdf: "The PDF could not be read",
-  unreadable_docx: "The DOCX could not be read",
-  ingest_failed: "Processing failed",
-};
+import { FILE_REASONS as REASONS } from "./reasons.js";
 
 function fileLine(file, names) {
   const name = names?.[file.index] ?? `Item ${file.index + 1}`;
@@ -31,7 +17,7 @@ function fileLine(file, names) {
   return { level, text: `${name} → ${shortId(file.candidate_id ?? "")}${notes.length ? ` (${notes.join(", ")})` : ""}` };
 }
 
-export function UploadPanel({ task, names, count, busy, onFiles, onDemo }) {
+export function UploadPanel({ task, names, count, busy, onFiles, onDemo, applications, labelFor, attachTitle, onSelect }) {
   const input = useRef(null);
   const [over, setOver] = useState(false);
 
@@ -63,7 +49,22 @@ export function UploadPanel({ task, names, count, busy, onFiles, onDemo }) {
         accept=".pdf,.docx"
         onChange={(event) => { take(event.target.files); event.target.value = ""; }}
       />
+      {attachTitle && <p className="scr-muted">New uploads are attached to {attachTitle}.</p>}
       <button type="button" className="scr-btn" disabled={busy} onClick={onDemo}>Load demo candidates</button>
+      {applications && (
+        <div className="scr-applicants">
+          <h3>{applications.length} application{applications.length === 1 ? "" : "s"}</h3>
+          <ul>
+            {applications.map((row) => (
+              <li key={row.application_id}>
+                <button type="button" className="scr-link" onClick={() => onSelect(row.candidate_id)}>{labelFor(row.candidate_id)}</button>
+                {row.source === "hr_upload" && <span className="scr-pill">HR upload</span>}
+                {row.candidate.injection_flag && <span className="scr-pill is-danger">flagged</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {task && (
         <div className="scr-task" aria-live="polite">
           {task.status !== "done" && <progress max={task.total || 1} value={task.done} />}

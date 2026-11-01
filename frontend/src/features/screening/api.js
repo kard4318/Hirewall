@@ -4,17 +4,35 @@ import { ApiError, request } from "../scheduling/api.js";
 const base = "/api/screener";
 const enc = encodeURIComponent;
 
-async function upload(token, files) {
-  const body = new FormData();
-  files.forEach((file) => body.append("files", file));
-  const res = await fetch(`${base}/candidates`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body });
+async function postForm(token, path, body) {
+  const res = await fetch(`${base}${path}`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new ApiError(res.status, data.detail);
   return data;
 }
 
+function upload(token, files, jobId) {
+  const body = new FormData();
+  files.forEach((file) => body.append("files", file));
+  if (jobId) body.append("job_id", jobId);
+  return postForm(token, "/candidates", body);
+}
+
+function extractOffer(token, file) {
+  const body = new FormData();
+  body.append("file", file);
+  return postForm(token, "/jobs/extract", body);
+}
+
 export const screeningApi = {
   upload,
+  extractOffer,
+  posting: (token, id) => request(`${base}/jobs/${enc(id)}/posting`, { token }),
+  updatePosting: (token, id, details) => request(`${base}/jobs/${enc(id)}`, { method: "PUT", token, body: details }),
+  publish: (token, id) => request(`${base}/jobs/${enc(id)}/publish`, { method: "POST", token }),
+  closeOffer: (token, id) => request(`${base}/jobs/${enc(id)}/close`, { method: "POST", token }),
+  applications: (token, id) => request(`${base}/jobs/${enc(id)}/applications`, { token }),
+  extracted: (token, id) => request(`${base}/candidates/${enc(id)}/extracted`, { token }),
   demo: (token) => request(`${base}/candidates/demo`, { method: "POST", token }),
   task: (token, id) => request(`${base}/tasks/${enc(id)}`, { token }),
   candidates: (token) => request(`${base}/candidates`, { token }),
