@@ -216,6 +216,11 @@ def test_meta_is_public(world) -> None:
     assert meta == {"dev_mode": False, "calendar_mode": "mock", "strict_mode_available": True, "company_name": "Northwind Labs"}
 
 
+def test_json_responses_declare_utf8(world) -> None:
+    response = world["client"].get("/api/meta", headers={"Authorization": ""})
+    assert response.headers["content-type"] == "application/json; charset=utf-8"
+
+
 def test_candidate_responses_hold_no_hr_details(world) -> None:
     client = world["client"]
     token = link_token(client.post("/api/hr/candidates/cand-sara/invite").json()["candidate_link"])

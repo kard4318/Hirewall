@@ -4,6 +4,7 @@ from typing import Any
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
 from gateway.auth.hr_auth import LoginRateLimiter
 from gateway.routers import (
@@ -28,6 +29,12 @@ from services.scheduler.config import REPO_ROOT
 from services.scheduler.service import SchedulingService, service_from_env
 
 
+class Utf8JSONResponse(JSONResponse):
+    """Declare the charset explicitly so no client guesses a legacy encoding for names like 'Léa' or '×'."""
+
+    media_type = "application/json; charset=utf-8"
+
+
 def create_app(scheduling_service: SchedulingService | None = None,
                knowledge_desk: KnowledgeDesk | None = None,
                analytics_service: AnalyticsService | None = None,
@@ -38,7 +45,8 @@ def create_app(scheduling_service: SchedulingService | None = None,
         load_dotenv(REPO_ROOT / ".env")
         scheduling_service = service_from_env()
         knowledge_desk = knowledge_desk or desk_from_env()
-    app = FastAPI(title="Hirewall gateway", docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(title="Hirewall gateway", docs_url=None, redoc_url=None, openapi_url=None,
+                  default_response_class=Utf8JSONResponse)
     app.state.scheduling = scheduling_service
     app.state.knowledge = knowledge_desk  # None in tests that only exercise scheduling
     # Reads data/people lazily, on the first analytics request.
