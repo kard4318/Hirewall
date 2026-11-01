@@ -39,5 +39,21 @@ def route_after_approve(state: WorkflowState) -> str:
     return "human_review" if status == AWAITING_REVIEW else END
 
 
+def route_after_record_proposal(state: WorkflowState) -> str:
+    return "record_review" if state.get("status") == AWAITING_REVIEW else END
+
+
+def route_after_record_review(state: WorkflowState) -> str:
+    decision = state.get("decision")
+    return f"record_{decision['action']}" if decision else "record_review"
+
+
+def route_after_record_approve(state: WorkflowState) -> str:
+    status = state.get("status")
+    if status == APPROVED:
+        return "record_execute"
+    return "record_review" if status == AWAITING_REVIEW else END
+
+
 def route_after_edit(state: WorkflowState) -> str:
     return "human_review" if state.get("status") == AWAITING_REVIEW else END

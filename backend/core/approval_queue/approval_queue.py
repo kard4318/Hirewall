@@ -40,7 +40,18 @@ def payload_hash(to: str, subject: str, body: str, in_reply_to: str) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def action_hash(action_type: str, payload: dict[str, Any]) -> str:
+    """Hash a non-email action, so an approval covers only this exact action."""
+    canonical = json.dumps(
+        {"action_type": action_type, "payload": payload}, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 def proposal_hash(proposal: dict[str, Any]) -> str:
+    action_type = proposal.get("action_type", "send_email")
+    if action_type != "send_email":
+        return action_hash(action_type, proposal["payload"])
     return payload_hash(proposal["to"], proposal["subject"], proposal["body"], proposal["in_reply_to"])
 
 

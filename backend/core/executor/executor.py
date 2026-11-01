@@ -5,9 +5,12 @@ from dataclasses import dataclass
 from typing import Any
 
 from core.approval_queue.approval_queue import ApprovalQueue, proposal_hash
+from core.candidate_status.store import CandidateStatusStore
 from core.integrations.email_provider import EmailProvider, OutboundEmail
 
 logger = logging.getLogger(__name__)
+
+RECORDED_STATUS = {"record_shortlist": "shortlisted", "record_rejection": "rejected"}
 
 
 @dataclass(frozen=True)
@@ -31,6 +34,8 @@ def execute_approved(item_id: str, *, queue: ApprovalQueue, provider: EmailProvi
         )
         return ExecutionResult(status, reason)
 
+    if item.proposal.get("action_type", "send_email") != "send_email":
+        return report("refused", "unsupported_action")
     if item.status != "approved":
         return report("refused", f"status_{item.status}")
     if proposal_hash(item.proposal) != item.payload_hash:
@@ -61,3 +66,41 @@ def execute_approved(item_id: str, *, queue: ApprovalQueue, provider: EmailProvi
 
     queue.set_status(item_id, "sent", "sending")
     return report("sent")
+
+
+def execute_record(item_id: str, *, queue: ApprovalQueue, status_store: CandidateStatusStore, audit: Any) -> ExecutionResult:
+    """Record one approved shortlist or rejection at most once, if it is still the action approved."""
+    item = queue.get(item_id)
+
+    def report(status: str, reason: str | None = None) -> ExecutionResult:
+        audit.record(
+            "executor.outcome",
+            approval_id=item_id,
+            action_type=item.proposal.get("action_type"),
+            status=status,
+            reason=reason,
+            approver=item.decided_by,
+            payload_hash=item.payload_hash,
+        )
+        return ExecutionResult(status, reason)
+
+    status = RECORDED_STATUS.get(item.proposal.get("action_type", ""))
+    if status is None:
+        return report("refused", "unsupported_action")
+    if item.status != "approved":
+        return report("refused", f"status_{item.status}")
+    if proposal_hash(item.proposal) != item.payload_hash:
+        return report("refused", "text_changed_after_approval")
+    if not queue.claim_for_send(item_id):
+        return report("refused", "already_claimed")
+
+    payload = item.proposal["payload"]
+    try:
+        status_store.record(payload["job_id"], payload["candidate_ids"], status, item_id)
+    except Exception as error:
+        logger.error("record failed error_type=%s", type(error).__name__)
+        queue.set_status(item_id, "record_failed", "sending")
+        return report("record_failed", type(error).__name__)
+
+    queue.set_status(item_id, "recorded", "sending")
+    return report("recorded")

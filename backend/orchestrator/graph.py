@@ -15,6 +15,7 @@ from services.summarizer.node import classify_node
 
 from .approval import DrafterWorkflow
 from .checkpoints import open_checkpointer
+from .record_approval import RECORD_TASK, RecordNodes, RecordWorkflow
 from .router import (
     APPROVED,
     AWAITING_REVIEW,
@@ -24,6 +25,9 @@ from .router import (
     route_after_classify,
     route_after_draft,
     route_after_edit,
+    route_after_record_approve,
+    route_after_record_proposal,
+    route_after_record_review,
     route_after_review,
     route_task,
 )
@@ -35,7 +39,10 @@ DRAFT_TASK = "draft_reply"
 TRIAGE_TASK = "triage_email"
 _RECURSION_LIMIT = 100
 # These outcomes stay final. Other outcomes, such as a model failure, can run again.
-_FINAL_STATUSES = {"sent", "rejected", "stale", "send_failed", "refused", APPROVED, "new_application", "no_action"}
+_FINAL_STATUSES = {
+    "sent", "rejected", "stale", "send_failed", "refused", APPROVED, "new_application", "no_action",
+    "recorded", "record_failed",
+}
 
 
 class DraftReplyNodes:
@@ -183,6 +190,7 @@ def build_graph(
     checkpointer: BaseCheckpointSaver,
     services: Mapping[str, ServiceNode] | None = None,
     classifier_deps: ClassifierDeps | None = None,
+    record_workflow: RecordWorkflow | None = None,
 ) -> Any:
     """Build the orchestrator. Each entry in `services` adds a task that runs that function and then ends."""
     nodes = DraftReplyNodes(workflow)
@@ -207,6 +215,30 @@ def build_graph(
         builder.add_node(task, _service_node(service))
         builder.add_edge(task, END)
         routes[task] = task
+
+    if record_workflow is not None:
+        records = RecordNodes(record_workflow)
+        routes[RECORD_TASK] = "record_propose"
+        builder.add_node("record_propose", records.propose)
+        builder.add_node("record_review", records.review)
+        builder.add_node("record_approve", records.approve)
+        builder.add_node("record_execute", records.execute)
+        builder.add_node("record_reject", records.reject)
+        builder.add_conditional_edges(
+            "record_propose", route_after_record_proposal, {"record_review": "record_review", END: END}
+        )
+        builder.add_conditional_edges(
+            "record_review",
+            route_after_record_review,
+            {name: name for name in ("record_review", "record_approve", "record_reject")},
+        )
+        builder.add_conditional_edges(
+            "record_approve",
+            route_after_record_approve,
+            {"record_execute": "record_execute", "record_review": "record_review", END: END},
+        )
+        builder.add_edge("record_execute", END)
+        builder.add_edge("record_reject", END)
 
     builder.add_conditional_edges(
         START,
@@ -251,11 +283,16 @@ class Orchestrator:
     checkpointer: BaseCheckpointSaver | None = None
     services: Mapping[str, ServiceNode] | None = None
     classifier_deps: ClassifierDeps | None = None
+    record_workflow: RecordWorkflow | None = None
 
     def __post_init__(self) -> None:
         self.checkpointer = self.checkpointer or open_checkpointer()
         self.graph = build_graph(
-            self.workflow, checkpointer=self.checkpointer, services=self.services, classifier_deps=self.classifier_deps
+            self.workflow,
+            checkpointer=self.checkpointer,
+            services=self.services,
+            classifier_deps=self.classifier_deps,
+            record_workflow=self.record_workflow,
         )
 
     @staticmethod
