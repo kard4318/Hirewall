@@ -12,7 +12,7 @@ from core.approval_queue.approval_queue import ApprovalError
 from gateway.auth.hr_auth import LoginRateLimiter
 from gateway.orchestration import screening_service, shared_orchestrator
 from gateway.routers.hr_scheduling import require_hr, service
-from gateway.routers.inbox import REVIEWER
+from gateway.auth.jwt import Principal
 from orchestrator.record_approval import RECORD_TASK
 from security.file_validator import MAX_BYTES
 from services.screener.csv_import import MAX_ROWS, CsvRejected, parse_candidates_csv
@@ -214,8 +214,8 @@ def propose(request: Request, run_id: str, body: ProposalRequest) -> dict[str, A
 
 
 @router.get("/candidates/{candidate_id}/identity")
-def identity(request: Request, candidate_id: str) -> dict[str, Any]:
+def identity(request: Request, candidate_id: str, principal: Principal = Depends(require_hr)) -> dict[str, Any]:
     try:
-        return screening_service(request.app).reveal_identity(candidate_id, REVIEWER).model_dump(mode="json")
+        return screening_service(request.app).reveal_identity(candidate_id, principal.username).model_dump(mode="json")
     except ScreenerError as error:
         raise _error(error) from None

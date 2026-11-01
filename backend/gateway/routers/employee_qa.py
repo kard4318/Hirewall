@@ -4,15 +4,10 @@ from typing import Any
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
 
 from core.integrations.email_provider import EmailDeliveryError
-from gateway.auth.hr_auth import (
-    HR_TOKEN_TTL_HOURS,
-    HRAuthConfigError,
-    HRAuthError,
-    check_passcode,
-    create_role_token,
-    verify_role_token,
-)
-from gateway.routers.hr_scheduling import require_hr
+from gateway.auth.hr_auth import HR_TOKEN_TTL_HOURS, HRAuthConfigError, HRAuthError
+from gateway.auth.jwt import read_token
+from gateway.auth.roles import can
+from gateway.routers.hr_scheduling import require_hr, sign_in
 from gateway.schemas.employee_qa import Escalation, Question, Reply, StaffLogin
 from services.employee_qa.desk import KnowledgeDesk, ReplyNotPossible
 
@@ -32,14 +27,15 @@ def require_staff(request: Request, authorization: str = Header(default="")) -> 
     """The asker's audience comes from the signed token, never from the request body."""
     scheme, _, token = authorization.partition(" ")
     if scheme.lower() == "bearer" and token:
-        for role in ("employee", "hr"):
+        for audience in ("employee", "hr"):
             try:
-                verify_role_token(token, now(request), role)
-                return role
+                principal = read_token(token, now(request), audience)
             except HRAuthError:
                 continue
             except HRAuthConfigError:
                 raise HTTPException(503, "staff_auth_not_configured") from None
+            if can(principal.role, "employee_qa"):
+                return audience
     raise HTTPException(401, "staff_auth_required", headers={"WWW-Authenticate": "Bearer"})
 
 
@@ -50,15 +46,9 @@ hr = APIRouter(prefix="/api/hr/knowledge", dependencies=[Depends(require_hr)])
 
 @public.post("/api/employee/login")
 def employee_login(body: StaffLogin, request: Request) -> dict[str, Any]:
-    client = request.client.host if request.client else "unknown"
-    if not request.app.state.login_limiter.allow(f"employee:{client}", now(request)):
-        raise HTTPException(429, "too_many_attempts")
-    try:
-        if not check_passcode(body.passcode, role="employee"):
-            raise HTTPException(401, "wrong_passcode")
-        return {"token": create_role_token("employee", now(request)), "expires_in_hours": HR_TOKEN_TTL_HOURS}
-    except HRAuthConfigError:
-        raise HTTPException(503, "employee_auth_not_configured") from None
+    token, user = sign_in(request, body.username, body.password, "employee")
+    return {"token": token, "expires_in_hours": HR_TOKEN_TTL_HOURS, "username": user.username,
+            "display_name": user.display_name}
 
 
 @staff.post("/ask")

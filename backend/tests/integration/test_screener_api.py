@@ -52,7 +52,7 @@ def api(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> SimpleNamespace:
         email_orchestrator=orchestrator,
         screening_service=service,
     ))
-    hr = {"Authorization": f"Bearer {create_role_token('hr', harness.deps.clock.now())}"}
+    hr = {"Authorization": f"Bearer {create_role_token('hr', harness.deps.clock.now(), username='recruiter.sam', user_role='recruiter')}"}
     return SimpleNamespace(client=client, hr=hr, service=service, tmp_path=tmp_path)
 
 
@@ -172,7 +172,7 @@ def test_full_flow_from_demo_to_recorded_shortlist(api):
     audit = api.client.get("/api/hr/audit-log", headers=api.hr).json()
     assert audit["verified"]
     outcome = next(e for e in audit["entries"] if e["event"] == "executor.outcome")
-    assert outcome["fields"]["status"] == "recorded" and outcome["fields"]["approver"] == "HR desk"
+    assert outcome["fields"]["status"] == "recorded" and outcome["fields"]["approver"] == "recruiter.sam"
 
 
 def test_proposals_for_different_candidates_all_stay_pending(api):
@@ -199,6 +199,23 @@ def test_client_cannot_set_the_reviewer(api):
     assert response.status_code == 422
 
 
+def test_reviewer_in_the_body_never_reaches_the_record(api):
+    run = load_and_score(api)
+    url = f"/api/screener/runs/{run['run_id']}/shortlist-proposals"
+    proposal = api.client.post(url, json={"candidate_ids": [run["candidates"][0]["candidate_id"]], "kind": "shortlist"},
+                               headers=api.hr).json()
+    decision_url = f"/api/hr/approvals/{proposal['approval_id']}/decision"
+    spoofed = {"action": "approve", "reviewed_hash": proposal["payload_hash"], "reviewer": "admin.nour"}
+    assert api.client.post(decision_url, json=spoofed, headers=api.hr).status_code == 422
+    item = next(i for i in api.client.get("/api/hr/approvals", headers=api.hr).json()["items"]
+                if i["approval_id"] == proposal["approval_id"])
+    assert item["status"] == "pending" and item["decided_by"] is None
+    api.client.post(decision_url, json={"action": "approve", "reviewed_hash": proposal["payload_hash"]}, headers=api.hr)
+    item = next(i for i in api.client.get("/api/hr/approvals", headers=api.hr).json()["items"]
+                if i["approval_id"] == proposal["approval_id"])
+    assert item["decided_by"] == "recruiter.sam"
+
+
 def test_proposal_for_unknown_candidates_is_refused(api):
     run = load_and_score(api)
     url = f"/api/screener/runs/{run['run_id']}/shortlist-proposals"
@@ -215,7 +232,7 @@ def test_identity_is_revealed_only_on_request_and_audited(api):
     assert response.status_code == 200 and response.json()["candidate_id"] == candidate_id
     events = [e for e in api.client.get("/api/hr/audit-log", headers=api.hr).json()["entries"]
               if e["event"] == "screener.identity_revealed"]
-    assert events[0]["fields"] == {"candidate_id": candidate_id, "reviewer": "HR desk"}
+    assert events[0]["fields"] == {"candidate_id": candidate_id, "reviewer": "recruiter.sam"}
     assert api.client.get("/api/screener/candidates/nope/identity", headers=api.hr).status_code == 404
 
 

@@ -7,6 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from gateway.auth.hr_auth import create_role_token
+from gateway.auth.login import UserStore
 from gateway.main import create_app
 from services.employee_qa.answerer import KnowledgeAssistant
 from services.employee_qa.config import KnowledgeSettings
@@ -34,8 +35,10 @@ NOW = datetime(2026, 11, 2, 8, 0, tzinfo=TUNIS)
 def world(monkeypatch: pytest.MonkeyPatch, tmp_path):
     monkeypatch.setenv("SCHEDULER_TOKEN_SECRET", "candidate-secret-for-tests")
     monkeypatch.setenv("HR_TOKEN_SECRET", "hr-secret-for-tests-different")
-    monkeypatch.setenv("HR_PASSCODE", "hr-pass")
-    monkeypatch.setenv("EMPLOYEE_PASSCODE", "staff-pass")
+    monkeypatch.setenv("HIREWALL_USERS_FILE", str(tmp_path / "users.json"))
+    users = UserStore()
+    users.add("emp.lea", "Lea Employee", "employee", "staff-password")
+    users.add("recruiter.sam", "Sam Recruiter", "recruiter", "hr-password-1")
     screener, state, mock, clock = MockScreenerResults(), SchedulingStateStore(None), MockCalendar(), FixedClock(NOW)
     deps = Deps(llm=FakeLLM(demo_rules), calendar=ReadOnlyCalendar(mock), executor=CalendarBookingExecutor(mock),
                 candidates=ScreenerCandidateRepo(screener, state), bookings=state, email=MemoryEmailSender(),
@@ -43,8 +46,8 @@ def world(monkeypatch: pytest.MonkeyPatch, tmp_path):
     log = QuestionLog(tmp_path / "knowledge_log.json")
     desk = KnowledgeDesk(KnowledgeAssistant(extractive_llm(), KnowledgeSettings()), log)
     client = TestClient(create_app(SchedulingService(deps, screener, state), desk))
-    employee = client.post("/api/employee/login", json={"passcode": "staff-pass"}).json()["token"]
-    hr = client.post("/api/hr/login", json={"passcode": "hr-pass"}).json()["token"]
+    employee = client.post("/api/employee/login", json={"username": "emp.lea", "password": "staff-password"}).json()["token"]
+    hr = client.post("/api/hr/login", json={"username": "recruiter.sam", "password": "hr-password-1"}).json()["token"]
     return {"client": client, "employee": {"Authorization": f"Bearer {employee}"},
             "hr": {"Authorization": f"Bearer {hr}"}, "log": log, "tmp": tmp_path, "desk": desk}
 
@@ -57,7 +60,7 @@ def ask(world, question: str, who: str = "employee") -> dict:
 
 def test_employee_login_and_auth_boundaries(world) -> None:
     client = world["client"]
-    assert client.post("/api/employee/login", json={"passcode": "nope"}).status_code == 401
+    assert client.post("/api/employee/login", json={"username": "emp.lea", "password": "nope"}).status_code == 401
     assert client.post("/api/knowledge/ask", json={"question": "hi"}).status_code == 401
     assert client.get("/api/hr/knowledge/questions", headers=world["employee"]).status_code == 401  # employees ≠ HR
     assert client.get("/api/hr/jobs", headers=world["employee"]).status_code == 401

@@ -4,7 +4,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class StaffLogin(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    passcode: str = Field(min_length=1, max_length=200)
+    username: str = Field(min_length=1, max_length=40)
+    password: str = Field(min_length=1, max_length=200)
 
 
 class Question(BaseModel):

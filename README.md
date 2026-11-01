@@ -288,13 +288,18 @@ Copy-Item .env.example .env
 Set at least these values in `.env`:
 
 ```ini
-HR_PASSCODE=choose-an-hr-passcode
-EMPLOYEE_PASSCODE=choose-a-staff-passcode
 HR_TOKEN_SECRET=<secret 1>
 SCHEDULER_TOKEN_SECRET=<secret 2, must differ>
 LLM_PROVIDER=ollama
 LLM_MODEL=qwen3.5:4b
 SECURITY_MODEL_MODE=block        # or off if you skipped the model download
+```
+
+Then create named accounts. Every approval is recorded under the name of the person who signed in:
+
+```powershell
+.venv\Scripts\python scripts\create_user.py --demo   # admin, recruiter and employee demo accounts; passwords are printed once
+.venv\Scripts\python scripts\create_user.py          # or add your own, one at a time
 ```
 
 ### 3. Start
@@ -312,13 +317,13 @@ cd frontend; npm run dev
 | Step | Go to | Do |
 |---|---|---|
 | 1 | `localhost:5173` | Pick a door |
-| 2 | `/hr` → **Overview** | Sign in with `HR_PASSCODE`; read the KPIs and Findings |
+| 2 | `/hr` → **Overview** | Sign in with your recruiter account; read the KPIs and Findings |
 | 3 | **Screening** | **Load demo candidates** → pick a job → **Score candidates** → open one → **Shortlist** or **Reject** |
 | 4 | **Approvals** | Approve it; the candidate gets the Scheduler's invitation or a rejection email |
 | 5 | **Inbox** | Triage an email, see a phishing attempt quarantined, review a draft and approve it |
 | 6 | **Digest** | **Generate** the daily digest |
 | 7 | **Scheduling** | **Invite** a candidate → open the link → book a slot in the chat |
-| 8 | `/ask` | Sign in with `EMPLOYEE_PASSCODE`; ask *"How many days of leave do I get?"* |
+| 8 | `/ask` | Sign in with an employee account; ask *"How many days of leave do I get?"* |
 
 Emails only reach candidates with `EMAIL_MODE=smtp` and `SMTP_HOST`, `SMTP_FROM`, `SMTP_USER` and `SMTP_PASSWORD` in `.env`. Otherwise they stay in a local outbox and the page says so. For Gmail, use `SMTP_HOST=smtp.gmail.com` and an app password. Set `PUBLIC_BASE_URL` to an address candidates can open, because `localhost` only works on your own machine.
 

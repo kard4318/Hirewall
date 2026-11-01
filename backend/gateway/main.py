@@ -6,7 +6,9 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+from core.audit.audit_log import AuditLog, get_audit_sink
 from gateway.auth.hr_auth import LoginRateLimiter
+from gateway.auth.login import LoginGuard, UserStore
 from gateway.routers import (
     analytics,
     approvals,
@@ -19,6 +21,7 @@ from gateway.routers import (
     scheduling,
     screener,
 )
+from gateway.routers import users as users_router
 from services.analytics.config import AnalyticsSettings
 from services.analytics.directory import Directory
 from services.analytics.reports import AnalyticsService
@@ -38,7 +41,9 @@ def create_app(scheduling_service: SchedulingService | None = None,
                knowledge_desk: KnowledgeDesk | None = None,
                analytics_service: AnalyticsService | None = None,
                email_orchestrator: Any = None,
-               screening_service: Any = None) -> FastAPI:
+               screening_service: Any = None,
+               users: UserStore | None = None,
+               audit_log: AuditLog | None = None) -> FastAPI:
     """App factory. Tests pass services built from fakes; with no arguments everything is built from .env."""
     if scheduling_service is None:
         load_dotenv(REPO_ROOT / ".env")
@@ -54,6 +59,9 @@ def create_app(scheduling_service: SchedulingService | None = None,
     app.state.email_orchestrator = email_orchestrator  # drafter/classifier workflows; built lazily when None
     app.state.screening = screening_service  # resume screener; built lazily when None
     app.state.login_limiter = LoginRateLimiter()
+    app.state.users = users or UserStore()  # named staff accounts (HIREWALL_USERS_FILE)
+    app.state.login_guard = LoginGuard()
+    app.state.audit = audit_log or get_audit_sink()  # sign-ins and security events; IDs and reason codes only
     app.state.upload_limiter = LoginRateLimiter(limit=10)
 
     @app.middleware("http")
@@ -77,6 +85,7 @@ def create_app(scheduling_service: SchedulingService | None = None,
     app.include_router(screener.router)
     app.include_router(approvals.router)
     app.include_router(audit.router)
+    app.include_router(users_router.router)
     return app
 
 

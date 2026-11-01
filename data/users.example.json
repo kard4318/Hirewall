@@ -1,0 +1,8 @@
+{
+  "_note": "Format of HIREWALL_USERS_FILE (default data/runtime/users.json, not committed). Fictional users. An empty password_hash means the account cannot sign in. Create real accounts with: python scripts/create_user.py",
+  "users": [
+    {"username": "admin.example", "display_name": "Example HR Admin", "role": "hr_admin", "password_hash": ""},
+    {"username": "recruiter.example", "display_name": "Example Recruiter", "role": "recruiter", "password_hash": ""},
+    {"username": "employee.example", "display_name": "Example Employee", "role": "employee", "password_hash": ""}
+  ]
+}

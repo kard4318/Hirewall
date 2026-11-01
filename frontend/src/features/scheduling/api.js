@@ -33,7 +33,8 @@ export const hrSession = {
 export const getMeta = () => request("/api/meta");
 
 export const hrApi = {
-  login: (passcode) => request("/api/hr/login", { method: "POST", body: { passcode } }),
+  login: (username, password) => request("/api/hr/login", { method: "POST", body: { username, password } }),
+  me: (token) => request("/api/hr/me", { token }),
   jobs: (token) => request("/api/hr/jobs", { token }),
   candidates: (token, jobId) => request(`/api/hr/jobs/${encodeURIComponent(jobId)}/candidates`, { token }),
   invite: (token, candidateId) =>

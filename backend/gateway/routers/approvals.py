@@ -8,9 +8,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, ConfigDict, Field
 
 from core.approval_queue.approval_queue import ApprovalError, ApprovalItem
+from gateway.auth.jwt import Principal
 from gateway.orchestration import shared_orchestrator
-from gateway.routers.hr_scheduling import require_hr
-from gateway.routers.inbox import REVIEWER
+from gateway.routers.hr_scheduling import require_hr, require_permission
 
 _lock = threading.Lock()
 
@@ -64,11 +64,13 @@ def approvals(request: Request, status: str | None = Query(default=None, max_len
 
 
 @router.post("/{approval_id}/decision")
-def decide(request: Request, approval_id: str, body: ApprovalDecision) -> dict[str, Any]:
+def decide(
+    request: Request, approval_id: str, body: ApprovalDecision, principal: Principal = Depends(require_permission("approve"))
+) -> dict[str, Any]:
     if body.action == "approve" and not body.reviewed_hash:
         raise HTTPException(422, "reviewed_hash_required")
     orchestrator = shared_orchestrator(request.app)
-    decision: dict[str, Any] = {"action": body.action, "reviewer": REVIEWER}
+    decision: dict[str, Any] = {"action": body.action, "reviewer": principal.username}
     if body.action == "approve":
         decision["reviewed_hash"] = body.reviewed_hash
     try:
