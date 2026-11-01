@@ -46,6 +46,8 @@ above. Each entry holds IDs, flags and counts only, never text or file names.
 | `screener.candidate_ingested` | a resume is accepted | `candidate_id`, `source`, `injection_flag`, `hidden_text_removed`, `extraction_failed` |
 | `screener.run_finished` | a scoring run ends | `run_id`, `job_id`, `status`, `scored`, `reason_code` |
 | `screener.identity_revealed` | HR reveals an identity | `candidate_id`, `reviewer` |
+| `screener.contact_used` | an address is looked up for an approved decision | `candidate_id`, `run_id`, `purpose` |
+| `executor.notification` | a candidate was told about a decision | `approval_id`, `action_type`, `candidate_id`, `outcome` |
 | `screener.job_extracted` | an offer becomes a draft | `job_id`, `extraction_failed`, `flagged_requirements`, `injection_flag`, `hidden_text_removed` |
 | `screener.job_published` | HR publishes an offer | `job_id`, `flagged_requirements` |
 | `screener.job_closed` | HR closes an offer | `job_id` |

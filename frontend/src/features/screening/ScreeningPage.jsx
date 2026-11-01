@@ -351,8 +351,9 @@ export function ScreeningPage() {
             </div>
             {proposal && (
               <p className="scr-note" aria-live="polite">
-                {proposal.kind === "shortlist" ? "Shortlist" : "Rejection"} of {proposal.count} proposed.{" "}
-                <Link to={`/hr/approvals?id=${encodeURIComponent(proposal.approval_id)}`}>Review it in the approval queue</Link>
+                {proposal.kind === "shortlist" ? "Shortlist" : "Rejection"} of {proposal.count} proposed. Nothing has been sent yet.{" "}
+                <Link to={`/hr/approvals?id=${encodeURIComponent(proposal.approval_id)}`}>Approve it in the approval queue</Link>
+                {proposal.kind === "shortlist" ? " to invite them through the Scheduler." : " to email the rejection."}
               </p>
             )}
             <RankingTable

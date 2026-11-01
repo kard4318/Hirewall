@@ -49,11 +49,11 @@ export function UploadPanel({ task, names, count, busy, onFiles, onDemo, applica
         accept=".pdf,.docx"
         onChange={(event) => { take(event.target.files); event.target.value = ""; }}
       />
-      {attachTitle && <p className="scr-muted">New uploads are attached to {attachTitle}.</p>}
       <button type="button" className="scr-btn" disabled={busy} onClick={onDemo}>Load demo candidates</button>
       {applications && (
-        <div className="scr-applicants">
-          <h3>{applications.length} application{applications.length === 1 ? "" : "s"}</h3>
+        <details className="scr-applicants scr-requirements">
+          <summary>{applications.length} application{applications.length === 1 ? "" : "s"}</summary>
+          {attachTitle && <p className="scr-muted">New uploads are attached to {attachTitle}.</p>}
           <ul>
             {applications.map((row) => (
               <li key={row.application_id}>
@@ -63,7 +63,7 @@ export function UploadPanel({ task, names, count, busy, onFiles, onDemo, applica
               </li>
             ))}
           </ul>
-        </div>
+        </details>
       )}
       {task && (
         <div className="scr-task" aria-live="polite">

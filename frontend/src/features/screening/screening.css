@@ -147,8 +147,13 @@
 .scr-evidence li { margin-bottom: 8px; }
 .scr-evidence blockquote { margin: 3px 0 0; padding-left: 8px; border-left: 2px solid var(--s-line); color: var(--s-muted); white-space: pre-wrap; }
 
-.scr-review { margin: 10px 0; padding-top: 10px; border-top: 1px solid var(--s-line); }
+.scr-dialog {
+  width: min(680px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 18px; border-radius: 6px;
+  color: var(--s-ink); background: var(--s-panel); border: 1px solid var(--s-line);
+}
+.scr-dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
 .scr-review h3 { margin-top: 0; }
+.scr-extracted { margin-top: 16px; }
 .scr-fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .scr-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .scr-json { font: 11.5px/1.45 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; max-height: 280px; overflow: auto; padding: 8px; background: var(--s-bg); border-radius: 4px; }

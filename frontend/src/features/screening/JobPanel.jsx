@@ -1,5 +1,5 @@
 // Step 2: pick a job offer or write one, then start scoring
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { JobReviewForm } from "./JobReviewForm.jsx";
 import { FILE_REASONS } from "./reasons.js";
 
@@ -21,6 +21,16 @@ export function JobPanel({
 }) {
   const [form, setForm] = useState(null);
   const fileInput = useRef(null);
+  const reviewDialog = useRef(null);
+  const openReview = () => reviewDialog.current?.showModal();
+  const closeReview = () => reviewDialog.current?.close();
+
+  // A draft opens for review as soon as it is picked or imported. Publishing closes it.
+  const reviewKey = posting?.status === "draft" ? posting.job_id : null;
+  useEffect(() => {
+    if (reviewKey) openReview();
+    else closeReview();
+  }, [reviewKey]);
   const set = (field) => (event) => setForm({ ...form, [field]: event.target.value });
   const requirements = form ? toRequirements(form) : [];
   const job = jobs.find((j) => j.job_id === jobId);
@@ -40,14 +50,29 @@ export function JobPanel({
           {jobs.map((j) => <option key={j.job_id} value={j.job_id}>{j.title}{STATUS[j.status] ?? ""}</option>)}
         </select>
       </label>
-      {job && !posting && (
+      {job && (
         <details className="scr-requirements">
           <summary>{job.requirements.length} requirements</summary>
           <ul>{job.requirements.map((r) => <li key={r.text}>{r.text} <span className="scr-muted">({r.kind})</span></li>)}</ul>
         </details>
       )}
       {posting && (
-        <JobReviewForm posting={posting} busy={postingBusy} onSave={onSavePosting} onPublish={onPublish} onClose={onClosePosting} />
+        <>
+          <p className="scr-row">
+            <span className={`scr-pill is-status-${posting.status}`}>{posting.status}</span>
+            <button type="button" className="scr-link" onClick={openReview}>Review offer</button>
+          </p>
+          <dialog ref={reviewDialog} className="scr-dialog" aria-label="Review offer">
+            <JobReviewForm
+              posting={posting}
+              busy={postingBusy}
+              onSave={onSavePosting}
+              onPublish={onPublish}
+              onClose={onClosePosting}
+              onDismiss={closeReview}
+            />
+          </dialog>
+        </>
       )}
       {form ? (
         <form className="scr-form" onSubmit={submit}>
@@ -81,7 +106,7 @@ export function JobPanel({
       )}
       {importError && <p className="scr-alert" role="alert">{FILE_REASONS[importError] ?? "The offer could not be read"}.</p>}
       {posting && posting.status !== "draft" && applicationCount === 0 && (
-        <p className="scr-note">No applications yet, so scoring uses the whole candidate pool.</p>
+        <p className="scr-muted">No applications yet, so scoring uses the whole candidate pool.</p>
       )}
       <button type="button" className="scr-btn is-primary" disabled={!canScore || running} onClick={onScore}>
         {running ? "Scoring..." : "Score candidates"}

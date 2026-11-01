@@ -35,7 +35,9 @@ files `data/screener_mock/jobs.json` and `data/screener_mock/candidates.json` wi
 | `screened_at` | ISO 8601 datetime with offset | when screening ran |
 
 Rules: the scheduler never changes these records and never decides who is invited. HR invites a passed candidate
-from the dashboard; only then does the candidate's signed booking link work.
+from the dashboard; only then does the candidate's signed booking link work. A candidate shortlisted in the screener
+is added to these records and invited once a person approves it (`ScreenerHandoff`), under the id
+`<candidate_id>--<job_id>`. Rejecting them removes the invitation, unless they already have a booking.
 
 ## Internal service contracts
 
@@ -332,8 +334,14 @@ Nothing in it comes from the model or from resume text.
 
 | `decision` | Required fields | Effect |
 |---|---|---|
-| Approve | `action: "approve"`, `reviewer`, `reviewed_hash` | the queue approves only if the hash matches; then `core/executor.execute_record` re-checks the hash, claims the item once, writes `CandidateStatusStore` and audits `executor.outcome` |
+| Approve | `action: "approve"`, `reviewer`, `reviewed_hash` | the queue approves only if the hash matches; then `core/executor.execute_record` re-checks the hash, claims the item once, writes `CandidateStatusStore`, audits `executor.outcome`, and tells each candidate whose status changed |
 | Reject | `action: "reject"`, `reviewer` | nothing is recorded |
+
+After approval, a rejection sends a fixed email with no score or reason, and a shortlist hands the candidate to the
+scheduler, whose bot invitation goes by email. The address is the first one found in the CV, then the one typed in the
+form. Delivery follows `EMAIL_MODE`: `outbox` keeps messages locally, and `smtp` sends them. Each candidate gets an
+`executor.notification` audit event with `outcome`: `sent`, `outbox`, `no_email`, `in_progress` or `failed`. A failed
+message never undoes the decision and is not retried.
 
 `edit` and `redraft` do not apply and pause the workflow again with a message. Workflow and queue statuses add
 `recorded` and `record_failed`.
@@ -362,7 +370,7 @@ code and never echo client input.
 | `GET /api/screener/runs/{run_id}` | | `ScreeningRun` |
 | `POST /api/screener/runs/{run_id}/shortlist-proposals` | `{candidate_ids: string[], kind: "shortlist" or "rejection"}` | `201 {proposal_id, approval_id, thread_id, payload_hash, status}` |
 | `GET /api/screener/candidates/{candidate_id}/identity` | | `Identity`; audited |
-| `GET /api/hr/approvals?status=` | | `{items: [{approval_id, status, action_type, thread_id, payload_hash, summary, created_at, decided_by, decided_at}]}`; `summary` holds IDs only |
+| `GET /api/hr/approvals?status=` | | `{delivery, items: [{approval_id, status, action_type, thread_id, payload_hash, summary, notifications, created_at, decided_by, decided_at}]}`; `summary` and `notifications` hold IDs and outcomes only |
 | `POST /api/hr/approvals/{approval_id}/decision` | `{action: "approve" or "reject", reviewed_hash}` | `WorkflowView` |
 | `GET /api/hr/audit-log?limit=` | | `{entries: [...], verified: boolean}`, newest first, IDs only |
 

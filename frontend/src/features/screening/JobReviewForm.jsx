@@ -38,7 +38,7 @@ function toDetails(form) {
   return details;
 }
 
-export function JobReviewForm({ posting, busy, onSave, onPublish, onClose }) {
+export function JobReviewForm({ posting, busy, onSave, onPublish, onClose, onDismiss }) {
   const [form, setForm] = useState(() => toForm(posting.details));
   useEffect(() => { setForm(toForm(posting.details)); }, [posting]);
 
@@ -122,6 +122,7 @@ export function JobReviewForm({ posting, busy, onSave, onPublish, onClose }) {
         {draft && <button className="scr-btn" disabled={busy || !valid}>Save draft</button>}
         {draft && <button type="button" className="scr-btn is-primary" disabled={busy || !valid} onClick={publish}>Publish</button>}
         {posting.status === "published" && <button type="button" className="scr-btn" disabled={busy} onClick={onClose}>Close offer</button>}
+        <button type="button" className="scr-link" onClick={onDismiss}>Back to screening</button>
       </div>
     </form>
   );

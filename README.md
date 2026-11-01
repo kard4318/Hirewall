@@ -99,7 +99,9 @@ Open http://localhost:5173/hr/screening and sign in with `HR_PASSCODE`. Then:
 2. Pick a job and choose **Score candidates**. Grey moons glide inward as results arrive.
 3. Open a candidate. Review is blind by default; **Reveal identity** is recorded in the audit log.
 4. Tick candidates and choose **Propose shortlist**, then follow the link to the approval queue.
-5. Approve it. The decision and the audit event appear on the same page.
+5. Approve it. A shortlisted candidate gets the Scheduler's invitation, and a rejected one gets a rejection email, at the address in their CV. The result for each candidate and the audit events appear on the same page.
+
+Emails only reach candidates with `EMAIL_MODE=smtp` and `SMTP_HOST`, `SMTP_FROM`, `SMTP_USER` and `SMTP_PASSWORD` in `.env`. Otherwise they stay in a local outbox and the page says so. For Gmail, use `SMTP_HOST=smtp.gmail.com` and an app password. Set `PUBLIC_BASE_URL` to an address candidates can open, because `localhost` only works on your own machine.
 
 To run it with no gateway, no Ollama and no download, with a placeholder rubric:
 

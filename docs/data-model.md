@@ -28,5 +28,6 @@ JobOffer (sample, preset, hand-written, or a published or closed JobPosting) 1--
 ```
 
 - One CV is one candidate, whichever jobs it applies to.
-- Only `reveal_identity` reads `screener_identity.sqlite3`, and each call is audited.
+- Only `reveal_identity` and `decision_contact` read `screener_identity.sqlite3`, and each call is audited.
+- `scheduler_handoff.json` holds the name and address of candidates a person approved for an invitation.
 - A cover letter lives on its `Application` and never reaches scoring.

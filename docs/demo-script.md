@@ -19,8 +19,10 @@ Set up as in "Run the screener" in the README, with Ollama running. The files ar
    injected line is listed, and the CV and letter data are there without a name.
 6. **Upload as HR.** Drop `resumes/cvs/walid_saidi_data.pdf`. It is attached to this job as an HR upload.
 7. **Score.** Choose **Score candidates**. Only this job's two applicants are scored.
-8. **Shortlist.** Tick a candidate, choose **Propose shortlist**, follow the link, and approve. The decision and its audit
-   events appear on the same page.
+8. **Shortlist.** Tick a candidate, choose **Propose shortlist**, follow the link, and choose **Approve and invite**. The
+   candidate gets the Scheduler's invitation at the address in their CV, and appears on the Scheduling page.
+   Set `EMAIL_MODE=smtp` to deliver it, and `PUBLIC_BASE_URL` to an address the candidate can open.
+   **Propose rejection** works the same way and emails a rejection.
 9. **Close the offer.** Choose **Close offer**. The offer leaves `/jobs`, and its page says it is closed.
 
 ## Attacks to show

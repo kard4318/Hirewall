@@ -19,13 +19,13 @@ function Values({ data, labels }) {
 const LETTER_LABELS = [["motivation_summary", "Motivation"], ["skills_mentioned", "Skills"], ["relevant_experiences", "Experience"],
   ["availability", "Availability"], ["start_date", "Start date"], ["desired_duration", "Duration"], ["languages", "Languages"], ["mobility", "Mobility"]];
 
-function ExtractedData({ extracted, application }) {
+function ExtractedData({ extracted, application, open = false }) {
   if (!extracted) return null;
   const { profile } = extracted;
   const letter = application?.cover_letter;
   return (
-    <>
-      <h3>Extracted data</h3>
+    <details className="scr-requirements scr-extracted" open={open}>
+      <summary>Extracted data</summary>
       <h4>CV</h4>
       {profile ? (
         <>
@@ -56,7 +56,7 @@ function ExtractedData({ extracted, application }) {
           )}
         </>
       )}
-    </>
+    </details>
   );
 }
 
@@ -105,7 +105,7 @@ export function CandidateDetail({ candidate, label, identity, blind, onReveal, e
             <ul>{lines.map((line) => <li key={line}><code>{line}</code></li>)}</ul>
           </div>
         )}
-        <ExtractedData extracted={extracted} application={application} />
+        <ExtractedData extracted={extracted} application={application} open />
       </section>
     );
   }
@@ -167,8 +167,6 @@ export function CandidateDetail({ candidate, label, identity, blind, onReveal, e
       <Skills title="Missing" items={candidate.missing_skills} tone="is-warn" />
       <Skills title="Additional (not scored)" items={candidate.additional_skills} tone="" />
 
-      <ExtractedData extracted={extracted} application={application} />
-
       <h3>Evidence</h3>
       <ul className="scr-evidence">
         {candidate.evidence.map((item) => (
@@ -178,6 +176,8 @@ export function CandidateDetail({ candidate, label, identity, blind, onReveal, e
           </li>
         ))}
       </ul>
+
+      <ExtractedData extracted={extracted} application={application} />
     </section>
   );
 }
