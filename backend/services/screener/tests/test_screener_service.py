@@ -6,6 +6,7 @@ import pytest
 
 from core.approval_queue.approval_queue import action_hash
 from core.llm.client import LLMError
+from services.screener.config import RankingWeights, SemanticConfig
 from services.screener.graph_store.taxonomy import default_taxonomy
 from services.screener.justify import RubricOutput, build_rubric_messages, rubric_score, score_rubric
 from services.screener.models import CandidateDocument, JobOffer, Requirement, ResumeSection
@@ -228,6 +229,13 @@ def test_errors_use_short_codes(tmp_path):
         service.get_run("nope")
     with pytest.raises(ScreenerError, match="task_not_found"):
         service.get_task("nope")
+
+
+def test_settings_are_read_when_built_so_dotenv_applies(monkeypatch):
+    monkeypatch.setenv("SCREENER_WEIGHT_RUBRIC", "0.1")
+    monkeypatch.setenv("SCREENER_SEMANTIC_FLOOR", "0.5")
+    assert RankingWeights().rubric == 0.1
+    assert SemanticConfig().floor == 0.5
 
 
 def test_created_job_is_listed(tmp_path):

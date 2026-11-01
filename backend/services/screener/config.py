@@ -10,6 +10,11 @@ import numpy as np
 EMBEDDING_MODEL = os.getenv("SCREENER_EMBEDDING_MODEL", "intfloat/multilingual-e5-small")
 
 
+def _env_float(name: str, default: str):
+    """Read when the object is built, not at import: the gateway loads .env after importing this module."""
+    return field(default_factory=lambda: float(os.getenv(name, default)))
+
+
 def _default_weights() -> dict[str, float]:
     return {"required": 2.0, "preferred": 1.0, "responsibility": 1.0}
 
@@ -19,8 +24,8 @@ class SemanticConfig:
     # Raw cosine depends on the model: for E5 even unrelated text scores
     # around 0.7-0.8, so [floor, ceiling] is mapped to [0, 1].
     # Calibrate on your own data before trusting the numbers (see README).
-    floor: float = float(os.getenv("SCREENER_SEMANTIC_FLOOR", "0.78"))
-    ceiling: float = float(os.getenv("SCREENER_SEMANTIC_CEILING", "0.90"))
+    floor: float = _env_float("SCREENER_SEMANTIC_FLOOR", "0.78")
+    ceiling: float = _env_float("SCREENER_SEMANTIC_CEILING", "0.90")
     met_threshold: float = 0.5           # calibrated score counted as "met"
     max_chunk_chars: int = 400
     max_chunks_per_candidate: int = 60
@@ -38,10 +43,10 @@ class SemanticConfig:
 class RankingWeights:
     # Weights of the combined score. A criterion that does not apply to a
     # candidate (score None) is left out and the others are renormalized.
-    semantic: float = float(os.getenv("SCREENER_WEIGHT_SEMANTIC", "0.35"))
-    experience: float = float(os.getenv("SCREENER_WEIGHT_EXPERIENCE", "0.2"))
-    graph: float = float(os.getenv("SCREENER_WEIGHT_GRAPH", "0"))
-    rubric: float = float(os.getenv("SCREENER_WEIGHT_RUBRIC", "0.45"))
+    semantic: float = _env_float("SCREENER_WEIGHT_SEMANTIC", "0.35")
+    experience: float = _env_float("SCREENER_WEIGHT_EXPERIENCE", "0.2")
+    graph: float = _env_float("SCREENER_WEIGHT_GRAPH", "0")
+    rubric: float = _env_float("SCREENER_WEIGHT_RUBRIC", "0.45")
 
     def __post_init__(self) -> None:
         values = self.as_dict().values()
@@ -63,6 +68,16 @@ def as_of_date() -> date:
 
 EXTRACT_PROMPT_VERSION = "extract_system_v1"
 RUBRIC_PROMPT_VERSION = "rubric_system_v1"
-LLM_TIMEOUT_S = float(os.getenv("SCREENER_LLM_TIMEOUT_SECONDS", "120"))
-# "sentence-transformers" (default, downloads the model once) or "hashing" (bag of words, offline, for demos).
-EMBEDDER = os.getenv("SCREENER_EMBEDDER", "sentence-transformers")
+
+
+def llm_timeout_s() -> float:
+    return float(os.getenv("SCREENER_LLM_TIMEOUT_SECONDS", "120"))
+
+
+def embedder_name() -> str:
+    """"sentence-transformers" (default, downloads the model once) or "hashing" (bag of words, for offline demos)."""
+    return os.getenv("SCREENER_EMBEDDER", "sentence-transformers")
+
+
+def embedding_model() -> str:
+    return os.getenv("SCREENER_EMBEDDING_MODEL", EMBEDDING_MODEL)

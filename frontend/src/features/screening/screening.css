@@ -65,7 +65,8 @@
 }
 
 .scr-card { background: var(--s-panel); border: 1px solid var(--s-line); border-radius: 6px; padding: 14px; min-width: 0; }
-.scr-card > * + .scr-btn, .scr-card > .scr-link { margin-top: 10px; }
+.scr-card > * + .scr-btn { margin-top: 10px; }
+.scr-card > .scr-link { display: block; margin-top: 10px; }
 
 .scr-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .scr-row.is-between { justify-content: space-between; margin-bottom: 8px; }

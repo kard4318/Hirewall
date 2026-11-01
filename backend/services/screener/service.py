@@ -24,12 +24,12 @@ from security.injection_detector import find_injection_lines, remove_injection_l
 from security.pii_bias_filter import mask_identity, split_identity
 from security.text_extractor import extract_visible_text
 from services.screener.config import (
-    EMBEDDER,
-    EMBEDDING_MODEL,
     RUBRIC_PROMPT_VERSION,
     RankingWeights,
     SemanticConfig,
     as_of_date,
+    embedder_name,
+    embedding_model,
 )
 from services.screener.extract import Extraction, clean_profile, extract_document, split_sections
 from services.screener.graph_store.taxonomy import default_taxonomy
@@ -131,11 +131,11 @@ class ScreeningService:
 
     def _embedder(self) -> Embedder:
         if self._embedder_instance is None:
-            if EMBEDDER == "hashing":
+            if embedder_name() == "hashing":
                 self._embedder_instance = HashingEmbedder()
                 self._semantic_config = self._semantic_config or SemanticConfig(floor=0.0, ceiling=0.6)
             else:
-                self._embedder_instance = SentenceTransformerEmbedder(EMBEDDING_MODEL)
+                self._embedder_instance = SentenceTransformerEmbedder(embedding_model())
         return self._embedder_instance
 
     # Ingestion

@@ -13,7 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from core.llm.client import LLMError
 from core.llm.structured_output import StructuredOutputError, generate_structured
 from security.sanitizer import new_boundary, remove_boundary
-from services.screener.config import LLM_TIMEOUT_S, RUBRIC_PROMPT_VERSION
+from services.screener.config import RUBRIC_PROMPT_VERSION, llm_timeout_s
 from services.screener.models import CandidateDocument, CandidateProfile, JobOffer, RubricResult
 
 _PROMPTS_DIR = Path(__file__).with_name("prompts")
@@ -59,14 +59,14 @@ def score_rubric(
     llm: Any,
     *,
     boundary_factory: Callable[[], str] = new_boundary,
-    timeout_s: float = LLM_TIMEOUT_S,
+    timeout_s: float | None = None,
 ) -> RubricResult:
     """Never raises for a model failure: the criterion is then not applied, and the candidate is still ranked."""
     if llm is None:
         return RubricResult(reason_code="llm_unavailable", prompt_version=RUBRIC_PROMPT_VERSION)
     system, user = build_rubric_messages(job, document, profile, boundary_factory())
     try:
-        output = generate_structured(llm, RubricOutput, system=system, user=user, timeout_s=timeout_s)
+        output = generate_structured(llm, RubricOutput, system=system, user=user, timeout_s=timeout_s or llm_timeout_s())
     except LLMError:
         return RubricResult(reason_code="llm_failed", prompt_version=RUBRIC_PROMPT_VERSION)
     except StructuredOutputError:

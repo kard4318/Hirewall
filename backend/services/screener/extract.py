@@ -16,7 +16,7 @@ from core.llm.client import LLMError
 from core.llm.structured_output import StructuredOutputError, generate_structured
 from security.injection_detector import find_injection_lines, remove_injection_lines
 from security.sanitizer import new_boundary, remove_boundary
-from services.screener.config import EXTRACT_PROMPT_VERSION, LLM_TIMEOUT_S
+from services.screener.config import EXTRACT_PROMPT_VERSION, llm_timeout_s
 from services.screener.models import CandidateProfile, ResumeSection, SectionKind
 
 _PROMPTS_DIR = Path(__file__).with_name("prompts")
@@ -67,7 +67,7 @@ def clean_profile(profile: CandidateProfile) -> CandidateProfile:
 
 
 def extract_document(
-    text: str, llm: Any, *, boundary_factory: Callable[[], str] = new_boundary, timeout_s: float = LLM_TIMEOUT_S
+    text: str, llm: Any, *, boundary_factory: Callable[[], str] = new_boundary, timeout_s: float | None = None
 ) -> Extraction:
     """`text` must already be visible-only, pseudonymized and free of the flagged lines."""
     fallback = Extraction(split_sections(text), None, True)
@@ -78,7 +78,8 @@ def extract_document(
     user = f"BEGIN_{boundary}\n{remove_boundary(text, boundary)}\nEND_{boundary}"
     try:
         output = generate_structured(
-            llm, ExtractionOutput, system=system.replace("{{BOUNDARY}}", boundary), user=user, timeout_s=timeout_s
+            llm, ExtractionOutput, system=system.replace("{{BOUNDARY}}", boundary), user=user,
+            timeout_s=timeout_s or llm_timeout_s(),
         )
     except (LLMError, StructuredOutputError):
         return fallback
