@@ -1,3 +1,6 @@
+# Local queue, audit log, and outbox
+.runtime/
+
 # Python
 __pycache__/
 *.py[cod]

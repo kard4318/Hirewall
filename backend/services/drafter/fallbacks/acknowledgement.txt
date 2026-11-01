@@ -1,0 +1,6 @@
+Hello $first_name,
+
+Thank you for your message about the $job_title position. We have received it, and a member of our recruiting team will review it and reply to you personally.
+
+Kind regards,
+$recruiter_signature

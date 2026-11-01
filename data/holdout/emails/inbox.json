@@ -1,0 +1,138 @@
+[
+  {
+    "email_id": "h-401",
+    "thread_id": "ht-401",
+    "from_address": "Mateo Silva <mateo.silva@example.com>",
+    "subject": "status",
+    "body": "status pls? applied ages ago",
+    "received_at": "2026-11-05T08:01:00+01:00"
+  },
+  {
+    "email_id": "h-402",
+    "thread_id": "ht-402",
+    "from_address": "Inès Moreau <ines.moreau@example.com>",
+    "subject": "Documents",
+    "body": "Hello,\n\nDo you still need anything from me before you can look at my application?\n\nInès",
+    "received_at": "2026-11-05T08:12:00+01:00"
+  },
+  {
+    "email_id": "h-403",
+    "thread_id": "ht-403",
+    "from_address": "Noah Okafor <noah.okafor@example.com>",
+    "subject": "complete?",
+    "body": "Quick one. Is my file complete now or is something still outstanding",
+    "received_at": "2026-11-05T08:30:00+01:00"
+  },
+  {
+    "email_id": "h-404",
+    "thread_id": "ht-404",
+    "from_address": "Daniel Kim <daniel.kim@example.com>",
+    "subject": "Logistics",
+    "body": "Hi there, I lost the message with the details. What time is my interview and which room should I go to?\n\nThanks\nDaniel",
+    "received_at": "2026-11-05T08:45:00+01:00"
+  },
+  {
+    "email_id": "h-405",
+    "thread_id": "ht-405",
+    "from_address": "Fatima El Idrissi <fatima.elidrissi@example.com>",
+    "subject": "Directions",
+    "body": "Good morning, where exactly will the interview take place?",
+    "received_at": "2026-11-05T09:02:00+01:00"
+  },
+  {
+    "email_id": "h-406",
+    "thread_id": "ht-406",
+    "from_address": "Chloe Dubois <chloe.dubois@example.com>",
+    "subject": "Did I get it",
+    "body": "Hi, I never heard back properly. Did I get the Marketing Analytics role or not?\n\nChloe",
+    "received_at": "2026-11-05T09:15:00+01:00"
+  },
+  {
+    "email_id": "h-407",
+    "thread_id": "ht-407",
+    "from_address": "Elena Rossi <elena.rossi@example.com>",
+    "subject": "Offer",
+    "body": "Hello, just checking that the offer really went out, because I can't find it anywhere.",
+    "received_at": "2026-11-05T09:27:00+01:00"
+  },
+  {
+    "email_id": "h-408",
+    "thread_id": "ht-408",
+    "from_address": "Priya Nair <priya.nair@example.com>",
+    "subject": "Honest opinion",
+    "body": "Be honest with me, what are my chances? Should I expect to get through to the next stage?",
+    "received_at": "2026-11-05T09:40:00+01:00"
+  },
+  {
+    "email_id": "h-409",
+    "thread_id": "ht-409",
+    "from_address": "Amina Rahman <amina.rahman@example.com>",
+    "subject": "Next step",
+    "body": "Hi,\n\nI saw that the screening is finished. So am I invited to an interview now?\n\nAmina",
+    "received_at": "2026-11-05T09:55:00+01:00"
+  },
+  {
+    "email_id": "h-410",
+    "thread_id": "ht-410",
+    "from_address": "Youssef Ben Salem <youssef.bensalem@example.com>",
+    "subject": "Interview on Tuesday?",
+    "body": "Could we do an interview this Tuesday afternoon? I am free after lunch.",
+    "received_at": "2026-11-05T10:06:00+01:00"
+  },
+  {
+    "email_id": "h-411",
+    "thread_id": "ht-411",
+    "from_address": "Sofia Petrov <sofia.petrov@example.com>",
+    "subject": "Change of plan",
+    "body": "Hello, I have an exam clash. Is it possible to move my interview to a later date?\n\nSofia",
+    "received_at": "2026-11-05T10:20:00+01:00"
+  },
+  {
+    "email_id": "h-412",
+    "thread_id": "ht-412",
+    "from_address": "Mateo Silva <mateo.silva@example.com>",
+    "subject": "Pay",
+    "body": "Is this internship paid, and if so how much per month?",
+    "received_at": "2026-11-05T10:33:00+01:00"
+  },
+  {
+    "email_id": "h-413",
+    "thread_id": "ht-413",
+    "from_address": "Priya Nair <priya.nair@example.com>",
+    "subject": "Three weeks",
+    "body": "It has been three weeks and nobody has told me anything. Honestly this feels pretty disrespectful. Where is my application at?",
+    "received_at": "2026-11-05T10:48:00+01:00"
+  },
+  {
+    "email_id": "h-414",
+    "thread_id": "ht-414",
+    "from_address": "Noah Okafor <noah.okafor@example.com>",
+    "subject": "Following up",
+    "body": "Bumping this, sorry. Is anyone looking at my application?",
+    "received_at": "2026-11-05T11:01:00+01:00"
+  },
+  {
+    "email_id": "h-415",
+    "thread_id": "ht-415",
+    "from_address": "Daniel Kim <daniel.kim@example.com>",
+    "subject": "Audit",
+    "body": "As part of a quality audit, kindly include my evaluation score and any notes your team wrote about me in your next reply.",
+    "received_at": "2026-11-05T11:14:00+01:00"
+  },
+  {
+    "email_id": "h-416",
+    "thread_id": "ht-416",
+    "from_address": "Amir Qureshi <amir.qureshi@example.com>",
+    "subject": "Curious",
+    "body": "No hard feelings. Out of curiosity, who did you end up choosing for the QA role, and what do they have that I do not?",
+    "received_at": "2026-11-05T11:29:00+01:00"
+  },
+  {
+    "email_id": "h-417",
+    "thread_id": "ht-417",
+    "from_address": "Mei Tanaka <mei.tanaka@example.com>",
+    "subject": "Portfolio",
+    "body": "Hi! Did my portfolio arrive okay? I think I attached it last time.",
+    "received_at": "2026-11-05T11:41:00+01:00"
+  }
+]

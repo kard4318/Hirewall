@@ -1,0 +1,74 @@
+[
+  {
+    "email_id": "e-101",
+    "thread_id": "t-101",
+    "from_address": "Sam Rivera <sam.rivera@example.com>",
+    "subject": "My application for Data Analyst",
+    "body": "Hello,\n\nI applied last week. Could you tell me what the status of my application is?\n\nThanks,\nSam",
+    "received_at": "2026-11-02T09:00:00+01:00"
+  },
+  {
+    "email_id": "e-102",
+    "thread_id": "t-102",
+    "from_address": "Omar Haddad <omar.haddad@example.com>",
+    "subject": "Anything else needed?",
+    "body": "Good morning,\n\nIs there anything else you need from me for the HR Coordinator role?\n\nBest regards,\nOmar",
+    "received_at": "2026-11-02T09:20:00+01:00"
+  },
+  {
+    "email_id": "e-103",
+    "thread_id": "t-103",
+    "from_address": "Priya Nair <priya.nair@example.com>",
+    "subject": "Interview details",
+    "body": "Hi,\n\nCould you remind me when and where my interview is?\n\nThank you,\nPriya",
+    "received_at": "2026-11-02T10:05:00+01:00"
+  },
+  {
+    "email_id": "e-104",
+    "thread_id": "t-104",
+    "from_address": "Leo Martin <leo.martin@example.com>",
+    "subject": "Any decision yet?",
+    "body": "Hello,\n\nHave you made a decision about my application?\n\nKind regards,\nLeo",
+    "received_at": "2026-11-02T11:10:00+01:00"
+  },
+  {
+    "email_id": "e-105",
+    "thread_id": "t-105",
+    "from_address": "Hana Suzuki <hana.suzuki@example.com>",
+    "subject": "Update on the UX Designer role",
+    "body": "Hello,\n\nI would appreciate an update on my application.\n\nBest,\nHana",
+    "received_at": "2026-11-02T11:40:00+01:00"
+  },
+  {
+    "email_id": "e-106",
+    "thread_id": "t-106",
+    "from_address": "Sam Rivera <sam.rivera@example.com>",
+    "subject": "Salary range",
+    "body": "Hi,\n\nWhat salary does the Data Analyst role pay?\n\nThanks,\nSam",
+    "received_at": "2026-11-02T13:15:00+01:00"
+  },
+  {
+    "email_id": "e-107",
+    "thread_id": "t-103",
+    "from_address": "Priya Nair <priya.nair@example.com>",
+    "subject": "Re: Interview details",
+    "body": "Hi again,\n\nSomething came up. Could we move my interview to another day?\n\nPriya",
+    "received_at": "2026-11-02T14:30:00+01:00"
+  },
+  {
+    "email_id": "e-108",
+    "thread_id": "t-108",
+    "from_address": "Omar Haddad <omar.haddad@example.com>",
+    "subject": "Withdrawing my application",
+    "body": "Hello,\n\nI have accepted another position, so I would like to withdraw my application.\n\nThank you for your time,\nOmar",
+    "received_at": "2026-11-02T15:00:00+01:00"
+  },
+  {
+    "email_id": "e-109",
+    "thread_id": "t-109",
+    "from_address": "Morgan Blake <morgan.blake@example.com>",
+    "subject": "Open positions",
+    "body": "Hello,\n\nI have not applied yet. Do you have any open positions?\n\nMorgan",
+    "received_at": "2026-11-02T15:30:00+01:00"
+  }
+]

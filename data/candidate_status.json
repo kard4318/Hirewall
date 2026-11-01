@@ -1,1 +1,107 @@
-[]
+[
+  {
+    "candidate_id": "C-1001",
+    "first_name": "Sam",
+    "last_name": "Rivera",
+    "email": "sam.rivera@example.com",
+    "job_title": "Data Analyst",
+    "stage": "under_review",
+    "documents_received": ["CV"],
+    "documents_missing": ["Portfolio"],
+    "interview": null,
+    "decisions": [],
+    "screening_score": 87,
+    "internal_notes": "Fictional note: strong SQL, salary expectations unknown."
+  },
+  {
+    "candidate_id": "C-1002",
+    "first_name": "Priya",
+    "last_name": "Nair",
+    "email": "priya.nair@example.com",
+    "job_title": "Backend Engineer",
+    "stage": "interview_scheduled",
+    "documents_received": ["CV", "Portfolio"],
+    "documents_missing": [],
+    "interview": { "scheduled_at": "2026-11-12T10:00:00+01:00", "location": "Meeting Room 4" },
+    "decisions": [
+      {
+        "type": "advance",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-20T15:00:00+01:00",
+        "details": "technical interview"
+      }
+    ],
+    "screening_score": 91,
+    "internal_notes": "Fictional note: top of the shortlist."
+  },
+  {
+    "candidate_id": "C-1003",
+    "first_name": "Leo",
+    "last_name": "Martin",
+    "email": "leo.martin@example.com",
+    "job_title": "Data Analyst",
+    "stage": "screening_complete",
+    "documents_received": ["CV", "Portfolio"],
+    "documents_missing": [],
+    "interview": null,
+    "decisions": [
+      {
+        "type": "advance",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-28T11:00:00+01:00",
+        "details": "technical interview"
+      }
+    ],
+    "screening_score": 79,
+    "internal_notes": "Fictional note: schedule interview next."
+  },
+  {
+    "candidate_id": "C-1004",
+    "first_name": "Hana",
+    "last_name": "Suzuki",
+    "email": "hana.suzuki@example.com",
+    "job_title": "UX Designer",
+    "stage": "closed",
+    "documents_received": ["CV"],
+    "documents_missing": [],
+    "interview": null,
+    "decisions": [
+      {
+        "type": "reject",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-29T09:30:00+01:00",
+        "details": "not moving forward"
+      }
+    ],
+    "screening_score": 54,
+    "internal_notes": "Fictional note: portfolio not relevant to the role."
+  },
+  {
+    "candidate_id": "C-1005",
+    "first_name": "Omar",
+    "last_name": "Haddad",
+    "email": "omar.haddad@example.com",
+    "job_title": "HR Coordinator",
+    "stage": "under_review",
+    "documents_received": ["CV"],
+    "documents_missing": ["References"],
+    "interview": null,
+    "decisions": [],
+    "screening_score": 68,
+    "internal_notes": "Fictional note: awaiting references."
+  },
+  {
+    "candidate_id": "C-1006",
+    "first_name": "Jordan",
+    "last_name": "Lee",
+    "email": "jordan.lee@example.com",
+    "job_title": "Data Analyst",
+    "stage": "under_review",
+    "documents_received": ["CV"],
+    "documents_missing": [],
+    "interview": null,
+    "decisions": [],
+    "screening_score": 83,
+    "internal_notes": "Fictional note: must stay private from other candidates."
+  }
+]

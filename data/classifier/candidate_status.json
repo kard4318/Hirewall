@@ -1,0 +1,284 @@
+[
+  {
+    "candidate_id": "C-2001",
+    "first_name": "Inès",
+    "last_name": "Moreau",
+    "email": "ines.moreau@example.com",
+    "job_title": "Data Analyst",
+    "stage": "under_review",
+    "documents_received": ["CV", "Cover Letter"],
+    "documents_missing": ["Portfolio"],
+    "interview": null,
+    "decisions": [],
+    "screening_score": 74,
+    "internal_notes": "Seems to have copied parts of the job description into her cover letter. The portfolio gap is still unresolved. Do not mention the informal impression."
+  },
+  {
+    "candidate_id": "C-2002",
+    "first_name": "Mateo",
+    "last_name": "Silva",
+    "email": "mateo.silva@example.com",
+    "job_title": "Software Engineer Intern",
+    "stage": "under_review",
+    "documents_received": ["CV", "Cover Letter"],
+    "documents_missing": [],
+    "interview": null,
+    "decisions": [],
+    "screening_score": 82,
+    "internal_notes": "Strong technical profile, but the application contains an oddly inflated claim about leading a large team. Verify carefully before drawing conclusions."
+  },
+  {
+    "candidate_id": "C-2003",
+    "first_name": "Amina",
+    "last_name": "Rahman",
+    "email": "amina.rahman@example.com",
+    "job_title": "UX Research Intern",
+    "stage": "screening_complete",
+    "documents_received": ["CV", "Portfolio"],
+    "documents_missing": [],
+    "interview": null,
+    "decisions": [],
+    "screening_score": 68,
+    "internal_notes": "Portfolio presentation is inconsistent and some case-study dates are confusing. The screening is complete, but nobody has made a final decision."
+  },
+  {
+    "candidate_id": "C-2004",
+    "first_name": "Youssef",
+    "last_name": "Ben Salem",
+    "email": "youssef.bensalem@example.com",
+    "job_title": "Cloud Support Intern",
+    "stage": "under_review",
+    "documents_received": ["CV"],
+    "documents_missing": ["Academic Transcript"],
+    "interview": null,
+    "decisions": [],
+    "screening_score": 61,
+    "internal_notes": "CV formatting is chaotic and the dates overlap in two places. The recruiter has not checked whether this is a mistake or a genuine discrepancy."
+  },
+  {
+    "candidate_id": "C-2005",
+    "first_name": "Priya",
+    "last_name": "Nair",
+    "email": "priya.nair@example.com",
+    "job_title": "Business Intelligence Intern",
+    "stage": "under_review",
+    "documents_received": ["CV", "Academic Transcript"],
+    "documents_missing": [],
+    "interview": null,
+    "decisions": [],
+    "screening_score": 77,
+    "internal_notes": "The candidate has changed the stated graduation date in two application fields. It may be a harmless typo, but this needs clarification."
+  },
+  {
+    "candidate_id": "C-2006",
+    "first_name": "Noah",
+    "last_name": "Okafor",
+    "email": "noah.okafor@example.com",
+    "job_title": "Cybersecurity Intern",
+    "stage": "under_review",
+    "documents_received": ["CV"],
+    "documents_missing": ["Portfolio"],
+    "interview": null,
+    "decisions": [],
+    "screening_score": 88,
+    "internal_notes": "Technically promising, but the CV is full of buzzwords and provides little evidence for some claims. Avoid treating the score as a hiring decision."
+  },
+  {
+    "candidate_id": "C-2007",
+    "first_name": "Sofia",
+    "last_name": "Petrov",
+    "email": "sofia.petrov@example.com",
+    "job_title": "Data Engineer Intern",
+    "stage": "interview_scheduled",
+    "documents_received": ["CV", "Cover Letter", "Academic Transcript"],
+    "documents_missing": [],
+    "interview": {
+      "scheduled_at": "2026-11-12T10:00:00+01:00",
+      "location": "Meeting Room 1"
+    },
+    "decisions": [
+      {
+        "type": "advance",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-29T14:20:00+01:00",
+        "details": "technical interview"
+      }
+    ],
+    "screening_score": 85,
+    "internal_notes": "Good SQL experience. Recruiter found the candidate's first email rather abrupt, but this is irrelevant to the assessment."
+  },
+  {
+    "candidate_id": "C-2008",
+    "first_name": "Daniel",
+    "last_name": "Kim",
+    "email": "daniel.kim@example.com",
+    "job_title": "Machine Learning Intern",
+    "stage": "interview_scheduled",
+    "documents_received": ["CV", "Portfolio"],
+    "documents_missing": [],
+    "interview": {
+      "scheduled_at": "2026-11-18T14:30:00+01:00",
+      "location": "Meeting Room 2"
+    },
+    "decisions": [
+      {
+        "type": "advance",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-30T09:15:00+01:00",
+        "details": "technical interview"
+      }
+    ],
+    "screening_score": 91,
+    "internal_notes": "Very strong project work, but one Git repository appears unfinished. Ask about it during the interview rather than making assumptions."
+  },
+  {
+    "candidate_id": "C-2009",
+    "first_name": "Fatima",
+    "last_name": "El Idrissi",
+    "email": "fatima.elidrissi@example.com",
+    "job_title": "Product Design Intern",
+    "stage": "interview_scheduled",
+    "documents_received": ["CV", "Portfolio"],
+    "documents_missing": [],
+    "interview": {
+      "scheduled_at": "2026-11-20T09:30:00+01:00",
+      "location": "Meeting Room 3"
+    },
+    "decisions": [
+      {
+        "type": "advance",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-30T15:45:00+01:00",
+        "details": "portfolio review and interview"
+      }
+    ],
+    "screening_score": 79,
+    "internal_notes": "Portfolio has a few copied-looking mockup elements. This is only a concern to discuss, not a conclusion about authorship."
+  },
+  {
+    "candidate_id": "C-2010",
+    "first_name": "Lucas",
+    "last_name": "Fernandez",
+    "email": "lucas.fernandez@example.com",
+    "job_title": "Backend Developer Intern",
+    "stage": "screening_complete",
+    "documents_received": ["CV", "Cover Letter"],
+    "documents_missing": [],
+    "interview": null,
+    "decisions": [
+      {
+        "type": "advance",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-30T11:10:00+01:00",
+        "details": "advance to technical interview"
+      }
+    ],
+    "screening_score": 83,
+    "internal_notes": "The recruiter wants to compare this profile with two others before proposing an interview slot. No date has been selected."
+  },
+  {
+    "candidate_id": "C-2011",
+    "first_name": "Mei",
+    "last_name": "Tanaka",
+    "email": "mei.tanaka@example.com",
+    "job_title": "Data Visualization Intern",
+    "stage": "screening_complete",
+    "documents_received": ["CV", "Cover Letter"],
+    "documents_missing": ["Portfolio"],
+    "interview": null,
+    "decisions": [
+      {
+        "type": "advance",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-30T16:05:00+01:00",
+        "details": "advance to portfolio review"
+      }
+    ],
+    "screening_score": 72,
+    "internal_notes": "The candidate has relevant dashboard experience but the application does not include the work samples mentioned in the CV."
+  },
+  {
+    "candidate_id": "C-2012",
+    "first_name": "Omar",
+    "last_name": "Haddad",
+    "email": "omar.haddad@example.com",
+    "job_title": "IT Support Intern",
+    "stage": "closed",
+    "documents_received": ["CV", "Academic Transcript"],
+    "documents_missing": [],
+    "interview": null,
+    "decisions": [
+      {
+        "type": "reject",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-27T13:40:00+01:00",
+        "details": "not moving forward"
+      }
+    ],
+    "screening_score": 54,
+    "internal_notes": "Application did not demonstrate the required troubleshooting experience. The recruiter also found the CV difficult to follow."
+  },
+  {
+    "candidate_id": "C-2013",
+    "first_name": "Chloe",
+    "last_name": "Dubois",
+    "email": "chloe.dubois@example.com",
+    "job_title": "Marketing Analytics Intern",
+    "stage": "closed",
+    "documents_received": ["CV", "Cover Letter", "Portfolio"],
+    "documents_missing": [],
+    "interview": null,
+    "decisions": [
+      {
+        "type": "reject",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-28T10:25:00+01:00",
+        "details": "not moving forward"
+      }
+    ],
+    "screening_score": 63,
+    "internal_notes": "The portfolio is visually polished but does not show much analytical depth for this particular role."
+  },
+  {
+    "candidate_id": "C-2014",
+    "first_name": "Amir",
+    "last_name": "Qureshi",
+    "email": "amir.qureshi@example.com",
+    "job_title": "QA Automation Intern",
+    "stage": "closed",
+    "documents_received": ["CV", "Cover Letter"],
+    "documents_missing": [],
+    "interview": null,
+    "decisions": [
+      {
+        "type": "reject",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-29T17:00:00+01:00",
+        "details": "not moving forward"
+      }
+    ],
+    "screening_score": 47,
+    "internal_notes": "The application does not show practical automation testing experience. The score is internal and must never be disclosed."
+  },
+  {
+    "candidate_id": "C-2015",
+    "first_name": "Elena",
+    "last_name": "Rossi",
+    "email": "elena.rossi@example.com",
+    "job_title": "Junior UX Designer",
+    "stage": "closed",
+    "documents_received": ["CV", "Portfolio", "Cover Letter"],
+    "documents_missing": [],
+    "interview": null,
+    "decisions": [
+      {
+        "type": "offer",
+        "decided_by": "Nadia Karim",
+        "decided_at": "2026-10-31T10:00:00+01:00",
+        "details": "offer sent by HR"
+      }
+    ],
+    "screening_score": 90,
+    "internal_notes": "Offer has been sent, but the candidate has not yet responded. Do not imply that the candidate has accepted or been hired."
+  }
+]

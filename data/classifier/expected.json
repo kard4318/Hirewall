@@ -1,0 +1,556 @@
+[
+  {
+    "email_id": "c-01",
+    "split": "tune",
+    "expected_types": [
+      "candidate_question"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": false,
+    "can_draft": true
+  },
+  {
+    "email_id": "c-02",
+    "split": "tune",
+    "expected_types": [
+      "candidate_question"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": false,
+    "can_draft": true
+  },
+  {
+    "email_id": "c-03",
+    "split": "tune",
+    "expected_types": [
+      "interview_scheduling"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": false,
+    "can_draft": true
+  },
+  {
+    "email_id": "c-04",
+    "split": "tune",
+    "expected_types": [
+      "interview_scheduling"
+    ],
+    "expected_urgency": [
+      "normal",
+      "high"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-05",
+    "split": "tune",
+    "expected_types": [
+      "interview_scheduling"
+    ],
+    "expected_urgency": [
+      "high"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-06",
+    "split": "tune",
+    "expected_types": [
+      "document_submission"
+    ],
+    "expected_urgency": [
+      "normal",
+      "low"
+    ],
+    "needs_human": false,
+    "can_draft": true
+  },
+  {
+    "email_id": "c-07",
+    "split": "tune",
+    "expected_types": [
+      "document_submission"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": false,
+    "can_draft": true
+  },
+  {
+    "email_id": "c-08",
+    "split": "tune",
+    "expected_types": [
+      "decision_or_feedback"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-09",
+    "split": "tune",
+    "expected_types": [
+      "decision_or_feedback"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": false,
+    "can_draft": true
+  },
+  {
+    "email_id": "c-10",
+    "split": "tune",
+    "expected_types": [
+      "decision_or_feedback"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-11",
+    "split": "tune",
+    "expected_types": [
+      "decision_or_feedback"
+    ],
+    "expected_urgency": [
+      "normal",
+      "high"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-12",
+    "split": "tune",
+    "expected_types": [
+      "decision_or_feedback"
+    ],
+    "expected_urgency": [
+      "high"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-13",
+    "split": "tune",
+    "expected_types": [
+      "compensation"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-14",
+    "split": "tune",
+    "expected_types": [
+      "compensation"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-15",
+    "split": "tune",
+    "expected_types": [
+      "withdrawal"
+    ],
+    "expected_urgency": [
+      "high"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-16",
+    "split": "tune",
+    "expected_types": [
+      "withdrawal"
+    ],
+    "expected_urgency": [
+      "high"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-17",
+    "split": "tune",
+    "expected_types": [
+      "new_application"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-18",
+    "split": "tune",
+    "expected_types": [
+      "new_application"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-19",
+    "split": "tune",
+    "expected_types": [
+      "new_application"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-20",
+    "split": "tune",
+    "expected_types": [
+      "employee_question"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-21",
+    "split": "tune",
+    "expected_types": [
+      "employee_question"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-22",
+    "split": "tune",
+    "expected_types": [
+      "automatic_reply"
+    ],
+    "expected_urgency": [
+      "low"
+    ],
+    "needs_human": false,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-23",
+    "split": "tune",
+    "expected_types": [
+      "automatic_reply"
+    ],
+    "expected_urgency": [
+      "low"
+    ],
+    "needs_human": false,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-24",
+    "split": "tune",
+    "expected_types": [
+      "unrelated"
+    ],
+    "expected_urgency": [
+      "low"
+    ],
+    "needs_human": false,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-25",
+    "split": "tune",
+    "expected_types": [
+      "unrelated"
+    ],
+    "expected_urgency": [
+      "low"
+    ],
+    "needs_human": false,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-26",
+    "split": "tune",
+    "expected_types": [
+      "unclassified"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-27",
+    "split": "tune",
+    "expected_types": [
+      "unrelated"
+    ],
+    "expected_urgency": [
+      "low"
+    ],
+    "needs_human": false,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-28",
+    "split": "tune",
+    "expected_types": [
+      "candidate_question",
+      "decision_or_feedback",
+      "suspicious"
+    ],
+    "expected_urgency": [
+      "normal",
+      "high"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-29",
+    "split": "tune",
+    "expected_types": [
+      "suspicious"
+    ],
+    "expected_urgency": [
+      "high"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-30",
+    "split": "tune",
+    "expected_types": [
+      "candidate_question"
+    ],
+    "expected_urgency": [
+      "low",
+      "normal"
+    ],
+    "needs_human": false,
+    "can_draft": true
+  },
+  {
+    "email_id": "c-31",
+    "split": "holdout",
+    "expected_types": [
+      "candidate_question"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": false,
+    "can_draft": true
+  },
+  {
+    "email_id": "c-32",
+    "split": "holdout",
+    "expected_types": [
+      "interview_scheduling"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": false,
+    "can_draft": true
+  },
+  {
+    "email_id": "c-33",
+    "split": "holdout",
+    "expected_types": [
+      "document_submission"
+    ],
+    "expected_urgency": [
+      "normal",
+      "low"
+    ],
+    "needs_human": false,
+    "can_draft": true
+  },
+  {
+    "email_id": "c-34",
+    "split": "holdout",
+    "expected_types": [
+      "decision_or_feedback"
+    ],
+    "expected_urgency": [
+      "normal",
+      "high"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-35",
+    "split": "holdout",
+    "expected_types": [
+      "compensation"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-36",
+    "split": "holdout",
+    "expected_types": [
+      "withdrawal"
+    ],
+    "expected_urgency": [
+      "high"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-37",
+    "split": "holdout",
+    "expected_types": [
+      "new_application"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-38",
+    "split": "holdout",
+    "expected_types": [
+      "unrelated"
+    ],
+    "expected_urgency": [
+      "low"
+    ],
+    "needs_human": false,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-39",
+    "split": "holdout",
+    "expected_types": [
+      "employee_question"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-40",
+    "split": "holdout",
+    "expected_types": [
+      "automatic_reply"
+    ],
+    "expected_urgency": [
+      "low"
+    ],
+    "needs_human": false,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-41",
+    "split": "holdout",
+    "expected_types": [
+      "interview_scheduling"
+    ],
+    "expected_urgency": [
+      "high"
+    ],
+    "needs_human": false,
+    "can_draft": true
+  },
+  {
+    "email_id": "c-42",
+    "split": "holdout",
+    "expected_types": [
+      "unclassified",
+      "unrelated",
+      "suspicious"
+    ],
+    "expected_urgency": [
+      "normal",
+      "low",
+      "high"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-43",
+    "split": "holdout",
+    "expected_types": [
+      "decision_or_feedback",
+      "candidate_question"
+    ],
+    "expected_urgency": [
+      "high"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  },
+  {
+    "email_id": "c-44",
+    "split": "holdout",
+    "expected_types": [
+      "document_submission"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": false,
+    "can_draft": true
+  },
+  {
+    "email_id": "c-45",
+    "split": "holdout",
+    "expected_types": [
+      "unclassified"
+    ],
+    "expected_urgency": [
+      "normal"
+    ],
+    "needs_human": true,
+    "can_draft": false
+  }
+]

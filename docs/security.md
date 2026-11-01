@@ -3,3 +3,60 @@
 Threat model, defenses (sanitizing, injection detection, PII/bias filtering) and the human-approval guarantee.
 
 TODO
+
+## Drafter
+
+The drafter reads text written by outsiders, so it assumes the model can be manipulated. Its protections do not depend on the model refusing an attack.
+
+### Defenses
+
+| Threat | Defense |
+|---|---|
+| The model is told to send or contact someone else | The model has no tools and its output schema has no recipient fields. Code takes the recipient from the candidate record |
+| A reply exposes another candidate's data | The candidate is found by exact sender address, and only that candidate's allowlisted fields reach the model |
+| A reply exposes scores or notes | Those fields are never copied into the context, and the output is checked for internal terms |
+| Hidden instructions | Hidden HTML, comments, zero-width characters, and Unicode tag characters are removed before the model sees the email. The reviewer gets a warning |
+| Breaking out of the data block | The email is wrapped in a random per-request boundary, and that boundary is removed from the email text |
+| Phishing or data exfiltration through links | URLs and email addresses must be in trusted data or an allowlist. Text in the candidate's email does not count |
+| Invented facts | Dates, times, numbers, and phone numbers must have a source. Money amounts must be in trusted data |
+| Decisions made by AI | Outcome and salary wording needs a matching human-recorded decision |
+| Email header injection | Line breaks in the subject are blocked, including after a recruiter edit |
+| Malformed model output | Output is strictly validated with one repair attempt, then falls back to a fixed template or a human |
+| Sensitive data in logs | Logs and audit events hold only IDs, hashes, status, reason codes, prompt version, and latency |
+
+### Known limits
+
+- **Sender identity:** the drafter trusts the `from_address` it receives. A forged sender matching a real candidate gets through, so the email integration must verify senders (SPF, DKIM, DMARC). The reply still goes only to the address on record.
+- **Values from the candidate's email:** a date, time, phone number, or plain number that appears only in the candidate's email causes a reviewer warning, not a block. A recruiter must not approve such a value without checking it.
+- **Phrase lists:** decision, internal-data, and contradiction checks use phrase lists, so a paraphrase can pass them. Numbers written as words are not detected. Because of this, the human review step remains essential.
+- **Wrong but well-formed drafts:** a local model can state something false that no check recognizes. In testing it told a candidate no more documents were needed while one was missing, which led to the `contradicts_record` check. Other such errors can still reach the reviewer, so a recruiter must read every draft against its listed sources.
+- **Invented details in ordinary words:** in testing the model told a candidate their interview would be "conducted with a panel", which no record said. Checks only recognize values such as dates, numbers, and links, so this kind of invention can reach the reviewer.
+- **Unconfirmed promises:** phrases such as "we will be in touch shortly" only add a `promise_to_confirm` warning. A recruiter should remove any promise they do not intend to keep.
+- **Rejection reasons:** the checks cannot detect an invented reason written in ordinary words.
+- **Language:** the checks rely on the language the model reports, and only English is configured. A model that reports `en` while writing another language would avoid the phrase lists.
+- **Other people's names:** names are not checked directly. The model only sees names from the context and the current thread.
+- **Sender-influenced text:** `human_message` and `warnings` may include model text shaped by the sender, so they must be displayed as plain text.
+- **Injection detector:** it uses patterns and is only a signal. Attacks can avoid it, and unusual ordinary text can trigger it, which only sends that email to a human.
+- **Data sent to the model:** the model runs locally through Ollama. `core/llm` refuses any host other than this machine, so prompts are not sent to a cloud service. Anyone with access to this machine can still reach the local server, which has no authentication. Do not change `OLLAMA_HOST` to expose it on a network.
+- **Model quality:** a small local model is more easily manipulated and makes more mistakes than a large hosted one. The code-level checks and human approval are what protect against this.
+
+## Approval and sending
+
+`core/executor` is the only code that sends. It enforces these rules for every send:
+
+| Rule | How it works |
+|---|---|
+| A named human approved | The queue requires an approver, and the item must be `approved` |
+| The approval covers this exact text | Approval requires the hash of the text the reviewer saw. An edit changes the hash, so an earlier review no longer applies. The hash is checked again just before sending |
+| The recipient cannot change | Edits that change `to` or `in_reply_to` are refused |
+| No duplicate replies | The item is claimed atomically, once, and only if no other reply to that email is sending or sent |
+| The draft is still current | If a newer email arrived in the thread, the draft becomes `stale` and is not sent |
+| Failures need a human | A failed send becomes `send_failed` and is never retried automatically, because the email may have gone out |
+| A record exists | Each step goes to a hash-chained audit log of IDs and outcomes. `verify()` detects edited, removed, or reordered entries, but not removal of the newest entries |
+
+### Known limits
+
+- **Identity:** the queue records the approver's name but does not authenticate them. The gateway must do this with its login and roles.
+- **Storage:** the queue, audit log, outbox, and workflow checkpoints are local files, and anyone with file access could replace them. Checkpoints hold IDs and outcomes, but a recruiter's edits, feedback, and short status messages from the model are saved there too.
+- **Tracing:** do not turn on LangSmith tracing, for example with `LANGSMITH_TRACING`. It would send workflow data to a cloud service, which breaks the local-only guarantee.
+- **Sending:** the email provider is a local outbox. A real provider needs its own credentials and tests.
