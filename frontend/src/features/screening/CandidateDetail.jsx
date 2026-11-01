@@ -41,12 +41,11 @@ function ExtractedData({ extracted, application, open = false }) {
         <summary>View CV JSON</summary>
         <pre className="scr-json">{JSON.stringify({ profile, sections: extracted.sections }, null, 2)}</pre>
       </details>
-      {application && (
+      {application && (letter || application.cover_letter_text || application.cover_letter_failed) && (
         <>
           <h4>Cover letter (display only, not scored)</h4>
           {letter && <Values data={letter} labels={LETTER_LABELS} />}
           {application.cover_letter_failed && <p className="scr-muted">The model could not structure this letter.</p>}
-          {!letter && !application.cover_letter_text && !application.cover_letter_failed && <p className="scr-muted">No cover letter.</p>}
           {(letter || application.cover_letter_text) && (
             <details className="scr-requirements" open={!letter}>
               <summary>{letter ? "View letter JSON and text" : "View letter text"}</summary>

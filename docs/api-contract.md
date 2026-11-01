@@ -177,9 +177,6 @@ stored apart, and never reach the scoring code, the model, logs or audit events.
 | `get_posting(job_id)` / `list_postings()` | id / none | `JobPosting` / `JobPosting[]` |
 | `update_posting(job_id, details)` | id, `JobPostingDetails` | `JobPosting`; drafts only, requirements derived again |
 | `publish_posting(job_id)` / `close_posting(job_id)` | id | `JobPosting` |
-| `public_postings()` / `public_posting(job_id)` | none / id | details only, for the public pages |
-| `check_application_files(cv, cover_letter)` | `(filename, bytes)` pairs | raises `cv_<reason>` or `cover_letter_<reason>`; no model involved |
-| `submit_application(job_id, cv, cover_letter, full_name, email)` | files and form values | `reference_id`; processed in the background |
 | `list_applications(job_id)` | id | application rows with the candidate summary and merged flags |
 | `get_extracted(candidate_id)` | id | profile, sections and flags, pseudonymous |
 
@@ -373,18 +370,6 @@ code and never echo client input.
 | `GET /api/hr/approvals?status=` | | `{delivery, items: [{approval_id, status, action_type, thread_id, payload_hash, summary, notifications, created_at, decided_by, decided_at}]}`; `summary` and `notifications` hold IDs and outcomes only |
 | `POST /api/hr/approvals/{approval_id}/decision` | `{action: "approve" or "reject", reviewed_hash}` | `WorkflowView` |
 | `GET /api/hr/audit-log?limit=` | | `{entries: [...], verified: boolean}`, newest first, IDs only |
-
-#### Public endpoints (no login)
-
-| Method and path | Body | Response |
-|---|---|---|
-| `GET /api/jobs` | | `{jobs: [{job_id, published_at, details}]}`, published only |
-| `GET /api/jobs/{job_id}` | | `{job_id, published_at, details}`; `404 job_not_found` for a draft, `409 job_closed` |
-| `POST /api/jobs/{job_id}/applications` | multipart `cv`, optional `cover_letter`, `full_name`, `email`, `consent` | `202 {reference_id}` and nothing else |
-
-Application errors: `429 too_many_applications` (5 a minute), `429 try_later` (20 waiting), `411 length_required`,
-`413 upload_too_large`, `422 consent_required`, `invalid_name`, `invalid_email`, `cv_required`, `cv_<file reason>`,
-`cover_letter_<file reason>`.
 
 ### LLM client (`core.llm`)
 

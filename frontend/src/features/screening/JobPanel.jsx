@@ -106,7 +106,7 @@ export function JobPanel({
       )}
       {importError && <p className="scr-alert" role="alert">{FILE_REASONS[importError] ?? "The offer could not be read"}.</p>}
       {posting && posting.status !== "draft" && applicationCount === 0 && (
-        <p className="scr-muted">No applications yet, so scoring uses the whole candidate pool.</p>
+        <p className="scr-muted">No candidates attached yet, so scoring uses the whole candidate pool.</p>
       )}
       <button type="button" className="scr-btn is-primary" disabled={!canScore || running} onClick={onScore}>
         {running ? "Scoring..." : "Score candidates"}
