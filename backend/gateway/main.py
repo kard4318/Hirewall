@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 
 from gateway.auth.hr_auth import LoginRateLimiter
-from gateway.routers import analytics, directory, employee_qa, hr_scheduling, scheduling
+from gateway.routers import analytics, directory, employee_qa, hr_scheduling, inbox, scheduling
 from services.analytics.config import AnalyticsSettings
 from services.analytics.directory import Directory
 from services.analytics.reports import AnalyticsService
@@ -18,7 +18,8 @@ from services.scheduler.service import SchedulingService, service_from_env
 
 def create_app(scheduling_service: SchedulingService | None = None,
                knowledge_desk: KnowledgeDesk | None = None,
-               analytics_service: AnalyticsService | None = None) -> FastAPI:
+               analytics_service: AnalyticsService | None = None,
+               email_orchestrator: Any = None) -> FastAPI:
     """App factory. Tests pass services built from fakes; with no arguments everything is built from .env."""
     if scheduling_service is None:
         load_dotenv(REPO_ROOT / ".env")
@@ -30,6 +31,7 @@ def create_app(scheduling_service: SchedulingService | None = None,
     # Reads data/people lazily, on the first analytics request.
     app.state.analytics = analytics_service or AnalyticsService(PeopleRepository(AnalyticsSettings()))
     app.state.directory = Directory(app.state.analytics.repo)  # identified records, HR only
+    app.state.email_orchestrator = email_orchestrator  # drafter/classifier workflows; built lazily when None
     app.state.login_limiter = LoginRateLimiter()
 
     @app.middleware("http")
@@ -48,6 +50,7 @@ def create_app(scheduling_service: SchedulingService | None = None,
     app.include_router(employee_qa.hr)
     app.include_router(analytics.router)
     app.include_router(directory.router)
+    app.include_router(inbox.router)
     return app
 
 

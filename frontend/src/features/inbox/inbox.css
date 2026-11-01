@@ -1,0 +1,42 @@
+/* Recruiter inbox: list on the left, the email and its draft on the right (Ledger and Stamp theme) */
+.inbox-tabs { display: inline-flex; border: 1.5px solid var(--ink); align-self: flex-start; }
+.inbox-tabs button { font: 600 0.85rem var(--font-ui); background: none; border: none; padding: 0.45rem 0.9rem; cursor: pointer; display: inline-flex; gap: 0.4rem; }
+.inbox-tabs button.is-active { background: var(--ink); color: var(--paper); }
+.inbox-layout { display: grid; grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.4fr); gap: 1.1rem; align-items: start; }
+@media (max-width: 900px) { .inbox-layout { grid-template-columns: 1fr; } }
+
+.inbox-list ul { list-style: none; margin: 0; padding: 0; }
+.mail-row { width: 100%; text-align: left; display: flex; flex-direction: column; gap: 0.15rem; padding: 0.65rem 0.4rem;
+  background: none; border: none; border-bottom: 1px solid var(--rule); cursor: pointer; font: inherit; color: var(--ink); }
+.mail-row:hover { background: rgba(23, 21, 15, 0.04); }
+.mail-row.is-open { background: rgba(229, 65, 45, 0.07); box-shadow: inset 3px 0 0 var(--vermilion); }
+.mail-row:focus-visible { outline: 2px solid var(--vermilion); outline-offset: -2px; }
+.mail-from { font-size: 0.78rem; color: var(--ink-soft); }
+.mail-subject { font-weight: 600; }
+.mail-preview { font-size: 0.82rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mail-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.25rem; font-size: 0.7rem; }
+
+.inbox-detail { position: sticky; top: 1rem; }
+@media (max-width: 900px) { .inbox-detail { position: static; } }
+.mail-body { white-space: pre-wrap; font: 0.92rem/1.5 var(--font-ui); margin: 0 0 0.9rem; padding: 0.7rem 0.8rem;
+  background: rgba(255, 253, 247, 0.8); border-left: 2px solid var(--rule-strong); }
+.mail-meta { margin: 0; display: flex; justify-content: space-between; gap: 0.6rem; }
+.history { margin-bottom: 0.8rem; font-size: 0.85rem; }
+.history summary { cursor: pointer; color: var(--ink-soft); margin-bottom: 0.4rem; }
+.history-item .mail-body { font-size: 0.85rem; }
+.classification { margin: 0 0 0.8rem; font-size: 0.88rem; }
+.inbox-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 0.4rem 0; }
+.notice-soft { margin: 0.4rem 0; padding: 0.5rem 0.7rem; border: 1px dashed var(--ink-soft); font-size: 0.86rem; }
+
+.draft { border-top: 3px double var(--ink); padding-top: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.draft input, .redraft input { font: 0.95rem var(--font-ui); }
+.draft textarea { font: 0.92rem/1.5 var(--font-ui); color: var(--ink); resize: vertical; padding: 0.6rem;
+  background: rgba(255, 255, 255, 0.6); border: 1px solid var(--rule-strong); }
+.draft textarea:focus-visible { outline: 2px solid var(--vermilion); outline-offset: 1px; }
+.draft-warnings { margin: 0; padding-left: 1.1rem; color: var(--vermilion-ink); font-size: 0.82rem; }
+.redraft { display: flex; gap: 0.5rem; align-items: flex-end; }
+.redraft input { flex: 1; }
+
+.sent-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.9rem; }
+.sent-list li { border-bottom: 1px solid var(--rule); padding-bottom: 0.6rem; }
+.sent-list .muted { margin: 0.1rem 0 0.4rem; font-size: 0.82rem; }

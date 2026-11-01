@@ -7,7 +7,7 @@ import { HrSessionContext } from "./HrSession.jsx";
 import "./styles/analytics.css";
 
 const LINKS = [["overview", "Overview"], ["people", "People"], ["directory", "Directory"], ["retention", "Retention"],
-  ["scheduling", "Scheduling"], ["questions", "Questions"]];
+  ["scheduling", "Scheduling"], ["inbox", "Inbox"], ["questions", "Questions"]];
 
 export function HrShell({ token, onSignOut }) {
   const [meta, setMeta] = useState(null);

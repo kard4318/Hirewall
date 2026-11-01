@@ -341,7 +341,8 @@ def test_loose_directory_match_is_not_trusted() -> None:
 
 def test_prompt_holds_no_candidate_record_data() -> None:
     llm = FakeLLM(suggestion())
-    classify_email(email(), deps(llm=llm))
+    # Fixed boundary: a random one sometimes contains "87" and made this check fail at random.
+    classify_email(email(), deps(llm=llm, boundary_factory=lambda: "UNTRUSTED_FIXED"))
     call = llm.calls[0]
     for private in ("SECRET-NOTE", "87", "screening", "decisions"):
         assert private not in call["system"].replace("screening results", "")
