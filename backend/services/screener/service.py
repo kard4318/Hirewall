@@ -871,6 +871,15 @@ class ScreeningService:
             "matched_skills": ranked.matched_skills,
         }
 
+    def upload_refusals(self) -> dict[str, int]:
+        """How many files were refused, by reason code. Counts only: no names or contents are kept."""
+        counts: dict[str, int] = {}
+        for task in self._store.list_tasks():
+            for file in task.files:
+                if file.status in ("rejected", "failed") and file.reason_code:
+                    counts[file.reason_code] = counts.get(file.reason_code, 0) + 1
+        return dict(sorted(counts.items(), key=lambda item: -item[1]))
+
     # Erasure and retention
 
     def known_names(self, candidate_id: str) -> list[str]:

@@ -33,7 +33,7 @@ export function HrShell({ token, onSignOut }) {
         <header className="hr-nav">
           <Wordmark />
           <nav aria-label="HR sections">
-            {LINKS.map(([to, label]) => (
+            {[...LINKS, ...(me?.role === "hr_admin" ? [["security", "Security"]] : [])].map(([to, label]) => (
               <NavLink key={to} to={to} className={({ isActive }) => `hr-nav-link${isActive ? " is-active" : ""}`}>
                 {label}
               </NavLink>

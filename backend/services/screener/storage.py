@@ -87,6 +87,11 @@ class ScreenerStore:
     def save_task(self, task: IngestionTask) -> None:
         self._put("tasks", task.task_id, task.model_dump_json())
 
+    def list_tasks(self) -> list[IngestionTask]:
+        with self._db.connect() as db:
+            rows = db.execute("SELECT data FROM tasks").fetchall()
+        return [IngestionTask.model_validate_json(row["data"]) for row in rows]
+
     def get_task(self, task_id: str) -> IngestionTask | None:
         data = self._get("tasks", task_id)
         return IngestionTask.model_validate_json(data) if data else None
