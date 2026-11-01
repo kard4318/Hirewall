@@ -6,7 +6,8 @@ def _escape(text: str) -> str:
 
 
 def minimal_pdf(
-    lines: list[str], *, hidden: str | None = None, tiny: str | None = None, off_page: str | None = None
+    lines: list[str], *, hidden: str | None = None, tiny: str | None = None, off_page: str | None = None,
+    catalog_extra: bytes = b"", extra_objects: list[bytes] | None = None,
 ) -> bytes:
     """One page of black 11 pt text, plus optional white, 2 pt or off-page text."""
     stream = ["BT", "/F1 11 Tf", "14 TL", "50 780 Td"]
@@ -20,13 +21,14 @@ def minimal_pdf(
         stream += ["BT", "0 0 0 rg", "/F1 11 Tf", "900 900 Td", f"({_escape(off_page)}) Tj", "ET"]
     content = "\n".join(stream).encode("latin-1")
     objects = [
-        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Catalog /Pages 2 0 R " + catalog_extra + b">>",
         b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
         b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R"
         b" /Resources << /Font << /F1 5 0 R >> >> >>",
         b"<< /Length " + str(len(content)).encode() + b" >>\nstream\n" + content + b"\nendstream",
         b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
     ]
+    objects += extra_objects or []
     output = bytearray(b"%PDF-1.4\n")
     offsets = []
     for number, body in enumerate(objects, start=1):
