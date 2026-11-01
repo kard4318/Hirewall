@@ -1,6 +1,7 @@
 # Data models used by the drafter service
 
 from datetime import datetime
+
 try:
     from enum import StrEnum
 except ImportError:  # Python 3.10: same behaviour as 3.11's StrEnum
@@ -26,6 +27,7 @@ class ReasonCode(StrEnum):
     AMBIGUOUS_SENDER = "ambiguous_sender"
     INVALID_CANDIDATE_RECORD = "invalid_candidate_record"
     INJECTION_SUSPECTED = "injection_suspected"
+    PHISHING_SUSPECTED = "phishing_suspected"
     LLM_UNAVAILABLE = "llm_unavailable"
     LLM_FAILED = "llm_failed"
     LLM_ESCALATED = "llm_escalated"

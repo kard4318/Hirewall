@@ -7,7 +7,7 @@ from langgraph.graph import END
 from .state import WorkflowState
 
 # Each task maps to the node that starts it. Routing is done by code, so an email's text cannot choose a route.
-TASK_ROUTES: dict[str, str] = {"draft_reply": "draft", "triage_email": "classify"}
+TASK_ROUTES: dict[str, str] = {"draft_reply": "draft", "triage_email": "classify", "daily_digest": "digest"}
 UNSUPPORTED_NODE = "unsupported_task"
 AWAITING_REVIEW = "awaiting_review"
 APPROVED = "approved"

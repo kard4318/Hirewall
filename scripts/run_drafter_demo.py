@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -10,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend"))
 from core.approval_queue.approval_queue import ApprovalError, ApprovalItem  # noqa: E402
 from core.paths import runtime_dir  # noqa: E402
 from orchestrator.checkpoints import CHECKPOINT_FILE  # noqa: E402
-from orchestrator.graph import TRIAGE_TASK, Orchestrator, WorkflowView  # noqa: E402
+from orchestrator.graph import DIGEST_TASK, TRIAGE_TASK, Orchestrator, WorkflowView  # noqa: E402
 
 
 def show_item(item: ApprovalItem) -> None:
@@ -121,6 +122,24 @@ def cmd_outbox(orchestrator: Orchestrator, args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_digest(orchestrator: Orchestrator, args: argparse.Namespace) -> int:
+    scope = args.date or "all"
+    view = orchestrator.start(scope, task=DIGEST_TASK)
+    if view.status != "completed":
+        print(f"Refused: {view.reason_code}")
+        return 1
+    digest = orchestrator.digest(scope)
+    print(digest["headline"])
+    for group in digest["groups"]:
+        urgency = group["urgency"]
+        counts = f"{group['total']}: {urgency['high']} high, {urgency['normal']} normal, {urgency['low']} low"
+        print(f"\n{group['label']} ({counts})")
+        for item in group["items"]:
+            tags = f"[{item['urgency']:<6}] [{item['bucket']:<14}]"
+            print(f"  {tags} {item['email_id']} {item['sender']}: {item['summary']}")
+    return 0
+
+
 def cmd_graph(orchestrator: Orchestrator, args: argparse.Namespace) -> int:
     print(orchestrator.diagram())
     return 0
@@ -132,7 +151,8 @@ def cmd_reset(args: argparse.Namespace) -> int:
     files += [f"{CHECKPOINT_FILE}-wal", f"{CHECKPOINT_FILE}-shm"]
     for name in files:
         (runtime_dir() / name).unlink(missing_ok=True)
-    print(f"Cleared the queue, audit log, outbox, and paused workflows in {runtime_dir()}")
+    shutil.rmtree(runtime_dir() / "digests", ignore_errors=True)
+    print(f"Cleared the queue, audit log, outbox, digests, and paused workflows in {runtime_dir()}")
     return 0
 
 
@@ -151,6 +171,10 @@ def build_parser() -> argparse.ArgumentParser:
     triage_target.add_argument("email_id", nargs="?")
     triage_target.add_argument("--all", action="store_true")
     triage.set_defaults(handler=cmd_triage)
+
+    digest = commands.add_parser("digest", help="build the daily digest, grouped by type and urgency")
+    digest.add_argument("--date", help="a day as YYYY-MM-DD, or leave it out for the whole inbox")
+    digest.set_defaults(handler=cmd_digest)
 
     listing = commands.add_parser("list", help="list the approval queue")
     listing.add_argument("--status")
@@ -187,7 +211,7 @@ def build_parser() -> argparse.ArgumentParser:
     commands.add_parser("audit", help="print the audit log").set_defaults(handler=cmd_audit)
     commands.add_parser("outbox", help="print sent emails").set_defaults(handler=cmd_outbox)
     commands.add_parser("graph", help="print the workflow as a Mermaid diagram").set_defaults(handler=cmd_graph)
-    commands.add_parser("reset", help="clear the local queue, audit log, outbox, and paused workflows")
+    commands.add_parser("reset", help="clear the local queue, audit log, outbox, digests, and paused workflows")
     return parser
 
 

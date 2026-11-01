@@ -91,6 +91,7 @@ Decision `type` is one of `advance`, `reject`, `offer`, `hire`, `salary`.
 | `ambiguous_sender` | `needs_human` | The sender matches several candidates |
 | `invalid_candidate_record` | `needs_human` | The record failed validation |
 | `injection_suspected` | `quarantined` | The detector flagged the input |
+| `phishing_suspected` | `quarantined` | The email has strong warning signs of phishing. `human_message` names them |
 | `llm_unavailable` | `needs_human` | No LLM client is wired in |
 | `llm_failed` | `needs_human` | The LLM failed and no fallback could be used |
 | `llm_escalated` | `needs_human` | The model asked for human input |
@@ -129,9 +130,9 @@ Gateway routes should call these methods rather than the graph, queue, or execut
 | `view(thread_id)` | Read a workflow's current state |
 | `diagram()` | Return the graph as a Mermaid diagram |
 
-`start` also accepts `task="triage_email"`, which classifies the email first and drafts a reply only for routine questions from candidates. `paused_thread_for_email(email_id)` finds the paused workflow holding an email's draft, whichever task started it.
+`start` also accepts `task="triage_email"`, which classifies the email first and drafts a reply only for routine questions from candidates, and `task="daily_digest"` with `all` or a date as the subject, which builds a digest. `digest(scope)` reads the latest one. `paused_thread_for_email(email_id)` finds the paused workflow holding an email's draft, whichever task started it.
 
-`start`, `resume`, and `view` return a `WorkflowView` with `thread_id`, `status`, `waiting_for_human`, `approval_id`, `payload_hash`, `reason_code`, `message`, `result`, and `classification`. Show the reviewer the draft by reading `approval_id` from the queue. `classification` has `type`, `urgency`, `needs_human`, `can_draft`, and `sender_kind`, and is set only for triage.
+`start`, `resume`, and `view` return a `WorkflowView` with `thread_id`, `status`, `waiting_for_human`, `approval_id`, `payload_hash`, `reason_code`, `message`, `result`, and `classification`. Show the reviewer the draft by reading `approval_id` from the queue. `classification` has `type`, `urgency`, `needs_human`, `can_draft`, `sender_kind`, and `rules_applied`, and is set only for triage.
 
 | `decision` | Required fields |
 |---|---|
@@ -377,6 +378,15 @@ code and never echo client input.
 Application errors: `429 too_many_applications` (5 a minute), `429 try_later` (20 waiting), `411 length_required`,
 `413 upload_too_large`, `422 consent_required`, `invalid_name`, `invalid_email`, `cv_required`, `cv_<file reason>`,
 `cover_letter_<file reason>`.
+
+### Daily digest (HR token required)
+
+| Route | Purpose |
+|---|---|
+| `POST /api/hr/digest/generate` with `{"date": "YYYY-MM-DD"}` or `{}` | Start building a digest for a day or the whole inbox. Returns 202. Returns 409 if one is already running, and 422 for an invalid date |
+| `GET /api/hr/digest?date=YYYY-MM-DD` | Read `scope`, `job` (`state`: `idle`, `running`, `done`, or `failed`), and `digest` (null if there is none yet), and `saved` (periods with a saved digest, most recently generated first) |
+
+`digest` has `scope`, `generated_at`, `total`, `counts`, `urgency`, `headline`, `needs_answer`, and `groups`. Each group has `type`, `label`, `total`, `urgency`, and `items`. Each item has `email_id`, `thread_id`, `sender`, `subject`, `summary`, `summary_source`, `received_at`, `type`, `urgency`, `needs_human`, `can_draft`, `sender_kind`, `rules_applied`, `workflow_status`, and `bucket`.
 
 ### LLM client (`core.llm`)
 

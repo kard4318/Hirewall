@@ -36,7 +36,8 @@ def api(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> SimpleNamespace:
     queue = ApprovalQueue(tmp_path / "queue.sqlite3")
     workflow = RecordWorkflow(service.build_proposed_action, queue, service._audit, service._status_store)
     drafter = SimpleNamespace(
-        deps=SimpleNamespace(llm=None, candidates=None, detector=None), queue=queue, audit=service._audit
+        deps=SimpleNamespace(llm=None, candidates=None, detector=None, phishing_detector=None),
+        queue=queue, audit=service._audit,
     )
     orchestrator = Orchestrator(
         workflow=drafter,

@@ -15,12 +15,15 @@ def load_default_deps() -> ClassifierDeps:
     from core.db.repositories import get_candidate_directory
     from core.llm.client import LLMError, get_llm_client
     from security.injection_detector import is_suspicious
+    from security.phishing_detector import assess_phishing
 
     try:
         llm = get_llm_client()
     except LLMError:
         llm = None
-    return ClassifierDeps(llm=llm, candidates=get_candidate_directory(), detector=is_suspicious)
+    return ClassifierDeps(
+        llm=llm, candidates=get_candidate_directory(), detector=is_suspicious, phishing_detector=assess_phishing
+    )
 
 
 def classify_node(state: Mapping[str, Any], deps: ClassifierDeps | None = None) -> dict[str, Any]:

@@ -10,6 +10,7 @@ from gateway.routers import (
     analytics,
     approvals,
     audit,
+    digest,
     directory,
     employee_qa,
     hr_scheduling,
@@ -65,6 +66,7 @@ def create_app(scheduling_service: SchedulingService | None = None,
     app.include_router(employee_qa.hr)
     app.include_router(analytics.router)
     app.include_router(directory.router)
+    app.include_router(digest.router)
     app.include_router(inbox.router)
     app.include_router(screener.router)
     app.include_router(jobs.public)
