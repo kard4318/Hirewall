@@ -56,6 +56,10 @@ HRwall is built on one idea, which is also its logo: **a wall of bricks with one
 
 ## 🏗 Architecture
 
+![Hirewall architecture](architecture.png)
+
+*Design overview. The current build runs the services together in one FastAPI process, without RabbitMQ or Docker, as the diagram below shows.*
+
 ```mermaid
 flowchart LR
     subgraph Users
@@ -222,15 +226,63 @@ A known candidate's address does **not** excuse an email, because accounts get t
 ### 9. Shared security layer: one wall for every service
 `backend/security/`
 
-| Component | Role |
-|---|---|
-| `rules.py` | Multilingual injection rules; folds look-alike letters, leetspeak, spaced letters and invisible characters |
-| `injection_model.py` | Local `protectai/deberta-v3-base-prompt-injection-v2` (Apache-2.0) on CPU through ONNX |
-| `quarantine.py` | `screen_untrusted()` returns allow, flag or block; the quarantine log holds a hash, reasons and a masked excerpt |
-| `pii_bias_filter.py` | Masks emails, phones, IBANs and cards; strips protected-attribute lines |
-| `output_validator.py` | Blocks prompt leaks, invisible characters, unexpected links and emails in model output |
+Every service reads text written by outsiders, so all of them share one set of defenses. The layer assumes a model can be manipulated: it cleans what goes in, checks what comes out, and leaves the final decision to a person.
 
-The rules always run. The model is a second opinion (`SECURITY_MODEL_MODE` = `off`, `monitor` or `block`). If it fails, the rules still apply.
+#### What happens to untrusted content
+
+```mermaid
+flowchart LR
+    IN[File, email, chat or question] --> FILE[Upload checks]
+    FILE --> TEXT[Visible text only]
+    TEXT --> CLEAN[Remove invisible characters]
+    CLEAN --> SCREEN{Injection and phishing screens}
+    SCREEN -- block --> QUAR[Quarantine, no model call]
+    SCREEN -- allow or flag --> FENCE[Random boundary and canary]
+    FENCE --> LLM[Local model, no tools]
+    LLM --> OUT{Output checks}
+    OUT -- problem --> HUMAN[Fixed template or a person]
+    OUT -- passes --> PROP[Proposal for human approval]
+```
+
+Not every input takes every step. Only uploads pass the file checks, and phishing screening applies to email.
+
+#### Components
+
+| Component | What it does |
+|---|---|
+| `file_validator.py` | Accepts PDF and DOCX only, up to 5 MB and 10 PDF pages. Checks the real file signature, and refuses zip bombs, unsafe paths, encrypted PDFs, PDF scripts and attachments, and DOCX macros, embedded objects and remote templates |
+| `malware_scan.py` | Optional ClamAV scan. If it is turned on and unreachable, uploads are refused |
+| `text_extractor.py` | Keeps only what a human reader would see. White, tiny, off-page and hidden text is dropped, then still checked, and the reviewer is told |
+| `sanitizer.py` | Removes hidden HTML, zero-width characters and other invisible characters |
+| `rules.py`, `injection_detector.py` | Injection rules in English, French and Arabic. Folds look-alike letters, leetspeak and spaced letters first |
+| `injection_model.py` | Optional local `protectai/deberta-v3-base-prompt-injection-v2` (Apache-2.0) on CPU through ONNX. Its files are checked against recorded SHA-256 hashes, and it does not load if they differ |
+| `quarantine.py` | `screen_untrusted()` returns allow, flag or block. The log holds a hash, reasons, the model score and a masked excerpt |
+| `phishing_detector.py` | Scores HR-specific scams before any model call (see section 3) |
+| `pii_bias_filter.py` | Masks emails, phones, IBANs, cards and URLs. Splits off identity and protected attributes such as age, gender and nationality, and lists discriminatory job requirements for HR |
+| `output_validator.py` | Flags prompt leaks, leaked canaries, invisible characters, and unexpected emails or links in model output |
+| `permissions.py` | Says who may approve each action and which executor may carry it out. Anything not listed is refused |
+| `attack_suite/` | 47 red-team attacks mapped to the OWASP Top 10 for LLM Applications 2025 |
+
+#### How it decides
+
+- **Rules always run**, and they can block on their own.
+- **The classifier is a second opinion**, set by `SECURITY_MODEL_MODE`: `off` (the default), `monitor` (flag only) or `block` (may block above `SECURITY_MODEL_THRESHOLD`). If it fails, the rules still apply.
+- **A flag never changes a score.** On a CV it is shown to the reviewer, and the flagged lines are removed from what the model sees.
+- **Model calls are protected in `core/llm`.** Each system prompt carries a canary token, so an answer that leaks the prompt is dropped. Hosts that are not local are refused.
+
+#### What we measured
+
+These runs were offline, on fictional data. The attack suite uses a stand-in model, and the other two checks use no model:
+
+| Check | Result | Command |
+|---|---|---|
+| Attack suite | 47 of 47 stopped | `python scripts/run_attack_suite.py` |
+| Injection rules alone, classifier not downloaded | 30 of 45 attacks caught, 0 of 76 ordinary messages flagged | `python scripts/eval_security.py` |
+| Phishing, hold-out emails | 17 of 20 quarantined, 3 sent to a person, 0 missed; 2 of 20 normal emails flagged | `python scripts/evaluate_phishing.py --split holdout` |
+
+The attack suite is a regression check against attacks we already know, not proof of safety. The rules alone miss a third of those attacks, mostly rewordings. That is why this layer is not the last line of defense: models have no tools, and a person approves the actions that reach people.
+
+Full details and known limits are in [docs/security.md](docs/security.md).
 
 ---
 
