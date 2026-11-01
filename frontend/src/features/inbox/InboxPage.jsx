@@ -5,8 +5,9 @@ import { useHrSession } from "../analytics/HrSession.jsx";
 import { inboxApi, statusLabel } from "./api.js";
 import { DraftEditor } from "./DraftEditor.jsx";
 import "./inbox.css";
+import { dateTime } from "../../shared/format.js";
 
-const when = (iso) => new Date(iso).toLocaleString([], { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+const when = (iso) => dateTime(iso);
 
 function useAsync(token, signOut) {
   const [error, setError] = useState(null);

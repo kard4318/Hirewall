@@ -12,6 +12,7 @@ import { SplitBar } from "../components/SplitBar.jsx";
 import { useHrSession } from "../HrSession.jsx";
 import { usePeriodParams } from "../usePeriodParams.js";
 import { useReport } from "../useReport.js";
+import { deltaPts } from "../../../shared/format.js";
 
 function mondayOf(iso) {
   const d = new Date(`${iso}T00:00:00Z`);
@@ -54,7 +55,7 @@ export function OverviewPage() {
       <section className="kpis" aria-label="Key figures">
         <KpiTile i={0} label="Headcount" tile={t?.headcount} format={(v) => num(v)} />
         <KpiTile i={1} label="Attrition · 12 months" tile={t?.attrition_rate_12m} format={(v) => pct(v)}
-          deltaFormat={(v) => `${(v * 100).toFixed(1)} pts`} goodWhen="down" />
+          deltaFormat={(v) => deltaPts(v).replace(/^[+−]/, "")} goodWhen="down" />
         <KpiTile i={2} label="Average tenure" tile={t?.avg_tenure_years} format={(v) => `${num(v, 1)} y`}
           deltaFormat={(v) => `${num(v, 2)} y`} />
         <KpiTile i={3} label="Open roles" tile={t?.open_roles} format={(v) => num(v)} hint="from open positions" />

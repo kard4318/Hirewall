@@ -3,15 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Candidate links carry a token in the URL: never send it to font or calendar hosts as a Referer. -->
+    <!-- Candidate links carry a token in the URL: never send it to other hosts (calendar embed) as a Referer. Fonts are self-hosted (src/fonts.js). -->
     <meta name="referrer" content="no-referrer" />
-    <title>Hirewall</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Gloock&family=Martian+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap"
-    />
+    <title>HRwall</title>
   </head>
   <body>
     <!-- React app mounts into #root (see src/main.jsx) -->

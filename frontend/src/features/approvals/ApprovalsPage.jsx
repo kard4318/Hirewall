@@ -3,11 +3,12 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useHrSession } from "../analytics/HrSession.jsx";
 import { approvalsApi, shortId } from "../screening/api.js";
+import { dateTime } from "../../shared/format.js";
 import "../screening/screening.css";
 
 const TITLES = { record_shortlist: "Shortlist", record_rejection: "Rejection", send_email: "Email reply" };
 const label = (text) => (text ?? "").replaceAll("_", " ");
-const when = (iso) => (iso ? new Date(iso).toLocaleString() : "");
+const when = (iso) => (iso ? dateTime(iso) : "");
 
 function auditLine(entry) {
   const { status, reason, approval_id: approval, candidate_id: candidate, run_id: run } = entry.fields;

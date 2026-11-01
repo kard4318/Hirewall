@@ -2,14 +2,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useHrSession } from "../analytics/HrSession.jsx";
+import { dateTime } from "../../shared/format.js";
 import { digestApi } from "./api.js";
 import "./digest.css";
 
 const POLL_MS = 2500;
-const DATE_KEY = "hirewall.digest.date";
-const SCROLL_KEY = "hirewall.digest.scroll";
-const TYPE_KEY = "hirewall.digest.type";
-const URGENCY_KEY = "hirewall.digest.urgency-level";
+const DATE_KEY = "hrwall.digest.date";
+const SCROLL_KEY = "hrwall.digest.scroll";
+const TYPE_KEY = "hrwall.digest.type";
+const URGENCY_KEY = "hrwall.digest.urgency-level";
 const URGENCIES = [
   ["high", "High"],
   ["normal", "Normal"],
@@ -30,12 +31,7 @@ const remember = (key, value) => {
     // The page still works without storage. It just will not remember this.
   }
 };
-const when = (iso) => {
-  const parsed = new Date(iso);
-  return Number.isNaN(parsed.getTime())
-    ? ""
-    : parsed.toLocaleString([], { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
-};
+const when = (iso) => (iso && !Number.isNaN(new Date(iso).getTime()) ? dateTime(iso) : "");
 const TILES = [
   ["needs_answer", "Need a human answer"],
   ["draft_waiting", "Drafts to approve"],

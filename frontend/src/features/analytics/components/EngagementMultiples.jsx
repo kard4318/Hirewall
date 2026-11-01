@@ -3,6 +3,7 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 import { axisProps, COLORS, gridProps } from "../chartTheme.jsx";
 import { LedgerTooltip } from "./LedgerTooltip.jsx";
 import { Suppressed } from "./Panel.jsx";
+import { decimal } from "../../../shared/format.js";
 
 export function EngagementMultiples({ data }) {
   const company = Object.fromEntries(data.company.map((c) => [c.quarter, c.suppressed ? null : c.score]));
@@ -14,7 +15,7 @@ export function EngagementMultiples({ data }) {
         return (
           <figure key={dept.department} className="multiple">
             <figcaption>
-              <b>{dept.department}</b> {last ? <span className="mono">{last.score.toFixed(1)}</span> : <Suppressed />}
+              <b>{dept.department}</b> {last ? <span className="mono">{decimal(last.score, 1)}</span> : <Suppressed />}
             </figcaption>
             <div className="chart-box" style={{ height: 110 }}>
               <ResponsiveContainer>
@@ -22,7 +23,7 @@ export function EngagementMultiples({ data }) {
                   <CartesianGrid {...gridProps} />
                   <XAxis dataKey="quarter" {...axisProps} tick={false} height={4} />
                   <YAxis {...axisProps} domain={[2.5, 4.5]} ticks={[3, 4]} />
-                  <Tooltip content={<LedgerTooltip format={(v) => v.toFixed(2)} />} />
+                  <Tooltip content={<LedgerTooltip format={(v) => decimal(v, 2)} />} />
                   <Line dataKey="company" name="Company" stroke={COLORS.slate} strokeDasharray="4 3" strokeWidth={1.2} dot={false} isAnimationActive={false} />
                   <Line dataKey="score" name={dept.department} stroke={COLORS.ink} strokeWidth={2} dot={false} isAnimationActive={false} />
                 </LineChart>

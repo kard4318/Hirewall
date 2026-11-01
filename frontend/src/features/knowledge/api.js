@@ -1,7 +1,7 @@
 // API client for the knowledge desk: employee sign-in and questions, and the HR question desk
 import { request } from "../scheduling/api.js";
 
-const EMPLOYEE_TOKEN_KEY = "hirewall.employee.token";
+const EMPLOYEE_TOKEN_KEY = "hrwall.employee.token";
 
 export const employeeSession = {
   get() {

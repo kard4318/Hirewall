@@ -39,7 +39,7 @@ export function NeedsYouCard() {
         ))}
       </ul>
       <Link className="btn btn-small" to="/hr/scheduling">Open scheduling</Link>
-      <p className="muted needs-note">Live from scheduling and the question desk (not synthetic).</p>
+      <p className="muted needs-note">Live from scheduling and the question desk.</p>
     </div>
   );
 }

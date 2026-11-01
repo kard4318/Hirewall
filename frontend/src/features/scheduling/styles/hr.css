@@ -38,7 +38,7 @@
 }
 .job-tab:hover { color: var(--ink); }
 .job-tab.is-active { color: var(--ink); border-bottom-color: var(--vermilion); }
-.job-tab-count { font-family: var(--font-mono); font-size: 0.68rem; font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+.job-tab-count { font-family: var(--font-ui); font-size: 0.6875rem; font-variant-numeric: tabular-nums lining-nums; color: var(--ink-soft); }
 .topbar-tools { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
 
 .notice {
@@ -55,7 +55,7 @@
 .ledger::before { content: ""; position: absolute; top: 0; bottom: 0; left: 2.2rem; width: 1.5px; background: var(--vermilion); opacity: 0.8; }
 .ledger-head { padding-bottom: 0.9rem; margin-bottom: 1rem; border-bottom: 3px double var(--ink); }
 .ledger-head .display { font-size: clamp(2rem, 3.4vw, 2.9rem); margin: 0.25rem 0 0.35rem; }
-.ledger-tally { margin: 0; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.ledger-tally { margin: 0; font-family: var(--font-ui); font-size: 0.7rem; letter-spacing: 0.04em; color: var(--ink-soft); font-variant-numeric: tabular-nums lining-nums; }
 .ledger-empty { color: var(--ink-soft); font-style: italic; }
 
 /* Dossier cards, dealt onto the desk */
@@ -73,14 +73,14 @@
   from { opacity: 0; transform: translate(-14px, -22px) rotate(-2.2deg); }
   to { opacity: 1; transform: none; }
 }
-.dossier-rank { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; padding-top: 0.25rem; margin-left: -2.85rem; width: 2rem; text-align: right; }
+.dossier-rank { font-family: var(--font-ui); font-size: 0.7rem; color: var(--ink-soft); font-variant-numeric: tabular-nums lining-nums; padding-top: 0.25rem; margin-left: -2.85rem; width: 2rem; text-align: right; }
 .dossier-body { min-width: 0; }
 .dossier-top { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
 .dossier-name { font-family: var(--font-display); font-weight: 400; font-size: 1.45rem; margin: 0; line-height: 1.1; }
 .skills { list-style: none; display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.55rem 0; padding: 0; }
 .justification { margin: 0 0 0.75rem; color: var(--ink-soft); font-size: 0.9rem; max-width: 58ch; }
 .dossier-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
-.slot-line { font-family: var(--font-mono); font-size: 0.78rem; font-variant-numeric: tabular-nums; color: var(--moss); font-weight: 500; margin-right: 0.35rem; }
+.slot-line { font-family: var(--font-ui); font-size: 0.78rem; font-variant-numeric: tabular-nums lining-nums; color: var(--moss); font-weight: 500; margin-right: 0.35rem; }
 .dossier-score { display: flex; flex-direction: column; align-items: flex-end; padding-left: 0.6rem; border-left: 1px solid var(--rule); }
 .score-num { font-family: var(--font-display); font-size: 2.9rem; line-height: 0.9; font-variant-numeric: tabular-nums; }
 
@@ -112,14 +112,14 @@
 .logbook-latest .log-entry { display: inline-flex; border: none; padding: 0; }
 .logbook-caret { font-size: 0.8rem; }
 .blocked-badge {
-  font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase;
+  font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em; text-transform: uppercase;
   padding: 0.25rem 0.55rem; border: 1.5px solid var(--paper-edge); border-radius: 2px; transform: rotate(-2deg);
 }
 .blocked-badge.has-blocks { background: var(--vermilion); border-color: var(--vermilion); color: var(--ink); font-weight: 600; }
 .logbook-list { list-style: none; margin: 0; padding: 0 1.5rem 1rem; max-height: 42vh; overflow-y: auto; }
 .log-entry { display: flex; flex-wrap: wrap; gap: 0.35rem 0.9rem; align-items: baseline; padding: 0.4rem 0; border-top: 1px solid rgba(242, 236, 223, 0.12); font-size: 0.85rem; }
-.log-time { font-family: var(--font-mono); font-size: 0.7rem; font-variant-numeric: tabular-nums; color: var(--paper-edge); }
+.log-time { font-family: var(--font-ui); font-size: 0.7rem; font-variant-numeric: tabular-nums lining-nums; color: var(--paper-edge); }
 .log-event { font-weight: 600; }
 .log-entry.bad .log-event { color: #ff8a78; }
 .log-entry.ok .log-event { color: #9fd3a8; }
-.log-reason, .log-who { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; color: var(--paper-edge); }
+.log-reason, .log-who { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em; color: var(--paper-edge); }

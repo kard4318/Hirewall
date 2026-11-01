@@ -13,6 +13,7 @@ import { Highlight } from "../components/RecapCard.jsx";
 import { useHrSession } from "../HrSession.jsx";
 import { usePeriodParams } from "../usePeriodParams.js";
 import { useReport } from "../useReport.js";
+import { quarter } from "../../../shared/format.js";
 
 const TREND_DAYS = 730; // trend charts show two years so quarters can be compared
 const REASONS = { career_growth: "Career growth", compensation: "Compensation", management: "Management", relocation: "Relocation",
@@ -32,7 +33,7 @@ export function RetentionPage() {
   const findings = useReport("recap", params || {}, ready);
 
   const rows = (quarterly.data?.quarters || []).map((q) => ({
-    quarter: q.partial ? `${q.quarter}*` : q.quarter,
+    quarter: quarter(q.partial ? `${q.quarter}*` : q.quarter, { short: true }),
     rate: q.suppressed ? null : q.rate, voluntary: q.suppressed ? null : q.voluntary, involuntary: q.suppressed ? null : q.involuntary,
   }));
   const companyCompletion = training.data?.company?.completion;

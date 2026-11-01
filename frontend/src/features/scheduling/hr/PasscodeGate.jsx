@@ -32,7 +32,7 @@ export function PasscodeGate({ onToken }) {
   return (
     <div className="gate paper">
       <form className="gate-card" onSubmit={submit}>
-        <Wordmark subtitle="Hiring office" />
+        <Wordmark subtitle="People office" />
         <h1 className="display">The ledger is closed.</h1>
         <p className="gate-lede">Every decision here carries a human stamp. Enter the office passcode to open it.</p>
         <label className="label" htmlFor="passcode">Office passcode</label>

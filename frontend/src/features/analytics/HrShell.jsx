@@ -33,9 +33,6 @@ export function HrShell({ token, onSignOut }) {
               </NavLink>
             ))}
           </nav>
-          <span className="demo-badge" title="All people data and agent activity on these pages is generated">
-            Demo data (synthetic)
-          </span>
           {meta?.as_of && <span className="chip">As of {meta.as_of}</span>}
           <button className="btn-link" onClick={onSignOut}>Sign out</button>
         </header>

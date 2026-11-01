@@ -1,4 +1,4 @@
-// Landing page at /: one box per part of the product (HR dashboard, employee handbook, candidate booking, open positions)
+// Landing page at /: one box per part of the HRwall platform (HR dashboard, employee handbook, candidate booking, open positions)
 import { Link } from "react-router-dom";
 import { Wordmark } from "../scheduling/Wordmark.jsx";
 import "../scheduling/styles/base.css";
@@ -9,7 +9,7 @@ const PAGES = [
     to: "/hr",
     path: "/hr",
     title: "HR dashboard",
-    text: "Screened candidates per job, interview invitations, the HR calendar, and the questions employees ask.",
+    text: "People analytics and retention, the staff directory, hiring and interviews, the HR inbox, and the questions employees ask.",
     who: "HR · office passcode",
   },
   {

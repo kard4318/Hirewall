@@ -1,4 +1,6 @@
-// Ledger chart theme: palette, ruled grid, mono ticks, hatch patterns (series never rely on colour alone)
+// Ledger chart theme: palette, ruled grid, tabular ticks, hatch patterns (series never rely on colour alone)
+import { count, decimal, percent } from "../../shared/format.js";
+
 export const COLORS = {
   ink: "#17150F",
   inkSoft: "#4A4639",
@@ -13,7 +15,7 @@ export const COLORS = {
 
 export const SERIES = [COLORS.ink, COLORS.vermilion, COLORS.moss, COLORS.ochre, COLORS.slate, COLORS.inkSoft];
 
-export const tick = { fontFamily: "Martian Mono, Consolas, monospace", fontSize: 10, fill: COLORS.inkSoft };
+export const tick = { fontFamily: "Schibsted Grotesk, sans-serif", fontSize: 11, fill: COLORS.inkSoft, style: { fontVariantNumeric: "tabular-nums lining-nums" } };
 
 export const gridProps = { stroke: COLORS.rule, strokeDasharray: "0", vertical: false };
 
@@ -38,5 +40,6 @@ export function Patterns() {
   );
 }
 
-export const pct = (v, digits = 1) => (v === null || v === undefined ? "–" : `${(v * 100).toFixed(digits)}%`);
-export const num = (v, digits = 0) => (v === null || v === undefined ? "–" : Number(v).toFixed(digits));
+// Kept for existing imports; both delegate to the shared formatter.
+export const pct = (v, digits = 1) => percent(v, digits);
+export const num = (v, digits = 0) => (digits === 0 ? count(v) : decimal(v, digits));
