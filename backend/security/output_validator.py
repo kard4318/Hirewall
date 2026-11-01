@@ -3,7 +3,7 @@ import re
 
 from core.llm.canary import leaked
 
-INVISIBLE = re.compile(r"[​-‏‪-‮⁠-⁩﻿­]")
+INVISIBLE = re.compile(r"[\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff\xad]")
 CONTACT = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+|https?://\S+|www\.\S+", re.IGNORECASE)
 # Any canary at all: callers that do not know this request's canary still catch one copied from a prompt.
 CANARY = re.compile(r"HWCANARY-?[0-9a-f]{16}", re.IGNORECASE)

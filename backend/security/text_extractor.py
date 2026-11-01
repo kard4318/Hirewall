@@ -144,7 +144,8 @@ def _docx_text(data: bytes) -> tuple[str, list[str]]:
     if b"<!DOCTYPE" in xml or b"<!ENTITY" in xml:
         raise FileRejected("unreadable_docx")
     try:
-        root = ET.fromstring(xml)
+        # Safe here: DTDs and entities were refused above, and sizes were capped by file_validator.
+        root = ET.fromstring(xml)  # nosec B314
     except ET.ParseError:
         raise FileRejected("unreadable_docx") from None
 

@@ -33,7 +33,7 @@ class SlotConstraints:
 
 
 def stable_slot_id(start: datetime) -> str:
-    return "s_" + hashlib.sha1(start.isoformat().encode("utf-8")).hexdigest()[:8]
+    return "s_" + hashlib.sha1(start.isoformat().encode("utf-8"), usedforsecurity=False).hexdigest()[:8]
 
 
 def find_free_slots(

@@ -54,10 +54,14 @@ class ScreenerStore:
         self._db = _Database(path or runtime_dir() / "screener.sqlite3", schema)
 
     def _put(self, table: str, item_id: str, data: str) -> None:
+        if table not in _TABLES:  # table names are fixed in code, never taken from input
+            raise ValueError("unknown table")
         with self._db.connect() as db:
             db.execute(f"INSERT OR REPLACE INTO {table} (id, data) VALUES (?, ?)", (item_id, data))
 
     def _get(self, table: str, item_id: str) -> str | None:
+        if table not in _TABLES:
+            raise ValueError("unknown table")
         with self._db.connect() as db:
             row = db.execute(f"SELECT data FROM {table} WHERE id = ?", (item_id,)).fetchone()
         return row["data"] if row else None

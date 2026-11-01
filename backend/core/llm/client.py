@@ -172,6 +172,9 @@ class OllamaLLM:
 
     def __init__(self, model: str, host: str = "http://localhost:11434", num_ctx: int = 8192,
                  timeout: float = 120.0, think: bool = False) -> None:
+        # Candidate data must stay on this machine, and only http(s) may be opened (never file:).
+        if not is_local_url(host) or urlsplit(host).scheme not in ("http", "https"):
+            raise LLMError("non_local_host")
         self.model = model
         self.host = host.rstrip("/")
         self.num_ctx = num_ctx
@@ -198,7 +201,7 @@ class OllamaLLM:
             headers={"Content-Type": "application/json"}, method="POST",
         )
         try:
-            with urllib.request.urlopen(request, timeout=self.timeout) as response:
+            with urllib.request.urlopen(request, timeout=self.timeout) as response:  # nosec B310 - local http only
                 data = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             if exc.code == 404:

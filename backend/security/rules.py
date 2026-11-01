@@ -6,7 +6,7 @@ import unicodedata
 from security.injection_detector import is_suspicious as detector_flags
 
 # Control, zero-width and bidi characters (keeps \t and \n).
-INVISIBLE = re.compile(r"[\x00-\x08\x0b-\x1f\x7f­؜᠎​-‏‪-‮⁠-⁩﻿]")
+INVISIBLE = re.compile(r"[\x00-\x08\x0b-\x1f\x7f\xad\u061c\u180e\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]")
 # Common Cyrillic/Greek look-alikes used to dodge keyword filters.
 CONFUSABLES = str.maketrans({
     "а": "a", "е": "e", "о": "o", "р": "p", "с": "c", "у": "y", "х": "x", "і": "i", "ј": "j", "ѕ": "s",
