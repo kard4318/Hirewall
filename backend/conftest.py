@@ -8,3 +8,6 @@ os.environ.setdefault("SECURITY_MODEL_MODE", "off")
 _RUNTIME = tempfile.mkdtemp(prefix="hirewall-tests-")
 os.environ["HIREWALL_RUNTIME_DIR"] = _RUNTIME
 os.environ["HIREWALL_USERS_FILE"] = os.path.join(_RUNTIME, "users.json")
+# Feature tests poll and repeat requests quickly; the rate limit has its own tests with low limits.
+os.environ.setdefault("RATE_LIMIT_PER_MINUTE", "100000")
+os.environ.setdefault("RATE_LIMIT_LLM_PER_MINUTE", "100000")

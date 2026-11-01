@@ -10,6 +10,11 @@ from core.audit.audit_log import AuditLog, get_audit_sink
 from core.integrations.email_provider import email_sender_from_env
 from gateway.auth.hr_auth import LoginRateLimiter
 from gateway.auth.login import LoginGuard, UserStore
+from gateway.config import GatewaySettings
+from gateway.middleware.cors import install_cors
+from gateway.middleware.rate_limit import RateLimitMiddleware
+from gateway.middleware.request_logging import RequestLoggingMiddleware
+from gateway.middleware.security import BodySizeMiddleware, SecurityHeadersMiddleware, install_error_handlers
 from gateway.routers import (
     analytics,
     approvals,
@@ -44,7 +49,8 @@ def create_app(scheduling_service: SchedulingService | None = None,
                email_orchestrator: Any = None,
                screening_service: Any = None,
                users: UserStore | None = None,
-               audit_log: AuditLog | None = None) -> FastAPI:
+               audit_log: AuditLog | None = None,
+               settings: GatewaySettings | None = None) -> FastAPI:
     """App factory. Tests pass services built from fakes; with no arguments everything is built from .env."""
     if scheduling_service is None:
         load_dotenv(REPO_ROOT / ".env")
@@ -65,13 +71,16 @@ def create_app(scheduling_service: SchedulingService | None = None,
     app.state.audit = audit_log or get_audit_sink()  # sign-ins and security events; IDs and reason codes only
     app.state.upload_limiter = LoginRateLimiter(limit=10)
 
-    @app.middleware("http")
-    async def security_headers(request: Request, call_next: Any) -> Any:
-        response = await call_next(request)
-        response.headers["Cache-Control"] = "no-store"  # responses carry personal data and booking links
-        response.headers["Referrer-Policy"] = "no-referrer"
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        return response
+    # Added innermost first: requests pass logging, headers, CORS, size and rate checks, in that order.
+    settings = settings or GatewaySettings()
+    app.state.gateway_settings = settings
+    app.add_middleware(RateLimitMiddleware, requests_per_minute=settings.requests_per_minute,
+                       llm_requests_per_minute=settings.llm_requests_per_minute)
+    app.add_middleware(BodySizeMiddleware, limit=settings.max_body_bytes)
+    install_cors(app, settings.allowed_origins)
+    app.add_middleware(SecurityHeadersMiddleware, hsts=settings.hsts)
+    app.add_middleware(RequestLoggingMiddleware)
+    install_error_handlers(app)
 
     app.include_router(scheduling.router)
     app.include_router(hr_scheduling.public)
@@ -91,7 +100,12 @@ def create_app(scheduling_service: SchedulingService | None = None,
 
 
 if __name__ == "__main__":
+    import logging
+
     import uvicorn
+
+    # Request lines (gateway/middleware/request_logging.py) hold IDs, routes and status codes only.
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 
     # Candidate links are in URL paths, so the access log stays off.
     uvicorn.run(create_app(), host="127.0.0.1", port=int(os.getenv("GATEWAY_PORT", "8000")), access_log=False)
