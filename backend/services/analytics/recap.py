@@ -11,6 +11,15 @@ TRAINING_GAP = 0.25          # completion this far (25 points) below the company
 ENGAGEMENT_DROP = 0.4
 
 
+SERIES_QUARTERS = 8
+
+
+def quarter_label(label: str) -> str:
+    """'2026Q3' -> 'Q3 2026' for sentences; the raw label stays in the numbers."""
+    year, q = label.split("Q")
+    return f"Q{q} {year}"
+
+
 def _plural(n: int, word: str, plural: str | None = None) -> str:
     return f"{n} {word if n == 1 else (plural or word + 's')}"
 
@@ -54,15 +63,25 @@ def highlights(employees: list[Employee], engagement: list[EngagementRow], train
         n = metrics.average_headcount(group, q_start, q_end)
         rate = metrics.attrition_rate(group, q_start, q_end)
         if company and rate is not None and n >= min_size and rate > ATTRITION_RATIO * company:
+            series = []
+            for q in metrics.previous_quarters(quarter, SERIES_QUARTERS):
+                qs, qe = metrics.quarter_bounds(q)
+                qn = metrics.average_headcount(group, qs, qe)
+                q_rate = metrics.attrition_rate(group, qs, qe)
+                hidden = q_rate is None or qn < min_size
+                series.append({"quarter": q, "value": None if hidden else round(q_rate, 4), "suppressed": hidden})
             found.append((rate / company, {
                 "rule": "attrition_spike",
-                "rule_text": f"latest quarterly attrition > {ATTRITION_RATIO:g}x the company quarterly average "
-                             f"(last 8 quarters) with at least {min_size} people",
-                "text": f"{dept} attrition was {rate:.1%} in {quarter}, {rate / company:.1f}x the company quarterly "
-                        f"average of {company:.1%}.",
+                "rule_text": f"Flagged because attrition in the latest full quarter is more than {ATTRITION_RATIO:g} times "
+                             f"the company's quarterly average over the last {SERIES_QUARTERS} quarters, and the group "
+                             f"has at least {min_size} people.",
+                "text": f"{dept} attrition was {rate:.1%} in {quarter_label(quarter)}, {rate / company:.1f}× the "
+                        f"company quarterly average of {company:.1%}.",
                 "numbers": {"department": dept, "quarter": quarter, "rate": round(rate, 4),
                             "company_quarterly_average": round(company, 4), "ratio": round(rate / company, 2),
                             "exits": len(metrics.exits(group, q_start, q_end)), "n": n},
+                "series": series, "series_kind": "rate", "flagged_quarter": quarter,
+                "reference": round(company, 4), "reference_label": "Company average",
             }))
 
     dept_of = {e.employee_id: e.department for e in employees if metrics.is_active(e, as_of)}
@@ -74,8 +93,8 @@ def highlights(employees: list[Employee], engagement: list[EngagementRow], train
             gap = overall - completion
             found.append((gap * 10, {
                 "rule": "training_gap",
-                "rule_text": f"training completion more than {TRAINING_GAP:.0%} points below the company figure "
-                             f"with at least {min_size} people",
+                "rule_text": f"Flagged because completion is more than {TRAINING_GAP * 100:.0f} percentage points below "
+                             f"the company figure, and the group has at least {min_size} people.",
                 "text": f"{dept} completed {completion:.0%} of assigned training, against {overall:.0%} company-wide.",
                 "numbers": {"department": dept, "completion": round(completion, 4),
                             "company_completion": round(overall, 4), "gap": round(gap, 4), "n": n},
@@ -91,12 +110,19 @@ def highlights(employees: list[Employee], engagement: list[EngagementRow], train
                  if a[1] is not None and b[1] is not None and min(a[2], b[2]) >= min_size and a[1] - b[1] >= ENGAGEMENT_DROP]
         if drops:
             a, b = max(drops, key=lambda pair: pair[0][1] - pair[1][1])
+            company_score, _ = metrics.engagement_score(r for r in engagement if r.quarter == b[0])
             found.append(((a[1] - b[1]) * 5, {
                 "rule": "engagement_drop",
-                "rule_text": f"engagement fell by {ENGAGEMENT_DROP} or more from one quarter to the next "
-                             f"with at least {min_size} respondents",
-                "text": f"{dept} engagement fell from {a[1]:.1f} in {a[0]} to {b[1]:.1f} in {b[0]}.",
+                "rule_text": f"Flagged because the average engagement score fell by {ENGAGEMENT_DROP:g} points or more "
+                             f"between two quarters in a row, with at least {min_size} respondents in each.",
+                "text": f"{dept} engagement fell from {a[1]:.1f} in {quarter_label(a[0])} to {b[1]:.1f} in "
+                        f"{quarter_label(b[0])}.",
                 "numbers": {"department": dept, "from_quarter": a[0], "to_quarter": b[0], "before": round(a[1], 2),
                             "after": round(b[1], 2), "drop": round(a[1] - b[1], 2), "n": min(a[2], b[2])},
+                "series": [{"quarter": q, "value": None if (sc is None or r < min_size) else round(sc, 2),
+                            "suppressed": sc is None or r < min_size} for q, sc, r in series],
+                "series_kind": "score", "flagged_quarter": b[0],
+                "reference": None if company_score is None else round(company_score, 2),
+                "reference_label": f"Company score in {quarter_label(b[0])}",
             }))
     return [item for _, item in sorted(found, key=lambda pair: -pair[0])[:3]]

@@ -1,5 +1,6 @@
 // Department x quarter attrition heatmap in CSS grid; every cell prints its value, suppressed cells are hatched
 import { pct } from "../chartTheme.jsx";
+import { groupSize, quarter } from "../../../shared/format.js";
 
 function tone(rate, max) {
   if (rate === null || rate === undefined) return 0;
@@ -15,7 +16,7 @@ export function Heatmap({ matrix, quarters }) {
         <caption className="visually-hidden">Quarterly attrition rate by department; hatched cells have fewer than 5 people.</caption>
         <thead>
           <tr><th scope="col"><span className="visually-hidden">Department</span></th>
-            {quarters.map((q) => <th key={q} scope="col">{q}</th>)}</tr>
+            {quarters.map((q) => <th key={q} scope="col">{quarter(q, { short: true })}</th>)}</tr>
         </thead>
         <tbody>
           {matrix.map((row) => (
@@ -24,7 +25,7 @@ export function Heatmap({ matrix, quarters }) {
               {row.cells.map((cell) => (
                 <td key={cell.quarter} className={cell.suppressed ? "is-suppressed" : ""}
                   style={cell.suppressed ? undefined : { "--heat": tone(cell.rate, max) }}
-                  title={cell.suppressed ? "Group too small to show" : `${row.department} ${cell.quarter}: ${pct(cell.rate)} (${cell.exits} exits, n=${cell.n})`}>
+                  title={cell.suppressed ? "Group too small to show" : `${row.department}, ${quarter(cell.quarter)}: ${pct(cell.rate)} (${cell.exits} exits, ${groupSize(cell.n)})`}>
                   {cell.suppressed ? <span aria-label="hidden">·</span> : pct(cell.rate, 0)}
                 </td>
               ))}

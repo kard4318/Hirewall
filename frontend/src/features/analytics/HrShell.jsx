@@ -7,8 +7,8 @@ import { HrSessionContext } from "./HrSession.jsx";
 import "./styles/analytics.css";
 
 const LINKS = [["overview", "Overview"], ["people", "People"], ["directory", "Directory"], ["retention", "Retention"],
-  ["screening", "Screening"], ["approvals", "Approvals"], ["scheduling", "Scheduling"], ["inbox", "Inbox"],
-  ["questions", "Questions"]];
+  ["screening", "Screening"], ["approvals", "Approvals"], ["scheduling", "Scheduling"], ["digest", "Digest"],
+  ["inbox", "Inbox"], ["questions", "Questions"]];
 
 export function HrShell({ token, onSignOut }) {
   const [meta, setMeta] = useState(null);
@@ -33,9 +33,6 @@ export function HrShell({ token, onSignOut }) {
               </NavLink>
             ))}
           </nav>
-          <span className="demo-badge" title="All people data and agent activity on these pages is generated">
-            Demo data (synthetic)
-          </span>
           {meta?.as_of && <span className="chip">As of {meta.as_of}</span>}
           <button className="btn-link" onClick={onSignOut}>Sign out</button>
         </header>

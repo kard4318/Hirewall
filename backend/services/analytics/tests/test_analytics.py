@@ -123,6 +123,20 @@ def test_highlights_fire_only_when_rules_hold_and_carry_numbers() -> None:
     assert "training_gap" in {h["rule"] for h in service(min_size=3).weekly_recap(None, Query())["highlights"]}
 
 
+def test_highlights_are_plain_english_and_carry_a_suppressed_series() -> None:
+    notes = {h["rule"]: h for h in service().weekly_recap(None, Query())["highlights"]}
+    spike = notes["attrition_spike"]
+    assert spike["rule_text"].startswith("Flagged because") and ">" not in spike["rule_text"]
+    assert "Q2 2026" in spike["text"] and "2026Q2" not in spike["text"] and "×" in spike["text"]
+    assert spike["flagged_quarter"] == "2026Q2" and spike["series"][-1]["quarter"] == "2026Q2"
+    assert spike["series"][-1]["value"] == pytest.approx(0.25) and spike["reference"] > 0
+    assert len(spike["series"]) == 8
+    for point in spike["series"] + notes["engagement_drop"]["series"]:
+        assert (point["value"] is None) == point["suppressed"]
+    drop = notes["engagement_drop"]
+    assert drop["flagged_quarter"] in {point["quarter"] for point in drop["series"]}
+
+
 def test_highlight_does_not_fire_when_the_drop_is_small(tmp_path: Path) -> None:
     folder = tmp_path / "people"
     shutil.copytree(FIXTURES, folder)

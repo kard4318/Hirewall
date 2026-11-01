@@ -1,11 +1,13 @@
 // /hr/inbox: recruiter inbox. Classify an email, draft a reply, then approve, edit, redraft or reject it
 import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useHrSession } from "../analytics/HrSession.jsx";
 import { inboxApi, statusLabel } from "./api.js";
 import { DraftEditor } from "./DraftEditor.jsx";
 import "./inbox.css";
+import { dateTime } from "../../shared/format.js";
 
-const when = (iso) => new Date(iso).toLocaleString([], { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+const when = (iso) => dateTime(iso);
 
 function useAsync(token, signOut) {
   const [error, setError] = useState(null);
@@ -46,6 +48,11 @@ export function InboxPage() {
   }, [run]);
 
   useEffect(() => { refresh(); }, [refresh]);
+
+  // The digest links to one email with ?email=<id>.
+  const [params] = useSearchParams();
+  const linkedEmail = params.get("email");
+  useEffect(() => { if (linkedEmail) open(linkedEmail); }, [linkedEmail, open]);
 
   async function act(label, call) {
     setBusy(label);

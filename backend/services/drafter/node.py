@@ -53,6 +53,7 @@ class DrafterDeps:
     llm: LLMClient | None = None
     candidates: CandidateDirectory | None = None
     detector: Callable[[str], bool] | None = None
+    phishing_detector: Callable[[str], Any] | None = None
     audit: AuditSink | None = None
     config: DrafterConfig = DEFAULT_CONFIG
     boundary_factory: Callable[[], str] = new_boundary
@@ -82,6 +83,7 @@ def load_default_deps() -> DrafterDeps:
         llm=_optional_instance("core.llm.client", "get_llm_client"),
         candidates=_optional_instance("core.db.repositories", "get_candidate_directory"),
         detector=_optional_factory("security.injection_detector", "is_suspicious"),
+        phishing_detector=_optional_factory("security.phishing_detector", "assess_phishing"),
         audit=_optional_instance("core.audit.audit_log", "get_audit_sink"),
     )
 
@@ -132,6 +134,19 @@ def _proposal(
         revision=revision,
         prompt_version=config.prompt_version,
     )
+
+
+def _assess_phishing(request: DraftRequest, built: BuiltContext, deps: DrafterDeps) -> Any:
+    """Check the raw email, so hidden text counts, plus its cleaned form. A failure leaves the other checks running."""
+    if deps.phishing_detector is None:
+        return None
+    latest = built.context.thread[-1]
+    text = f"{request.email.subject}\n{request.email.body}\n{latest.subject}\n{latest.body}"
+    try:
+        return deps.phishing_detector(text)
+    except Exception as error:
+        logger.warning("phishing detector failed error_type=%s", type(error).__name__)
+        return None
 
 
 def _detect_injection(request: DraftRequest, built: BuiltContext, deps: DrafterDeps) -> tuple[bool, list[str]]:
@@ -190,7 +205,17 @@ def _generate(request: DraftRequest, deps: DrafterDeps, feedback: str | None, re
     suspicious, warnings = _detect_injection(request, built, deps)
     if suspicious:
         return _result("quarantined", ReasonCode.INJECTION_SUSPECTED)
+    phishing = _assess_phishing(request, built, deps)
+    if phishing is not None and phishing.verdict == "phishing":
+        listed = ", ".join(phishing.signals)
+        return _result(
+            "quarantined",
+            ReasonCode.PHISHING_SUSPECTED,
+            f"This email looks like phishing, so no reply was drafted. Warning signs: {listed}.",
+        )
     warnings = [*built.warnings, *warnings]
+    if phishing is not None and phishing.verdict == "suspicious":
+        warnings.append(f"phishing_signals:{','.join(phishing.signals)}")
 
     if deps.llm is None:
         return _needs_human(ReasonCode.LLM_UNAVAILABLE)

@@ -1,4 +1,4 @@
-// Hirewall wordmark: a small wall of offset bricks with one brick missing, like an open gate
+// HRwall wordmark: a small wall of offset bricks with one brick missing, like an open gate
 export function Wordmark({ subtitle }) {
   const bricks = [
     [0, 0], [11, 0], [22, 0],
@@ -13,7 +13,7 @@ export function Wordmark({ subtitle }) {
         ))}
         <rect className="gate" x="11" y="12" width="10" height="5" rx="0.6" />
       </svg>
-      <span className="wordmark-name">Hirewall</span>
+      <span className="wordmark-name">HRwall</span>
       {subtitle && <span className="wordmark-sub">{subtitle}</span>}
     </div>
   );

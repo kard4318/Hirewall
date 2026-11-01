@@ -7,7 +7,7 @@ function addToCalendarUrl(booking, jobTitle, company) {
     action: "TEMPLATE",
     text: `Interview: ${jobTitle}${company ? ` at ${company}` : ""}`,
     dates: `${compact(booking.start)}/${compact(booking.end)}`,
-    details: "Interview booked through the Hirewall scheduling assistant.",
+    details: "Interview booked through the HRwall scheduling assistant.",
   });
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }

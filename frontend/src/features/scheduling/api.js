@@ -1,5 +1,5 @@
 // API client for the scheduling feature: HR dashboard calls (bearer token) and candidate booking calls
-const HR_TOKEN_KEY = "hirewall.hr.token";
+const HR_TOKEN_KEY = "hrwall.hr.token";
 
 export class ApiError extends Error {
   constructor(status, detail) {

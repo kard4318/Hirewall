@@ -44,7 +44,7 @@
 .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.8rem; }
 .card-question { margin: 0; font-family: var(--font-display); font-size: 1.3rem; line-height: 1.2; }
 .card-answer { margin: 0.7rem 0 0.8rem; white-space: pre-wrap; }
-.looking { margin: 0.6rem 0 0; color: var(--ink-soft); font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.06em; }
+.looking { margin: 0.6rem 0 0; color: var(--ink-soft); font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.04em; }
 .looking span { animation: dot 1s ease-in-out infinite; }
 .looking span:nth-child(2) { animation-delay: 0.15s; }
 .looking span:nth-child(3) { animation-delay: 0.3s; }
@@ -54,7 +54,7 @@
 .citations li { display: flex; flex-wrap: wrap; gap: 0.3rem 0.6rem; align-items: baseline; font-size: 0.82rem; }
 .cite-id { font-family: var(--font-mono); font-size: 0.7rem; color: var(--vermilion-ink); }
 .cite-title { color: var(--ink); }
-.cite-version { font-family: var(--font-mono); font-size: 0.66rem; color: var(--ink-soft); }
+.cite-version { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--ink-soft); }
 
 .escalate { display: flex; flex-direction: column; gap: 0.4rem; }
 .escalate-row { display: flex; gap: 0.5rem; align-items: flex-end; }
@@ -69,7 +69,7 @@
 .view-switch { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 2px; overflow: hidden; }
 .view-switch button { font: 600 0.8rem var(--font-ui); padding: 0.4rem 0.75rem; background: none; border: none; cursor: pointer; color: var(--ink); display: inline-flex; gap: 0.4rem; align-items: center; }
 .view-switch button.is-active { background: var(--ink); color: var(--paper); }
-.view-badge { font-family: var(--font-mono); font-size: 0.62rem; background: var(--vermilion); color: var(--ink); padding: 0 0.35rem; border-radius: 2px; }
+.view-badge { font-family: var(--font-mono); font-size: 0.6875rem; background: var(--vermilion); color: var(--ink); padding: 0 0.35rem; border-radius: 2px; }
 
 .desk-main { flex: 1; display: grid; grid-template-columns: minmax(380px, 1.4fr) minmax(300px, 0.8fr); gap: 1.5rem; padding: 1.25rem 1.5rem; align-items: start; }
 @media (max-width: 980px) { .desk-main { grid-template-columns: 1fr; padding: 1rem; } }
@@ -111,4 +111,4 @@
 .reply-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .handoff-reply { border-left: 2px solid var(--moss); padding: 0.1rem 0 0.1rem 0.7rem; display: flex; flex-direction: column; gap: 0.25rem; }
 .reply-text { margin: 0; white-space: pre-wrap; font-size: 0.9rem; }
-.reply-delivery { margin: 0; font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--moss); }
+.reply-delivery { margin: 0; font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--moss); }

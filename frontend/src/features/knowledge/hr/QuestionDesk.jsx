@@ -4,13 +4,14 @@ import { usePolling } from "../../scheduling/usePolling.js";
 import { hrKnowledgeApi, KIND_LABELS } from "../api.js";
 import { EscalationCard } from "./EscalationCard.jsx";
 import "../styles/knowledge.css";
+import { dateTime } from "../../../shared/format.js";
 
 const WITHHELD = {
   sensitive: "Sensitive matter: question not stored",
   refused_personal: "Personal record request: question not stored",
   blocked: "Blocked attempt: question not stored",
 };
-const time = (iso) => new Date(iso).toLocaleString([], { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+const time = (iso) => dateTime(iso);
 
 export function QuestionDesk({ token, onError }) {
   const [questions, setQuestions] = useState(null);
