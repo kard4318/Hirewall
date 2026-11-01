@@ -40,6 +40,43 @@ The drafter reads text written by outsiders, so it assumes the model can be mani
 - **Data sent to the model:** the model runs locally through Ollama. `core/llm` refuses any host other than this machine, so prompts are not sent to a cloud service. Anyone with access to this machine can still reach the local server, which has no authentication. Do not change `OLLAMA_HOST` to expose it on a network.
 - **Model quality:** a small local model is more easily manipulated and makes more mistakes than a large hosted one. The code-level checks and human approval are what protect against this.
 
+## Screener (resumes)
+
+A resume is a file written by the person being judged, so the screener treats it as hostile. Scores are a
+reading aid: the model has no tools, nothing is decided automatically, and every shortlist or rejection goes
+through human approval.
+
+### Defenses
+
+| Threat | Defense |
+|---|---|
+| Malicious or disguised file | Only PDF and DOCX up to 5 MB. The real signature is checked (`%PDF-`, zip `PK`), not the extension. Encrypted PDFs and PDFs over 10 pages are refused |
+| Zip bomb or crafted DOCX | Member count, total uncompressed size and compression ratio are capped before anything is read. Absolute or `..` member paths are refused |
+| Hidden text (white, tiny, off-page, hidden runs) | Only visible text is extracted: PDF characters with a near-white fill, under 3 pt or outside the page are dropped, and so are DOCX runs that are vanished or white. `hidden_text_removed` tells the reviewer |
+| Visible instructions to the model (EN, FR, AR) | Lines matching the injection patterns are removed from the text given to the model and the embedder, and shown to the reviewer as excerpts. `injection_flag` is set but never filters a candidate or changes a score |
+| Instructions in hidden text | Removed with the hidden text. The hidden lines are still checked, so the candidate is flagged |
+| Words split with zero-width characters | Invisible and format characters are removed before detection and scoring |
+| Breaking out of the data block | The resume is wrapped in a random per-request boundary, removed from the resume text, and the system prompt says the block is data |
+| The model is told to give a high score | The model only gives three integers against anchored scales and short evidence texts. Code computes the criterion and the total. Two other criteria do not involve the model |
+| Keyword stuffing | Repeated lines are deduplicated before embedding, experience counts only dated positions, and skills outside the job never add to the score |
+| Bias from identity | Name, contact details, profile links, photo, age, gender, nationality and date of birth are split off at ingestion and stored apart. The model, scores, logs and audit events see only a pseudonymous `candidate_id` |
+| Unlogged identity access | Identity is returned only by an HR-authenticated endpoint that writes an audit event |
+| Approving something else than what was reviewed | Shortlists and rejections are queued with a hash of the action. Approval needs that hash, the executor checks it again, and a claim makes it run once |
+| Resume text in logs | Logs, audit events and workflow state hold IDs, hashes, statuses, reason codes and counts only. Upload file names are not stored |
+
+### Known limits
+
+- **Name detection:** names are found in the resume header with a heuristic. A name written elsewhere in an unusual
+  form can remain in the evidence text. Demo profiles with structured names are exact.
+- **Hidden text:** text drawn over by an image, text in the same colour as a coloured background, and text inside
+  images are not detected. Background is assumed to be white.
+- **Patterns:** injection detection is a signal. A paraphrase can avoid it; the model's limited role and human
+  approval are what protect the decision.
+- **Model judgement:** a small local model can misread a resume. The rubric shows its evidence texts so a recruiter
+  can check them, and the semantic and experience criteria do not depend on it.
+- **Bias:** removing identity does not remove every proxy (school names, places, career gaps). Recruiters must not
+  treat the ranking as a decision.
+
 ## Approval and sending
 
 `core/executor` is the only code that sends. It enforces these rules for every send:
