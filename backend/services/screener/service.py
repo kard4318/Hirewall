@@ -11,7 +11,7 @@ import uuid
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from threading import Lock
 from typing import Any
 
@@ -280,6 +280,7 @@ class ScreeningService:
         )
         skills = self._taxonomy.find_skills("\n".join(s.text for s in document.sections))
         stored = StoredCandidate(
+            created_at=_now(),
             candidate_id=candidate_id,
             content_hash=content_hash,
             source=source,
@@ -411,7 +412,7 @@ class ScreeningService:
 
     def close_posting(self, job_id: str) -> JobPosting:
         posting = self._require_posting(job_id, allow={"published"})
-        closed = posting.model_copy(update={"status": "closed"})
+        closed = posting.model_copy(update={"status": "closed", "closed_at": _now()})
         self._store.save_posting(closed)
         self._audit.record("screener.job_closed", job_id=job_id)
         return closed
@@ -778,7 +779,8 @@ class ScreeningService:
         self._store.save_run(run)
 
     def _rubric(self, job: JobOffer, candidate: StoredCandidate) -> RubricResult:
-        key = _sha256(_canonical([
+        # The candidate ID leads the key so erasure can find every cached answer about this person.
+        key = candidate.candidate_id + ":" + _sha256(_canonical([
             candidate.document.model_dump(mode="json"), job.model_dump(mode="json"),
             RUBRIC_PROMPT_VERSION, self._llm_id(),
         ]))
@@ -868,6 +870,66 @@ class ScreeningService:
             "score": round(ranked.total_score * 100),
             "matched_skills": ranked.matched_skills,
         }
+
+    def upload_refusals(self) -> dict[str, int]:
+        """How many files were refused, by reason code. Counts only: no names or contents are kept."""
+        counts: dict[str, int] = {}
+        for task in self._store.list_tasks():
+            for file in task.files:
+                if file.status in ("rejected", "failed") and file.reason_code:
+                    counts[file.reason_code] = counts.get(file.reason_code, 0) + 1
+        return dict(sorted(counts.items(), key=lambda item: -item[1]))
+
+    # Erasure and retention
+
+    def known_names(self, candidate_id: str) -> list[str]:
+        """Name and addresses on file, so other stores can find entries that mention this person."""
+        record = self._identity.get(candidate_id)
+        contacts = self._identity.contacts_for(candidate_id)
+        values = [record.full_name, *record.emails] if record else []
+        values += [value for contact in contacts for value in (contact.full_name, contact.email)]
+        return sorted({value for value in values if value})
+
+    def erase_candidate(self, candidate_id: str) -> dict[str, int]:
+        """Remove one candidate from every screener store and from recorded decisions. Raises if nothing was found."""
+        counts = self._store.erase_candidate(candidate_id)
+        counts["identity_records"] = self._identity.erase(candidate_id)
+        counts["recorded_decisions"] = self._status_store.erase(candidate_id)
+        if not any(counts.values()):
+            raise ScreenerError("candidate_not_found")
+        return counts
+
+    def retention_due(self, now: datetime, days: int) -> list[dict[str, str]]:
+        """Candidates whose process ended more than `days` ago, with why it counts as ended.
+
+        Ended means: every job they were attached to is closed; or every decision recorded for them is a rejection;
+        or they were never attached to a job and never decided on (an idle pool entry). Shortlisted candidates in an
+        open process, and old records with no dates, are kept.
+        """
+        due = []
+        for candidate in self._store.list_candidates():
+            ended = self._process_end(candidate)
+            if ended is None:
+                continue
+            reason, since = ended
+            if now - datetime.fromisoformat(since) > timedelta(days=days):
+                due.append({"candidate_id": candidate.candidate_id, "reason": reason, "since": since})
+        return due
+
+    def _process_end(self, candidate: StoredCandidate) -> tuple[str, str] | None:
+        applications = self._store.applications_of(candidate.candidate_id)
+        history = self._status_store.history_for(candidate.candidate_id)
+        if applications:
+            postings = [self._store.get_posting(a.job_id) for a in applications]
+            if all(p is not None and p.status == "closed" and p.closed_at for p in postings):
+                return "postings_closed", max(p.closed_at for p in postings)
+            return None
+        if history:
+            latest = {job: (status, at) for job, status, at in history}
+            if all(status == "rejected" for status, _ in latest.values()):
+                return "rejected", max(at for _, at in latest.values())
+            return None
+        return ("pool_inactive", candidate.created_at) if candidate.created_at else None
 
     def reveal_identity(self, candidate_id: str, reviewer: str) -> IdentityRecord:
         if self._store.get_candidate(candidate_id) is None:

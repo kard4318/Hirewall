@@ -18,6 +18,7 @@ const DigestPage = lazy(() => import("../../digest/DigestPage.jsx").then((m) => 
 const DirectoryPage = lazy(() => import("../../analytics/pages/DirectoryPage.jsx").then((m) => ({ default: m.DirectoryPage })));
 const ScreeningPage = lazy(() => import("../../screening/ScreeningPage.jsx").then((m) => ({ default: m.ScreeningPage })));
 const ApprovalsPage = lazy(() => import("../../approvals/ApprovalsPage.jsx").then((m) => ({ default: m.ApprovalsPage })));
+const SecurityAudit = lazy(() => import("../../../pages/SecurityAudit.jsx").then((m) => ({ default: m.SecurityAudit })));
 const loading = <main className="a-page"><div className="skeleton" aria-busy="true"><span /><span /><span /></div></main>;
 
 export function HrPage() {
@@ -46,6 +47,7 @@ export function HrPage() {
         <Route path="inbox" element={<Suspense fallback={loading}><InboxPage /></Suspense>} />
         <Route path="screening" element={<Suspense fallback={loading}><ScreeningPage /></Suspense>} />
         <Route path="approvals" element={<Suspense fallback={loading}><ApprovalsPage /></Suspense>} />
+        <Route path="security" element={<Suspense fallback={loading}><SecurityAudit /></Suspense>} />
         <Route path="questions" element={<QuestionDesk token={token} onError={(err) => err.status === 401 && signOut()} />} />
         <Route path="*" element={<Navigate to="overview" replace />} />
       </Route>

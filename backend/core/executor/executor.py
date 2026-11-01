@@ -7,6 +7,7 @@ from typing import Any
 from core.approval_queue.approval_queue import ApprovalQueue, proposal_hash
 from core.candidate_status.store import CandidateStatusStore
 from core.integrations.email_provider import EmailProvider, OutboundEmail
+from security.permissions import execution_refusal
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +39,9 @@ def execute_approved(item_id: str, *, queue: ApprovalQueue, provider: EmailProvi
         return report("refused", "unsupported_action")
     if item.status != "approved":
         return report("refused", f"status_{item.status}")
+    refusal = execution_refusal("send_email", "core.executor.execute_approved", item.decided_by)
+    if refusal:
+        return report("refused", refusal)
     if proposal_hash(item.proposal) != item.payload_hash:
         return report("refused", "text_changed_after_approval")
     if provider.latest_inbound_id(item.thread_id) != item.in_reply_to:
@@ -86,11 +90,17 @@ def execute_record(
         )
         return ExecutionResult(status, reason)
 
-    status = RECORDED_STATUS.get(item.proposal.get("action_type", ""))
+    action_type = item.proposal.get("action_type", "")
+    if execution_refusal(action_type, "core.executor.execute_record", "check") == "unknown_action":
+        return report("refused", "unknown_action")
+    status = RECORDED_STATUS.get(action_type)
     if status is None:
         return report("refused", "unsupported_action")
     if item.status != "approved":
         return report("refused", f"status_{item.status}")
+    refusal = execution_refusal(action_type, "core.executor.execute_record", item.decided_by)
+    if refusal:
+        return report("refused", refusal)
     if proposal_hash(item.proposal) != item.payload_hash:
         return report("refused", "text_changed_after_approval")
     if not queue.claim_for_send(item_id):

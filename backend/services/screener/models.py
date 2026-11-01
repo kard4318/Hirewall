@@ -174,6 +174,7 @@ class StoredCandidate(BaseModel):
     injection_excerpts: list[str] = Field(default_factory=list)
     hidden_text_removed: bool = False
     family: str = "Other"
+    created_at: str | None = None  # for retention; older records have none
 
 
 class CandidateSummary(BaseModel):
@@ -307,6 +308,7 @@ class JobPosting(BaseModel):
     source_hash: str | None = None
     created_at: str
     published_at: str | None = None
+    closed_at: str | None = None
 
 
 class CoverLetterProfile(BaseModel):

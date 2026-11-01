@@ -6,12 +6,16 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 class HRLogin(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    passcode: str = Field(min_length=1, max_length=200)
+    username: str = Field(min_length=1, max_length=40)
+    password: str = Field(min_length=1, max_length=200)
 
 
 class HRToken(BaseModel):
     token: str
     expires_in_hours: int
+    username: str
+    display_name: str
+    role: str
 
 
 class StrictSetting(BaseModel):

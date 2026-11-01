@@ -1,0 +1,11 @@
+# Gitleaks settings: the default rules, minus places that hold only fictional or empty example values
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Test fixtures and examples: fake secrets made up for tests, empty placeholders"
+paths = [
+  '''\.env\.example$''',
+  '''data/users\.example\.json$''',
+  '''(^|/)tests/''',
+]

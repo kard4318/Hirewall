@@ -10,7 +10,7 @@ import unicodedata
 
 # Eastern Arabic (٠-٩) and Persian (۰-۹) digits -> 0-9
 _DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890123456789")
-_SPACES = re.compile(r"[ \t ‏‎]+")
+_SPACES = re.compile(r"[ \t \u200f\u200e]+")
 
 
 def fold(text: str) -> str:

@@ -18,6 +18,8 @@ import httpx
 import ollama
 from dotenv import load_dotenv
 
+from core.llm.canary import leaked, new_canary, with_canary
+
 logger = logging.getLogger(__name__)
 
 DEFAULT_MODEL = "qwen3.5:4b"
@@ -27,6 +29,14 @@ MAX_OUTPUT_TOKENS = 2048
 KEEP_ALIVE = "10m"
 # Candidate data must stay on this machine, so other hosts are refused.
 _LOCAL_HOSTS = {"127.0.0.1", "localhost", "::1", "host.docker.internal"}
+
+
+def is_local_url(url: str | None) -> bool:
+    """True only for a model server on this machine. Candidate data must never reach a cloud model."""
+    try:
+        return bool(url) and urlsplit(url).hostname in _LOCAL_HOSTS
+    except ValueError:
+        return False
 
 
 class LLMError(Exception):
@@ -69,11 +79,12 @@ class LLMClient:
     ) -> str | Mapping[str, Any]:
         """Return the model's JSON text. A truncated prompt or response counts as a failure."""
         client = ollama.Client(host=self._host, timeout=timeout_s, **self._client_options)
+        canary = new_canary()
         started = time.monotonic()
         try:
             response = client.chat(
                 model=self._model,
-                messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+                messages=[{"role": "system", "content": with_canary(system, canary)}, {"role": "user", "content": user}],
                 format=_inline_refs(json_schema),
                 think=False,
                 stream=False,
@@ -104,6 +115,9 @@ class LLMClient:
         text = response.message.content
         if not text:
             raise LLMError("no_text_output")
+        if leaked(text, canary):
+            logger.warning("llm output dropped reason=canary_leak")
+            raise LLMError("canary_leak")
         return text
 
 
@@ -158,6 +172,9 @@ class OllamaLLM:
 
     def __init__(self, model: str, host: str = "http://localhost:11434", num_ctx: int = 8192,
                  timeout: float = 120.0, think: bool = False) -> None:
+        # Candidate data must stay on this machine, and only http(s) may be opened (never file:).
+        if not is_local_url(host) or urlsplit(host).scheme not in ("http", "https"):
+            raise LLMError("non_local_host")
         self.model = model
         self.host = host.rstrip("/")
         self.num_ctx = num_ctx
@@ -169,9 +186,10 @@ class OllamaLLM:
         if estimated > CONTEXT_WARNING_RATIO * self.num_ctx:
             logger.warning("LLM prompt is about %d tokens, over %d%% of LLM_NUM_CTX=%d; it may be truncated",
                            estimated, int(CONTEXT_WARNING_RATIO * 100), self.num_ctx)
+        canary = new_canary()
         body = {
             "model": self.model,
-            "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+            "messages": [{"role": "system", "content": with_canary(system, canary)}, {"role": "user", "content": user}],
             "stream": False,
             "think": self.think,  # reasoning models (e.g. Qwen3) answer ~10x faster without it
             "options": {"temperature": 0, "num_ctx": self.num_ctx},
@@ -183,7 +201,7 @@ class OllamaLLM:
             headers={"Content-Type": "application/json"}, method="POST",
         )
         try:
-            with urllib.request.urlopen(request, timeout=self.timeout) as response:
+            with urllib.request.urlopen(request, timeout=self.timeout) as response:  # nosec B310 - local http only
                 data = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             if exc.code == 404:
@@ -202,6 +220,9 @@ class OllamaLLM:
         content = (data.get("message") or {}).get("content")
         if not isinstance(content, str):
             raise LLMError("Ollama response has no message content")
+        if leaked(content, canary):
+            logger.warning("llm output dropped reason=canary_leak")
+            raise LLMError("canary_leak")
         return THINK_BLOCK.sub("", content).strip()
 
 

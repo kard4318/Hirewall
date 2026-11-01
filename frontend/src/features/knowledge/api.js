@@ -16,7 +16,7 @@ export const employeeSession = {
 };
 
 export const knowledgeApi = {
-  login: (passcode) => request("/api/employee/login", { method: "POST", body: { passcode } }),
+  login: (username, password) => request("/api/employee/login", { method: "POST", body: { username, password } }),
   ask: (token, question) => request("/api/knowledge/ask", { method: "POST", token, body: { question } }),
   escalate: (token, id, contact) =>
     request(`/api/knowledge/questions/${encodeURIComponent(id)}/escalate`, {

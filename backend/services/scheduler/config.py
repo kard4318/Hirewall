@@ -59,7 +59,8 @@ def get_hr_notification_email() -> str | None:
 
 
 def get_strict_booking_mode() -> bool:
-    return os.getenv("STRICT_BOOKING_MODE", "false").strip().lower() in ("1", "true", "yes")
+    """Always on: a calendar booking is an outside effect, so HR approves each slot (security/permissions.py)."""
+    return True
 
 
 @dataclass(frozen=True)

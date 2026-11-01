@@ -40,7 +40,7 @@ SENSITIVE = [re.compile(p, _F) for p in (
 
 def normalise(text: str) -> str:
     text = unicodedata.normalize("NFKC", text)
-    text = re.sub(r"[​-‏‪-‮⁠-⁩﻿]", "", text)
+    text = re.sub(r"[\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]", "", text)
     return re.sub(r"\s+", " ", text).strip()
 
 

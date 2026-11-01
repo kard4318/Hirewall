@@ -52,6 +52,16 @@ class SchedulingStateStore:
     def active_bookings(self) -> list[Booking]:
         return [b for b in self._bookings.values() if b.status == "booked"]
 
+    def forget(self, candidate_id: str) -> int:
+        """Drop the status and bookings of one candidate. Callers check first that nothing is still booked."""
+        bookings = [key for key, booking in self._bookings.items() if booking.candidate_id == candidate_id]
+        for key in bookings:
+            del self._bookings[key]
+        removed = len(bookings) + (1 if self._status.pop(candidate_id, None) is not None else 0)
+        if removed:
+            self._persist()
+        return removed
+
     # --- persistence --------------------------------------------------------------------------------------
     def snapshot(self) -> dict[str, Any]:
         return {"status": dict(self._status), "bookings": [b.model_dump(mode="json") for b in self._bookings.values()]}

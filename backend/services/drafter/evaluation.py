@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Any
 
 from core.db.repositories import JsonCandidateDirectory
-from core.integrations.email_provider import LocalMailbox
 from security.sanitizer import normalize_address
 
 from .checks import _stem, _tokens, extract_values
@@ -233,12 +232,38 @@ def _score_review(rows: list[dict[str, str]]) -> dict[str, Any]:
     }
 
 
+
+class _JsonMailbox:
+    """Read-only view of the labeled emails, enough for an evaluation run."""
+
+    def __init__(self, paths: list[Path]) -> None:
+        self._emails = sorted(
+            (email for path in paths if path.exists() for email in json.loads(path.read_text(encoding="utf-8"))),
+            key=lambda email: email["received_at"],
+        )
+
+    def inbound(self) -> list[dict[str, Any]]:
+        return list(self._emails)
+
+    def thread_history(self, email: dict[str, Any]) -> list[dict[str, Any]]:
+        return [
+            {"thread_id": other["thread_id"], "from_address": other["from_address"], "direction": "inbound",
+             "subject": other["subject"], "body": other["body"], "sent_at": other["received_at"]}
+            for other in self._emails
+            if other["thread_id"] == email["thread_id"] and other["received_at"] < email["received_at"]
+        ]
+
+
 def run_evaluation(
-    data_dir: Path, deps: DrafterDeps, signature: str, *, runs: int, out_dir: Path, limit: int | None = None
+    data_dir: Path, deps: DrafterDeps, signature: str, *, runs: int, out_dir: Path, limit: int | None = None,
+    mailbox: Any = None,
 ) -> list[dict[str, Any]]:
-    """Run every labeled email through the drafter. Nothing is queued, sent, or written to the audit log."""
+    """Run every labeled email through the drafter. Nothing is queued, sent, or written to the audit log.
+
+    `mailbox` reads the labeled emails; the caller builds it, because services may not import core.integrations.
+    """
     out_dir.mkdir(parents=True, exist_ok=True)
-    mailbox = LocalMailbox([data_dir / "emails" / "inbox.json", data_dir / "attacks" / "emails.json"], out_dir / "none")
+    mailbox = mailbox or _JsonMailbox([data_dir / "emails" / "inbox.json", data_dir / "attacks" / "emails.json"])
     labels = {item["email_id"] for item in _read_json(data_dir / "expected.json")}
     emails = [email for email in mailbox.inbound() if email["email_id"] in labels][:limit]
     deps = replace(deps, audit=None, candidates=JsonCandidateDirectory(data_dir / "candidate_status.json"))

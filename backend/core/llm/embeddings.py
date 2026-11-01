@@ -78,7 +78,7 @@ class HashingEmbedder:
     def _vector(self, text: str) -> np.ndarray:
         vec = np.zeros(self._dim, dtype=np.float32)
         for token in self._TOKEN.findall(text.casefold()):
-            digest = hashlib.md5(token.encode("utf-8")).digest()
+            digest = hashlib.md5(token.encode("utf-8"), usedforsecurity=False).digest()
             vec[int.from_bytes(digest[:4], "little") % self._dim] += 1.0
         norm = np.linalg.norm(vec)
         return vec / norm if norm > 0 else vec

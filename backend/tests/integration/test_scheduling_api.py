@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from gateway.auth.hr_auth import create_hr_token
+from gateway.auth.login import UserStore
 from gateway.main import create_app
 from gateway.routers.hr_scheduling import build_embed_url
 from services.scheduler.calendar_source.mock_calendar import MockCalendar
@@ -25,14 +26,15 @@ from services.scheduler.service import SchedulingService
 
 TUNIS = ZoneInfo("Africa/Tunis")
 NOW = datetime(2026, 11, 2, 8, 0, tzinfo=TUNIS)
-PASSCODE = "demo-passcode-for-tests"
+PASSWORD = "demo-password-for-tests"
 
 
 @pytest.fixture
 def world(monkeypatch: pytest.MonkeyPatch, tmp_path):
     monkeypatch.setenv("SCHEDULER_TOKEN_SECRET", "candidate-secret-for-tests")
     monkeypatch.setenv("HR_TOKEN_SECRET", "hr-secret-for-tests-different")
-    monkeypatch.setenv("HR_PASSCODE", PASSCODE)
+    monkeypatch.setenv("HIREWALL_USERS_FILE", str(tmp_path / "users.json"))
+    UserStore().add("recruiter.sam", "Sam Recruiter", "recruiter", PASSWORD)
     screener = MockScreenerResults()
     state = SchedulingStateStore(tmp_path / "runtime" / "state.json")
     mock = MockCalendar()
@@ -43,7 +45,7 @@ def world(monkeypatch: pytest.MonkeyPatch, tmp_path):
                 config=ConversationSettings(tz=TUNIS, hr_email="hr@example.test", strict_booking=False))
     svc = SchedulingService(deps, screener, state, calendar_mode="mock", public_base_url="http://localhost:5173")
     client = TestClient(create_app(svc))
-    token = client.post("/api/hr/login", json={"passcode": PASSCODE}).json()["token"]
+    token = client.post("/api/hr/login", json={"username": "recruiter.sam", "password": PASSWORD}).json()["token"]
     client.headers["Authorization"] = f"Bearer {token}"
     return {"client": client, "svc": svc, "mock": mock, "state": state, "tmp": tmp_path}
 
@@ -79,8 +81,8 @@ def test_hr_routes_require_a_token(world, method: str, path: str) -> None:
 def test_wrong_passcode_fails_and_login_is_rate_limited(world) -> None:
     client = world["client"]
     for _ in range(4):
-        assert client.post("/api/hr/login", json={"passcode": "nope"}).status_code == 401
-    assert client.post("/api/hr/login", json={"passcode": PASSCODE}).status_code == 429  # 6th attempt this minute
+        assert client.post("/api/hr/login", json={"username": "recruiter.sam", "password": "nope"}).status_code == 401
+    assert client.post("/api/hr/login", json={"username": "recruiter.sam", "password": PASSWORD}).status_code == 429  # 6th attempt this minute
 
 
 def test_candidate_token_rejected_on_hr_routes(world) -> None:
@@ -172,6 +174,18 @@ def test_strict_mode_approve_and_decline(world) -> None:
         assert client.post(f"/api/hr/bookings/{row['pending_booking_id']}/{verb}").json() == {"ok": True}
         assert candidate(client, "job-da", cid)["status"] == ("booked" if approve else "invited")
     assert len(mock._events) == 1
+    decisions = [e for e in world["svc"].deps.audit.entries if e["event"] == "booking_decided"]
+    assert [(d["approved"], d["reviewer"]) for d in decisions] == [(True, "recruiter.sam"), (False, "recruiter.sam")]
+
+
+def test_approval_cannot_be_switched_off(world) -> None:
+    client = world["client"]
+    assert client.post("/api/hr/settings/strict", json={"enabled": False}).json() == {"detail": "approval_required"}
+    assert client.post("/api/hr/settings/strict", json={"enabled": True}).json() == {"strict": True}
+
+
+def test_bookings_need_approval_by_default() -> None:
+    assert ConversationSettings().strict_booking is True
 
 
 def test_state_snapshot_survives_restart(world) -> None:

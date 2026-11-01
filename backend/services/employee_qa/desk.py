@@ -1,9 +1,8 @@
 # Knowledge desk used by the gateway: the assistant plus the anonymous question log and People Team escalations
 import os
 import threading
-from typing import Any
+from typing import Any, Protocol
 
-from core.integrations.email_provider import EmailSender, OutboxEmailSender, email_sender_from_env
 from core.llm.client import get_llm
 from services.employee_qa.answerer import KnowledgeAssistant
 from services.employee_qa.config import REPO_ROOT, KnowledgeSettings
@@ -26,11 +25,30 @@ class ReplyNotPossible(Exception):
     """The hand-off has no contact address (anonymous), so there is nobody to reply to."""
 
 
+
+class EmailSender(Protocol):
+    mode: str
+
+    def send(self, to: str, subject: str, body: str) -> None: ...
+
+
+class MemoryOutbox:
+    """Keeps replies in memory: the default when no sender is passed in, as in tests."""
+
+    mode = "outbox"
+
+    def __init__(self) -> None:
+        self.outbox: list[dict[str, str]] = []
+
+    def send(self, to: str, subject: str, body: str) -> None:
+        self.outbox.append({"to": to, "subject": subject, "body": body})
+
+
 class KnowledgeDesk:
-    def __init__(self, assistant: KnowledgeAssistant, log: QuestionLog, email: EmailSender | None = None) -> None:
+    def __init__(self, assistant: KnowledgeAssistant, log: QuestionLog, email: "EmailSender | None" = None) -> None:
         self.assistant = assistant
         self.log = log
-        self.email = email or OutboxEmailSender()
+        self.email = email or MemoryOutbox()
         self.lock = threading.Lock()  # one question at a time: a small local model handles one prompt well
 
     def ask(self, question: str, audience: str) -> dict[str, Any]:
@@ -89,7 +107,7 @@ def knowledge_provider() -> str:
     return "ollama" if os.getenv("LLM_MODEL", "").strip() else "fake"
 
 
-def desk_from_env() -> KnowledgeDesk:
+def desk_from_env(email: "EmailSender | None" = None) -> KnowledgeDesk:
+    """`email` comes from the gateway: services never build a real sender themselves (team rule 7)."""
     assistant = KnowledgeAssistant(get_llm(knowledge_provider(), fake=extractive_llm()), KnowledgeSettings())
-    return KnowledgeDesk(assistant, QuestionLog(REPO_ROOT / "data" / "runtime" / "knowledge_log.json"),
-                         email_sender_from_env())
+    return KnowledgeDesk(assistant, QuestionLog(REPO_ROOT / "data" / "runtime" / "knowledge_log.json"), email)

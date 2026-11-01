@@ -57,5 +57,19 @@ class CandidateStatusStore:
         return {row["candidate_id"]: row["status"] for row in rows}
 
 
+    def history_for(self, candidate_id: str) -> list[tuple[str, str, str]]:
+        """(job_id, status, recorded_at) for one candidate, oldest first."""
+        with self._connect() as db:
+            rows = db.execute(
+                "SELECT job_id, status, recorded_at FROM candidate_status WHERE candidate_id = ? ORDER BY recorded_at, rowid",
+                (candidate_id,),
+            ).fetchall()
+        return [(row["job_id"], row["status"], row["recorded_at"]) for row in rows]
+
+    def erase(self, candidate_id: str) -> int:
+        with self._connect() as db:
+            return db.execute("DELETE FROM candidate_status WHERE candidate_id = ?", (candidate_id,)).rowcount
+
+
 def get_candidate_status_store() -> CandidateStatusStore:
     return CandidateStatusStore(runtime_dir() / "candidate_status.sqlite3")

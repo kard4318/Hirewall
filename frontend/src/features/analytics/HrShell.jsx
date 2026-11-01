@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { Wordmark } from "../scheduling/Wordmark.jsx";
+import { hrApi } from "../scheduling/api.js";
 import { getAnalytics } from "./api.js";
 import { HrSessionContext } from "./HrSession.jsx";
 import "./styles/analytics.css";
@@ -12,6 +13,11 @@ const LINKS = [["overview", "Overview"], ["people", "People"], ["directory", "Di
 
 export function HrShell({ token, onSignOut }) {
   const [meta, setMeta] = useState(null);
+  const [me, setMe] = useState(null);
+
+  useEffect(() => {
+    hrApi.me(token).then(setMe).catch(() => setMe(null));
+  }, [token]);
 
   useEffect(() => {
     getAnalytics(token, "filters")
@@ -27,13 +33,14 @@ export function HrShell({ token, onSignOut }) {
         <header className="hr-nav">
           <Wordmark />
           <nav aria-label="HR sections">
-            {LINKS.map(([to, label]) => (
+            {[...LINKS, ...(me?.role === "hr_admin" ? [["security", "Security"]] : [])].map(([to, label]) => (
               <NavLink key={to} to={to} className={({ isActive }) => `hr-nav-link${isActive ? " is-active" : ""}`}>
                 {label}
               </NavLink>
             ))}
           </nav>
           {meta?.as_of && <span className="chip">As of {meta.as_of}</span>}
+          {me && <span className="chip" title={me.role.replace("_", " ")}>{me.display_name}</span>}
           <button className="btn-link" onClick={onSignOut}>Sign out</button>
         </header>
         <Outlet />

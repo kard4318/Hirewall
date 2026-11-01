@@ -79,10 +79,9 @@ def test_request_shape() -> None:
     assert request.url.path == "/api/chat"
     body = server.bodies[0]
     assert body["model"] == DEFAULT_MODEL
-    assert body["messages"] == [
-        {"role": "system", "content": "system text"},
-        {"role": "user", "content": PROMPT_MARKER},
-    ]
+    system, user = body["messages"]
+    assert system["role"] == "system" and system["content"].startswith("system text\n\nInternal reference HWCANARY-")
+    assert user == {"role": "user", "content": PROMPT_MARKER}
     assert body["stream"] is False
     assert body["think"] is False
     assert body["options"]["temperature"] == 0

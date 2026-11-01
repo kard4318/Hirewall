@@ -184,6 +184,22 @@ class ApprovalQueue:
             ).rowcount
         return changed == 1
 
+    def withdraw_for_candidate(self, candidate_id: str) -> "list[str]":  # quoted: this class defines list()
+        """Withdraw items not yet carried out that concern this candidate. Executed ones keep only IDs and stay."""
+        withdrawn = []
+        for item in self.list():
+            if item.status not in ("pending", "approved"):
+                continue
+            payload = item.proposal.get("payload") or {}
+            if candidate_id in payload.get("candidate_ids", []) or item.proposal.get("candidate_id") == candidate_id:
+                with self._connect() as db:
+                    changed = db.execute(
+                        "UPDATE approvals SET status = 'withdrawn' WHERE id = ? AND status = ?", (item.id, item.status)
+                    ).rowcount
+                if changed:
+                    withdrawn.append(item.id)
+        return withdrawn
+
     def set_status(self, item_id: str, status: str, expected: str) -> None:
         with self._connect() as db:
             changed = db.execute(

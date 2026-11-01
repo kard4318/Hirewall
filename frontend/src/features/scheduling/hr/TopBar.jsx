@@ -1,4 +1,4 @@
-// HR top bar: wordmark, Scheduling / Questions switch, job tabs, calendar-mode chip, strict toggle, sign out
+// HR top bar: wordmark, Scheduling / Questions switch, job tabs, calendar-mode chip, booking approval chip, sign out
 import { Wordmark } from "../Wordmark.jsx";
 
 const CALENDAR_MODES = {
@@ -36,15 +36,10 @@ export function TopBar({ jobs, jobId, onSelect, meta, strict, onToggleStrict, on
       {view !== "scheduling" && <span className="job-tabs" aria-hidden="true" />}
       <div className="topbar-tools">
         {meta && view === "scheduling" && <span className="chip">{CALENDAR_MODES[meta.calendar_mode] || meta.calendar_mode}</span>}
-        {meta?.strict_mode_available && view === "scheduling" && (
-          <button
-            className={`chip chip-toggle${strict ? " is-on" : ""}`}
-            aria-pressed={strict}
-            onClick={onToggleStrict}
-            title="When on, HR approves each booking before the calendar event is created"
-          >
-            HR approval · {strict ? "on" : "off"}
-          </button>
+        {view === "scheduling" && (
+          <span className="chip" title="HR approves each booking before the calendar event is created. This cannot be switched off.">
+            HR approval · always on
+          </span>
         )}
         {!embedded && <button className="btn-link" onClick={onSignOut}>Sign out</button>}
       </div>

@@ -58,13 +58,17 @@ class AuditLog:
 
     def verify(self) -> bool:
         """Return False if any entry was changed, removed, or reordered."""
+        return self.first_broken() is None
+
+    def first_broken(self) -> int | None:
+        """Position (from 0) of the first entry that breaks the chain, or None when the whole log is intact."""
         previous = _GENESIS
-        for entry in self.entries():
+        for position, entry in enumerate(self.entries()):
             body = {key: value for key, value in entry.items() if key != "hash"}
-            if entry["previous_hash"] != previous or _entry_hash(body) != entry["hash"]:
-                return False
+            if entry.get("previous_hash") != previous or _entry_hash(body) != entry.get("hash"):
+                return position
             previous = entry["hash"]
-        return True
+        return None
 
 
 def get_audit_sink() -> AuditLog:

@@ -1,4 +1,4 @@
-# Staff authentication: passcode login and HMAC-signed bearer tokens for HR and employees, separate from candidate links
+# Staff authentication: HMAC-signed bearer tokens for HR and employees, separate from candidate links
 import base64
 import hashlib
 import hmac
@@ -8,9 +8,11 @@ from collections import deque
 from datetime import datetime, timedelta, timezone
 
 HR_TOKEN_TTL_HOURS = 8
-# role -> (token prefix, passcode env var). Staff tokens have three dot-separated parts and candidate links two,
-# and the audience is part of the signature, so no token works for another role.
+# audience -> (token prefix, legacy passcode env var). Staff tokens have three dot-separated parts and candidate links
+# two, and the audience is part of the signature, so no token works for another audience.
 ROLES = {"hr": ("hr.", "HR_PASSCODE"), "employee": ("emp.", "EMPLOYEE_PASSCODE")}
+# Which staff roles may hold a token for each audience (see gateway/auth/roles.py), and the default for test tokens.
+AUDIENCE_ROLES = {"hr": ("hr_admin", "recruiter"), "employee": ("employee",)}
 
 
 class HRAuthError(Exception):
@@ -43,6 +45,7 @@ def _sign(body: str, audience: str) -> str:
 
 
 def check_passcode(passcode: str, role: str = "hr") -> bool:
+    """Legacy shared-passcode check. No route uses it since named accounts replaced passcodes."""
     env = ROLES[role][1]
     expected = os.getenv(env, "")
     if not expected:
@@ -50,10 +53,15 @@ def check_passcode(passcode: str, role: str = "hr") -> bool:
     return hmac.compare_digest(passcode.encode("utf-8"), expected.encode("utf-8"))
 
 
-def create_role_token(role: str, now: datetime) -> str:
+def create_role_token(role: str, now: datetime, username: str | None = None, user_role: str | None = None) -> str:
+    """`role` is the audience (hr or employee). `username` and `user_role` name the person; tests may omit them."""
     prefix = ROLES[role][0]
+    user_role = user_role or AUDIENCE_ROLES[role][0]
+    if user_role not in AUDIENCE_ROLES[role]:
+        raise ValueError("role not allowed for this audience")
     expires = int((now + timedelta(hours=HR_TOKEN_TTL_HOURS)).timestamp())
-    body = _b64(json.dumps({"aud": role, "sub": role, "exp": expires}, separators=(",", ":")).encode("utf-8"))
+    payload = {"aud": role, "sub": username or role, "role": user_role, "exp": expires}
+    body = _b64(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
     return f"{prefix}{body}.{_sign(body, role)}"
 
 
@@ -71,6 +79,8 @@ def verify_role_token(token: str, now: datetime, role: str) -> dict:
         raise HRAuthError("bad format") from exc
     if payload.get("aud") != role:
         raise HRAuthError("wrong audience")
+    if payload.get("role") not in AUDIENCE_ROLES[role]:
+        raise HRAuthError("wrong role")
     if now >= expires:
         raise HRAuthError("expired")
     return payload

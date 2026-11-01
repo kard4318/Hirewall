@@ -8,10 +8,10 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from core.approval_queue.approval_queue import ApprovalError
 from gateway.orchestration import shared_orchestrator
-from gateway.routers.hr_scheduling import require_hr
+from gateway.auth.jwt import Principal
+from gateway.routers.hr_scheduling import require_hr, require_permission
 from orchestrator.graph import TRIAGE_TASK, Orchestrator, draft_thread_id
 
-REVIEWER = "HR desk"  # the passcode login has no personal identity; every decision is still a human one
 _lock = threading.Lock()  # the approval queue and graph run one job at a time
 
 router = APIRouter(prefix="/api/hr/inbox", dependencies=[Depends(require_hr)])
@@ -111,9 +111,11 @@ def _start(request: Request, email_id: str, task: str) -> dict[str, Any]:
 
 
 @router.post("/{email_id}/decision")
-def decide(email_id: str, body: Decision, request: Request) -> dict[str, Any]:
+def decide(
+    email_id: str, body: Decision, request: Request, principal: Principal = Depends(require_permission("approve"))
+) -> dict[str, Any]:
     orch = orchestrator(request)
-    decision: dict[str, Any] = {"action": body.action, "reviewer": REVIEWER}
+    decision: dict[str, Any] = {"action": body.action, "reviewer": principal.username}
     if body.action == "approve":
         if not body.reviewed_hash:
             raise HTTPException(422, "reviewed_hash_required")

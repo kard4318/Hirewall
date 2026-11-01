@@ -1,4 +1,6 @@
 # Local prompt-injection classifier (DeBERTa-v3, ONNX via onnxruntime): a second opinion next to the rules
+import hashlib
+import hmac
 import json
 import logging
 import os
@@ -79,16 +81,59 @@ _loaded: dict[str, InjectionModel | None] = {}
 _load_lock = threading.Lock()
 
 
+CHECKSUMS = "checksums.json"  # written by scripts/download_security_models.py
+_integrity_cache: dict[tuple, str] = {}
+
+
+def model_dir() -> Path:
+    return Path(os.getenv("SECURITY_MODEL_DIR") or DEFAULT_DIR)
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def model_integrity(directory: Path | None = None) -> str:
+    """ok, not_downloaded, no_checksums, missing_files or checksum_mismatch. Cached until a file changes."""
+    directory = directory or model_dir()
+    if not (directory / "model.onnx").is_file() or not (directory / "tokenizer.json").is_file():
+        return "not_downloaded"
+    manifest_path = directory / CHECKSUMS
+    if not manifest_path.is_file():
+        return "no_checksums"
+    try:
+        expected: dict[str, str] = json.loads(manifest_path.read_text(encoding="utf-8"))["files"]
+    except (ValueError, KeyError, TypeError):
+        return "no_checksums"
+    if not expected or not {"model.onnx", "tokenizer.json"} <= set(expected):
+        return "no_checksums"
+    paths = [directory / name for name in expected]
+    if not all(path.is_file() for path in paths):
+        return "missing_files"
+    stamp = tuple((str(path), path.stat().st_size, path.stat().st_mtime_ns) for path in paths) + (
+        manifest_path.stat().st_mtime_ns,)
+    if stamp not in _integrity_cache:
+        same = all(hmac.compare_digest(sha256_file(directory / name), digest) for name, digest in expected.items())
+        _integrity_cache[stamp] = "ok" if same else "checksum_mismatch"
+    return _integrity_cache[stamp]
+
+
 def load_injection_model() -> InjectionModel | None:
-    """The configured model, loaded once; None (rules only) when the files are not downloaded."""
-    model_dir = Path(os.getenv("SECURITY_MODEL_DIR") or DEFAULT_DIR)
-    key = str(model_dir)
+    """The configured model, loaded once; None (rules only) when missing or when its files fail the checksum check."""
+    directory = model_dir()
+    key = str(directory)
     with _load_lock:
         if key not in _loaded:
-            if (model_dir / "model.onnx").is_file() and (model_dir / "tokenizer.json").is_file():
-                _loaded[key] = OnnxInjectionModel(model_dir)
+            status = model_integrity(directory)
+            if status == "ok":
+                _loaded[key] = OnnxInjectionModel(directory)
             else:
-                logger.warning("injection model not found in %s; rules only (run scripts/download_security_models.py)",
-                               model_dir)
+                # Fail closed: a model file that changed since download is never run.
+                logger.warning("injection model not loaded reason=%s; rules only (run scripts/download_security_models.py)",
+                               status)
                 _loaded[key] = None
         return _loaded[key]
