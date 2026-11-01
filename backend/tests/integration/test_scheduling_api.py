@@ -122,7 +122,7 @@ def test_invite_creates_working_link_audit_and_email(world) -> None:
     assert link.startswith("/candidate?token=")
     assert candidate(client, "job-be", "cand-yassine")["status"] == "invited"
     state = client.get(f"/api/schedule/{link_token(link)}/state").json()
-    assert (state["first_name"], state["job_title"], state["company_name"]) == ("Yassine", "Backend Developer", "Northwind Labs")
+    assert (state["first_name"], state["job_title"], state["company_name"]) == ("Yassine", "Backend Developer", "")
     mail = svc.deps.email.outbox[-1]
     assert mail["to"] == "yassine@example.test" and "http://localhost:5173/candidate?token=" in mail["body"]
     assert "invitation_created" in [e["event"] for e in svc.deps.audit.entries]
@@ -213,7 +213,7 @@ def test_calendar_embed_url_encoding_and_hint(world, monkeypatch: pytest.MonkeyP
 
 def test_meta_is_public(world) -> None:
     meta = world["client"].get("/api/meta", headers={"Authorization": ""}).json()
-    assert meta == {"dev_mode": False, "calendar_mode": "mock", "strict_mode_available": True, "company_name": "Northwind Labs"}
+    assert meta == {"dev_mode": False, "calendar_mode": "mock", "strict_mode_available": True, "company_name": ""}
 
 
 def test_json_responses_declare_utf8(world) -> None:

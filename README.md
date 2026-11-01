@@ -315,11 +315,13 @@ cd frontend; npm run dev
 | 1 | `localhost:5173` | Pick a door |
 | 2 | `/hr` → **Overview** | Sign in with `HR_PASSCODE`; read the KPIs and Findings |
 | 3 | **Screening** | **Load demo candidates** → pick a job → **Score candidates** → open one → **Propose shortlist** |
-| 4 | **Approvals** | Approve the shortlist; the audit entry appears |
+| 4 | **Approvals** | Approve the shortlist: shortlisted candidates get the Scheduler's invitation, rejected ones a rejection email, and each result shows on the page |
 | 5 | **Inbox** | Triage an email, see a phishing attempt quarantined, review a draft and approve it |
 | 6 | **Digest** | **Generate** the daily digest |
 | 7 | **Scheduling** | **Invite** a candidate → open the link → book a slot in the chat |
 | 8 | `/ask` | Sign in with `EMPLOYEE_PASSCODE`; ask *"How many days of leave do I get?"* |
+
+> **Candidate emails** only leave the machine with `EMAIL_MODE=smtp` and `SMTP_HOST`, `SMTP_FROM`, `SMTP_USER`, `SMTP_PASSWORD` set; otherwise they stay in a local outbox and the page says so. For Gmail use `smtp.gmail.com` with an app password, and set `PUBLIC_BASE_URL` to an address candidates can open.
 
 Reset the demo at any time with `.venv\Scripts\python scripts\reset_demo_state.py`.
 

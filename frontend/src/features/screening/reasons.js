@@ -1,4 +1,4 @@
-// Plain-language messages for the screener's file and application reason codes
+// Plain-language messages for the screener's file reason codes
 export const FILE_REASONS = {
   unsupported_type: "Only PDF and DOCX are accepted",
   file_too_large: "Larger than 5 MB",
@@ -12,26 +12,17 @@ export const FILE_REASONS = {
   unreadable_pdf: "The PDF could not be read",
   unreadable_docx: "The DOCX could not be read",
   ingest_failed: "Processing failed",
+  cv_missing: "This row has no CV",
+  cv_file_missing: "The CV file named in this row was not uploaded",
+  cover_letter_file_missing: "The cover letter file named in this row was not uploaded",
+  cover_letter_needs_posting: "Cover letter not kept: select a published offer before uploading",
 };
 
-const APPLICATION_REASONS = {
-  consent_required: "Please give your consent to apply.",
-  invalid_name: "Please enter your full name.",
-  invalid_email: "Please enter a valid email address.",
-  cv_required: "Please attach your CV.",
-  job_closed: "This offer is closed and no longer takes applications.",
-  job_not_found: "This offer is not available.",
-  too_many_applications: "Too many attempts. Please wait a minute and try again.",
-  try_later: "We are receiving many applications. Please try again in a few minutes.",
-  upload_too_large: "Your files are too large. Each must be 5 MB or less.",
+export const UPLOAD_REASONS = {
+  csv_no_cv_column: "The CSV needs a column named cv.",
+  csv_empty: "The CSV has no candidates.",
+  csv_too_many_rows: "The CSV has more than 100 candidates.",
+  csv_too_large: "The CSV is larger than 5 MB.",
+  csv_unreadable: "The CSV could not be read.",
+  one_csv_only: "Upload one CSV at a time.",
 };
-
-export function applicationMessage(code) {
-  if (APPLICATION_REASONS[code]) return APPLICATION_REASONS[code];
-  for (const [prefix, label] of [["cover_letter_", "Cover letter"], ["cv_", "CV"]]) {
-    if (code?.startsWith(prefix)) {
-      return `${label}: ${FILE_REASONS[code.slice(prefix.length)] ?? "This file was refused"}.`;
-    }
-  }
-  return "Your application could not be sent. Please try again.";
-}

@@ -1,4 +1,4 @@
-// Landing page at /: one box per part of the HRwall platform (HR dashboard, employee handbook, candidate booking, open positions)
+// Landing page at /: one box per part of the HRwall platform (HR dashboard, employee handbook, candidate booking)
 import { Link } from "react-router-dom";
 import { Wordmark } from "../scheduling/Wordmark.jsx";
 import "../scheduling/styles/base.css";
@@ -26,20 +26,13 @@ const PAGES = [
     text: "Candidates chat with the scheduling assistant and book an interview. Opens only from the personal link HR sends.",
     who: "Candidates · invitation link (invite one from /hr)",
   },
-  {
-    to: "/jobs",
-    path: "/jobs",
-    title: "Open positions",
-    text: "Applicants read the published offers and apply with a CV and an optional cover letter.",
-    who: "Applicants · public",
-  },
 ];
 
 export function HomePage() {
   return (
     <div className="home paper">
       <header className="home-head">
-        <Wordmark subtitle="Northwind Labs" />
+        <Wordmark />
         <h1 className="display">The agent executes, the human decides.</h1>
         <p className="home-lede">Pick a door.</p>
       </header>

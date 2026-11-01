@@ -77,12 +77,11 @@ through human approval.
 | Unlogged identity access | Identity is returned only by an HR-authenticated endpoint that writes an audit event |
 | Approving something else than what was reviewed | Shortlists and rejections are queued with a hash of the action. Approval needs that hash, the executor checks it again, and a claim makes it run once |
 | Resume text in logs | Logs, audit events and workflow state hold IDs, hashes, statuses, reason codes and counts only. Upload file names are not stored |
-| Poisoned job offer | An offer gets the same file checks, visible-text extraction and injection removal as a resume. Values the model returns are checked again, and nothing is public until HR has reviewed and published it |
-| Discriminatory requirements | Lines naming age, gender, nationality, religion, family status, health or photo are listed for HR, who is asked to confirm before publishing. They are not silently dropped |
+| Poisoned job offer | An offer gets the same file checks, visible-text extraction and injection removal as a resume. Values the model returns are checked again, and HR reviews the result before publishing |
+| Poisoned CSV | Text in a cell gets the same invisible-character removal, injection removal, identity split and fencing as an upload. A cell naming a file is matched by base name against the files in the same request, so it cannot read from disk. Rows and size are capped, and the CSV is not kept. Name and email go to the identity store |
 | Poisoned cover letter | The same checks and fencing as a CV. A letter is display only, so it cannot reach the ranking or the rubric. Its flags stay on that application |
-| A stranger resubmitting someone's CV | A CV already on file keeps its identity and its first application. A later submission only adds a form contact that HR can see. The reference id is random, so the response does not reveal that the CV is known |
-| Abuse of the public form | Rate limit and body size are checked before the body is read, separately from HR's limit. At most 20 applications wait for the model. The response holds only a reference id |
-| Form contact details in prompts | Name and email go to the identity store only. They are used to mask the letter, and they are never sent to the model |
+| Discriminatory requirements | Lines naming age, gender, nationality, religion, family status, health or photo are listed for HR, who is asked to confirm before publishing. They are not silently dropped |
+| Contacting the wrong person or too early | Messages go out only from `core/executor`, after a person approves that exact selection, and once per status change. The text is fixed: no model writes it, and it gives no score or reason. Addresses are never in logs or audit events, and each lookup is audited |
 
 ### Known limits
 
@@ -97,9 +96,9 @@ through human approval.
 - **Keyword stuffing:** a list of the job's skills can still raise the semantic score and may mislead the model. The
   same words written under a dated job make that job count as relevant experience, because relevance is judged by
   the words in the position. A recruiter should compare the evidence quotes with the score.
-- **Public form:** there is no email check or CAPTCHA, so a form contact is unverified, and anyone can submit a copy of someone's CV. The rate limit is in memory and per client address, so behind a proxy all applicants share one limit.
-- **Name in a CV:** the name typed in the form is not used to mask the CV, so CV masking still depends on the header heuristic.
-- **Retention:** there is no way yet to delete an applicant's data or withdraw consent. Add one before using real data.
+- **Address in a CV:** the message goes to the first address in the CV, which nobody has verified. A CV can name someone else's address, so a recruiter should look before approving a rejection or an invitation.
+- **Rejecting after a booking:** a confirmed interview is not cancelled automatically. HR cancels it on the Scheduling page.
+- **Retention:** there is no way yet to delete a candidate's data. Add one before using real data.
 - **Protected-attribute lines:** these use a word list, so a paraphrase can pass and an ordinary sentence can be flagged. The list only asks HR to look.
 - **Bias:** removing identity does not remove every proxy (school names, places, career gaps). Recruiters must not
   treat the ranking as a decision.

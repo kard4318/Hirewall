@@ -15,7 +15,7 @@ ATTACKS = ROOT / "data" / "attacks" / "applications"
 
 FULL_TIME = [
     "Backend Python Developer",
-    "Northwind Labs (fictional), Engineering department",
+    "Fictional Company, Engineering department",
     "Full-time, permanent contract. Tunis, hybrid.",
     "Start date: January 2027. Apply before 15 December 2026.",
     "",
@@ -36,7 +36,7 @@ FULL_TIME = [
 ]
 INTERNSHIP = [
     "Data Analyst Internship",
-    "Northwind Labs (fictional), People Analytics team",
+    "Fictional Company, People Analytics team",
     "Internship, 6 months. Tunis, on site.",
     "Start date: February 2027. Apply before 10 January 2027.",
     "",

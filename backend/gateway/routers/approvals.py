@@ -1,4 +1,5 @@
 # HTTP routes for the human approval queue
+import os
 import threading
 from dataclasses import asdict
 from typing import Any, Literal
@@ -33,8 +34,17 @@ def _summary(item: ApprovalItem) -> dict[str, Any]:
 
 @router.get("")
 def approvals(request: Request, status: str | None = Query(default=None, max_length=30)) -> dict[str, Any]:
-    queue = shared_orchestrator(request.app).workflow.queue
+    workflow = shared_orchestrator(request.app).workflow
+    queue = workflow.queue
+    notified: dict[str, list[dict[str, str]]] = {}
+    for entry in workflow.audit.entries():
+        if entry["event"] == "executor.notification":
+            fields = entry["fields"]
+            notified.setdefault(fields["approval_id"], []).append(
+                {"candidate_id": fields["candidate_id"], "outcome": fields["outcome"]}
+            )
     return {
+        "delivery": os.getenv("EMAIL_MODE", "outbox").strip().lower(),
         "items": [
             {
                 "approval_id": item.id,
@@ -43,6 +53,7 @@ def approvals(request: Request, status: str | None = Query(default=None, max_len
                 "thread_id": item.thread_id,
                 "payload_hash": item.payload_hash,
                 "summary": _summary(item),
+                "notifications": notified.get(item.id, []),
                 "created_at": item.created_at,
                 "decided_by": item.decided_by,
                 "decided_at": item.decided_at,

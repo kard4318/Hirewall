@@ -25,7 +25,7 @@ export function HrShell({ token, onSignOut }) {
     <HrSessionContext.Provider value={session}>
       <div className="hr-shell paper">
         <header className="hr-nav">
-          <Wordmark subtitle="Northwind Labs" />
+          <Wordmark />
           <nav aria-label="HR sections">
             {LINKS.map(([to, label]) => (
               <NavLink key={to} to={to} className={({ isActive }) => `hr-nav-link${isActive ? " is-active" : ""}`}>

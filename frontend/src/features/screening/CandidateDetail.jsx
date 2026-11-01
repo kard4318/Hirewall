@@ -1,5 +1,6 @@
 // Detail panel. Resume and model text is rendered as plain text only
 import { percent } from "./api.js";
+import { DecisionButtons } from "./DecisionButtons.jsx";
 
 const CRITERIA = [["semantic", "Semantic match"], ["rubric", "Rubric"], ["experience", "Experience"]];
 const SUB_SCORES = [
@@ -19,13 +20,13 @@ function Values({ data, labels }) {
 const LETTER_LABELS = [["motivation_summary", "Motivation"], ["skills_mentioned", "Skills"], ["relevant_experiences", "Experience"],
   ["availability", "Availability"], ["start_date", "Start date"], ["desired_duration", "Duration"], ["languages", "Languages"], ["mobility", "Mobility"]];
 
-function ExtractedData({ extracted, application }) {
+function ExtractedData({ extracted, application, open = false }) {
   if (!extracted) return null;
   const { profile } = extracted;
   const letter = application?.cover_letter;
   return (
-    <>
-      <h3>Extracted data</h3>
+    <details className="scr-requirements scr-extracted" open={open}>
+      <summary>Extracted data</summary>
       <h4>CV</h4>
       {profile ? (
         <>
@@ -41,12 +42,11 @@ function ExtractedData({ extracted, application }) {
         <summary>View CV JSON</summary>
         <pre className="scr-json">{JSON.stringify({ profile, sections: extracted.sections }, null, 2)}</pre>
       </details>
-      {application && (
+      {application && (letter || application.cover_letter_text || application.cover_letter_failed) && (
         <>
           <h4>Cover letter (display only, not scored)</h4>
           {letter && <Values data={letter} labels={LETTER_LABELS} />}
           {application.cover_letter_failed && <p className="scr-muted">The model could not structure this letter.</p>}
-          {!letter && !application.cover_letter_text && !application.cover_letter_failed && <p className="scr-muted">No cover letter.</p>}
           {(letter || application.cover_letter_text) && (
             <details className="scr-requirements" open={!letter}>
               <summary>{letter ? "View letter JSON and text" : "View letter text"}</summary>
@@ -56,7 +56,7 @@ function ExtractedData({ extracted, application }) {
           )}
         </>
       )}
-    </>
+    </details>
   );
 }
 
@@ -88,7 +88,7 @@ function Skills({ title, items, tone }) {
   );
 }
 
-export function CandidateDetail({ candidate, label, identity, blind, onReveal, extracted, application }) {
+export function CandidateDetail({ candidate, label, identity, blind, onReveal, extracted, application, status, proposal, canDecide, onDecide }) {
   if (!candidate && !extracted) return <section className="scr-card scr-detail"><p className="scr-muted">Select a candidate in the orbit or the table.</p></section>;
   if (!candidate) {
     // An applicant who has not been scored yet: what was extracted is all there is to read.
@@ -105,7 +105,7 @@ export function CandidateDetail({ candidate, label, identity, blind, onReveal, e
             <ul>{lines.map((line) => <li key={line}><code>{line}</code></li>)}</ul>
           </div>
         )}
-        <ExtractedData extracted={extracted} application={application} />
+        <ExtractedData extracted={extracted} application={application} open />
       </section>
     );
   }
@@ -116,6 +116,13 @@ export function CandidateDetail({ candidate, label, identity, blind, onReveal, e
     <section className="scr-card scr-detail" aria-label={`Details for ${label}`}>
       <h2>{label}</h2>
       <p className="scr-muted">{candidate.profile} · rank {candidate.rank}</p>
+      <DecisionButtons
+        candidateId={candidate.candidate_id}
+        status={status}
+        proposal={proposal}
+        disabled={!canDecide}
+        onDecide={onDecide}
+      />
 
       <Identity identity={identity} blind={blind} onReveal={onReveal} />
 
@@ -167,8 +174,6 @@ export function CandidateDetail({ candidate, label, identity, blind, onReveal, e
       <Skills title="Missing" items={candidate.missing_skills} tone="is-warn" />
       <Skills title="Additional (not scored)" items={candidate.additional_skills} tone="" />
 
-      <ExtractedData extracted={extracted} application={application} />
-
       <h3>Evidence</h3>
       <ul className="scr-evidence">
         {candidate.evidence.map((item) => (
@@ -178,6 +183,8 @@ export function CandidateDetail({ candidate, label, identity, blind, onReveal, e
           </li>
         ))}
       </ul>
+
+      <ExtractedData extracted={extracted} application={application} />
     </section>
   );
 }

@@ -9,7 +9,7 @@ SENSITIVE = ("I'm sorry you're dealing with this. It deserves a personal, confid
              f"automated answer. You can reach the People Team privately at {PEOPLE_TEAM} with \"Confidential\" in "
              "the subject. If anyone is in immediate danger, contact the emergency services. Would you like me to "
              "ask the People Team to contact you?")
-BLOCKED = "I can only answer questions about Northwind Labs policies. Please rephrase your question."
+BLOCKED = "I can only answer questions about company policies. Please rephrase your question."
 ERROR = ("I can't answer right now because the assistant is unavailable. "
          "Would you like me to pass your question to the People Team?")
-EMPTY = "Please type a question about a Northwind Labs policy."
+EMPTY = "Please type a question about a company policy."

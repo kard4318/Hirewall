@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useHrSession } from "../analytics/HrSession.jsx";
 import { screeningApi, shortId } from "./api.js";
+import { UPLOAD_REASONS } from "./reasons.js";
 import { CandidateDetail } from "./CandidateDetail.jsx";
 import { JobPanel } from "./JobPanel.jsx";
 import { RankingTable } from "./RankingTable.jsx";
@@ -28,6 +29,7 @@ export function ScreeningPage() {
   const [identities, setIdentities] = useState({});
   const [paused, setPaused] = useState(() => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false);
   const [proposal, setProposal] = useState(null);
+  const [proposals, setProposals] = useState({});
   const polling = useRef(null);
   const [posting, setPosting] = useState(null);
   const [postingBusy, setPostingBusy] = useState(false);
@@ -119,6 +121,7 @@ export function ScreeningPage() {
     setSelectedId(null);
     setChecked(new Set());
     setProposal(null);
+    setProposals({});
   };
 
   const savePosting = async (details) => {
@@ -181,7 +184,7 @@ export function ScreeningPage() {
     const started = await call((t) => screeningApi.upload(t, files, attachId.current));
     if (started) {
       // File names stay in this browser: the server never stores them.
-      setNames(files.map((file) => file.name));
+      setNames(files.some((file) => file.name.toLowerCase().endsWith(".csv")) ? null : files.map((file) => file.name));
       setTask({ task_id: started.task_id, status: "queued", total: files.length, done: 0, files: [] });
     }
   };
@@ -207,6 +210,7 @@ export function ScreeningPage() {
     if (started) {
       setChecked(new Set());
       setProposal(null);
+      setProposals({});
       const first = await call((t) => screeningApi.run(t, started.run_id));
       if (first) setRun(first);
     }
@@ -266,13 +270,19 @@ export function ScreeningPage() {
     return next;
   });
 
-  const propose = async (kind) => {
-    const ids = [...checked];
-    const flagged = scored.filter((c) => checked.has(c.candidate_id) && c.injection_flag).length;
+  const proposeFor = async (ids, kind) => {
+    const flagged = scored.filter((c) => ids.includes(c.candidate_id) && c.injection_flag).length;
     if (kind === "shortlist" && flagged && !window.confirm(`${flagged} selected candidate(s) are flagged for possible prompt injection. Propose anyway?`)) return;
     const created = await call((t) => screeningApi.propose(t, run.run_id, ids, kind));
-    if (created) setProposal({ ...created, kind, count: ids.length });
+    if (!created) return;
+    setProposal({ ...created, kind, count: ids.length });
+    if (created.status === "awaiting_review") {
+      setProposals((current) => ({ ...current, ...Object.fromEntries(ids.map((id) => [id, { kind, approval_id: created.approval_id }])) }));
+    }
   };
+
+  const propose = (kind) => proposeFor([...checked], kind);
+  const decideOne = (id, kind) => proposeFor([id], kind);
 
   const taskBusy = Boolean(task && task.status !== "done");
   const finished = run?.status === "done";
@@ -288,7 +298,26 @@ export function ScreeningPage() {
           <input type="checkbox" checked={blind} onChange={(event) => setBlind(event.target.checked)} /> Blind review
         </label>
       </header>
-      {error && <p className="scr-alert" role="alert">{error.replaceAll("_", " ")}</p>}
+      {error && <p className="scr-alert" role="alert">{UPLOAD_REASONS[error] ?? error.replaceAll("_", " ")}</p>}
+
+      <JobPanel
+        jobs={jobs}
+        jobId={jobId}
+        onPick={pickJob}
+        onCreate={createJob}
+        onScore={score}
+        canScore={candidates.length > 0 && !taskBusy && Boolean(jobId) && jobStatus !== "draft"}
+        run={run}
+        posting={posting}
+        importing={Boolean(importState)}
+        importError={importError}
+        onImport={importOffer}
+        onSavePosting={savePosting}
+        onPublish={() => changePostingStatus(screeningApi.publish)}
+        onClosePosting={() => changePostingStatus(screeningApi.closeOffer)}
+        postingBusy={postingBusy}
+        applicationCount={applications?.length ?? 0}
+      />
 
       <div className="scr-grid">
         <div className="scr-side">
@@ -304,39 +333,9 @@ export function ScreeningPage() {
             attachTitle={attachId.current ? job?.title : null}
             onSelect={setSelectedId}
           />
-          <JobPanel
-            jobs={jobs}
-            jobId={jobId}
-            onPick={pickJob}
-            onCreate={createJob}
-            onScore={score}
-            canScore={candidates.length > 0 && !taskBusy && Boolean(jobId) && jobStatus !== "draft"}
-            run={run}
-            posting={posting}
-            importing={Boolean(importState)}
-            importError={importError}
-            onImport={importOffer}
-            onSavePosting={savePosting}
-            onPublish={() => changePostingStatus(screeningApi.publish)}
-            onClosePosting={() => changePostingStatus(screeningApi.closeOffer)}
-            postingBusy={postingBusy}
-            applicationCount={applications?.length ?? 0}
-          />
         </div>
 
         <div className="scr-center">
-          <section className="scr-card scr-orbit-card">
-            <TalentOrbitView
-              data={orbitData}
-              selectedId={selectedId}
-              paused={paused}
-              onSelect={(candidate) => candidate && !candidate.pending && setSelectedId(candidate.id)}
-            />
-            <button type="button" className="scr-link" onClick={() => setPaused((value) => !value)}>
-              {paused ? "Resume orbits" : "Pause orbits"}
-            </button>
-          </section>
-
           <section className="scr-card">
             <div className="scr-row is-between">
               <h2>Ranking</h2>
@@ -351,8 +350,11 @@ export function ScreeningPage() {
             </div>
             {proposal && (
               <p className="scr-note" aria-live="polite">
-                {proposal.kind === "shortlist" ? "Shortlist" : "Rejection"} of {proposal.count} proposed.{" "}
-                <Link to={`/hr/approvals?id=${encodeURIComponent(proposal.approval_id)}`}>Review it in the approval queue</Link>
+                {proposal.status === "awaiting_review"
+                  ? `${proposal.kind === "shortlist" ? "Shortlist" : "Rejection"} of ${proposal.count} proposed. Nothing has been sent yet. `
+                  : `This exact proposal was already decided (${proposal.status.replaceAll("_", " ")}). `}
+                <Link to={`/hr/approvals?id=${encodeURIComponent(proposal.approval_id)}`}>Approve it in the approval queue</Link>
+                {proposal.kind === "shortlist" ? " to invite them through the Scheduler." : " to email the rejection."}
               </p>
             )}
             <RankingTable
@@ -364,7 +366,22 @@ export function ScreeningPage() {
               checked={checked}
               onSelect={setSelectedId}
               onToggle={toggle}
+              proposals={proposals}
+              canDecide={finished}
+              onDecide={decideOne}
             />
+          </section>
+
+          <section className="scr-card scr-orbit-card">
+            <TalentOrbitView
+              data={orbitData}
+              selectedId={selectedId}
+              paused={paused}
+              onSelect={(candidate) => candidate && !candidate.pending && setSelectedId(candidate.id)}
+            />
+            <button type="button" className="scr-link" onClick={() => setPaused((value) => !value)}>
+              {paused ? "Resume orbits" : "Pause orbits"}
+            </button>
           </section>
         </div>
 
@@ -376,6 +393,10 @@ export function ScreeningPage() {
           onReveal={() => reveal(selectedId)}
           extracted={extracted}
           application={applications?.find((a) => a.candidate_id === selectedId) ?? null}
+          status={statuses[selectedId]}
+          proposal={proposals[selectedId]}
+          canDecide={finished}
+          onDecide={decideOne}
         />
       </div>
     </main>

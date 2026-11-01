@@ -5,7 +5,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Request
 
 from gateway.schemas.scheduling import CandidateMessage
-from services.scheduler.service import COMPANY_NAME, LinkError, SchedulingService
+from services.scheduler.service import LinkError, SchedulingService, company_name
 
 router = APIRouter()
 
@@ -21,7 +21,7 @@ def dev_mode() -> bool:
 @router.get("/api/meta")
 def meta(request: Request) -> dict[str, Any]:
     return {"dev_mode": dev_mode(), "calendar_mode": service(request).calendar_mode,
-            "strict_mode_available": True, "company_name": COMPANY_NAME}
+            "strict_mode_available": True, "company_name": company_name()}
 
 
 @router.get("/api/schedule/{token}/state")

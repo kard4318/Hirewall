@@ -54,7 +54,7 @@ export function AskDesk({ token, onSignOut }) {
 
       <main className="handbook-main">
         <section className="ask-sheet" aria-label="Ask a question">
-          <p className="label">Northwind Labs · Employee handbook</p>
+          <p className="label">Employee handbook</p>
           <h1 className="display">What do you need to know?</h1>
           <form className="ask-line" onSubmit={(e) => { e.preventDefault(); ask(draft); }}>
             <label className="visually-hidden" htmlFor="question">Your question</label>

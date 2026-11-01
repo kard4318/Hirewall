@@ -35,7 +35,9 @@ files `data/screener_mock/jobs.json` and `data/screener_mock/candidates.json` wi
 | `screened_at` | ISO 8601 datetime with offset | when screening ran |
 
 Rules: the scheduler never changes these records and never decides who is invited. HR invites a passed candidate
-from the dashboard; only then does the candidate's signed booking link work.
+from the dashboard; only then does the candidate's signed booking link work. A candidate shortlisted in the screener
+is added to these records and invited once a person approves it (`ScreenerHandoff`), under the id
+`<candidate_id>--<job_id>`. Rejecting them removes the invitation, unless they already have a booking.
 
 ## Internal service contracts
 
@@ -176,9 +178,6 @@ stored apart, and never reach the scoring code, the model, logs or audit events.
 | `get_posting(job_id)` / `list_postings()` | id / none | `JobPosting` / `JobPosting[]` |
 | `update_posting(job_id, details)` | id, `JobPostingDetails` | `JobPosting`; drafts only, requirements derived again |
 | `publish_posting(job_id)` / `close_posting(job_id)` | id | `JobPosting` |
-| `public_postings()` / `public_posting(job_id)` | none / id | details only, for the public pages |
-| `check_application_files(cv, cover_letter)` | `(filename, bytes)` pairs | raises `cv_<reason>` or `cover_letter_<reason>`; no model involved |
-| `submit_application(job_id, cv, cover_letter, full_name, email)` | files and form values | `reference_id`; processed in the background |
 | `list_applications(job_id)` | id | application rows with the candidate summary and merged flags |
 | `get_extracted(candidate_id)` | id | profile, sections and flags, pseudonymous |
 
@@ -196,6 +195,14 @@ presets, hand-written jobs and published postings. `get_job` also resolves close
 | `job_id` | string | from `data/job_offers/*.json`, or `job-` and 8 hex characters for a created job |
 | `title` | string | trusted, written by a recruiter |
 | `requirements` | `{text, kind}[]` | at least one; `kind` is `required`, `preferred` or `responsibility`. A line such as "3+ years of experience" sets the experience requirement |
+
+#### Candidates CSV
+
+Columns, with common spellings accepted: `name`, `email`, `cv` (required), `cover_letter`. Comma, semicolon or tab, up to
+100 rows. A `cv` or `cover_letter` cell ending in `.pdf` or `.docx` is a file uploaded in the same request, matched by base
+name; any other value is the document's text. Nothing is read from a path on disk. Results are per row: `index` is the row,
+and `reason_code` can be `cv_missing`, `cv_file_missing`, `cover_letter_file_missing` or `cover_letter_needs_posting`. A cover
+letter is kept only when a posting is selected, because it belongs to an application.
 
 #### `JobPosting`
 
@@ -317,7 +324,7 @@ Scoring rules:
 |---|---|---|
 | `action_type` | string | `record_shortlist` or `record_rejection` |
 | `payload` | object | `job_id`, `run_id`, `candidate_ids` (sorted, unique) |
-| `in_reply_to` | string | scope key `<action_type>:<job_id>`; a newer pending proposal for the same job supersedes an older one |
+| `in_reply_to` | string | scope key `<action_type>:<proposal_id>`, so proposals for different candidates all stay pending |
 | `payload_hash` | string | `action_hash(action_type, payload)`: SHA-256 of canonical JSON of `{"action_type", "payload"}` |
 | `idempotency_key` | string | the `proposal_id`: a stable hash of `action_type`, `job_id`, `run_id` and `candidate_ids` |
 
@@ -333,8 +340,14 @@ Nothing in it comes from the model or from resume text.
 
 | `decision` | Required fields | Effect |
 |---|---|---|
-| Approve | `action: "approve"`, `reviewer`, `reviewed_hash` | the queue approves only if the hash matches; then `core/executor.execute_record` re-checks the hash, claims the item once, writes `CandidateStatusStore` and audits `executor.outcome` |
+| Approve | `action: "approve"`, `reviewer`, `reviewed_hash` | the queue approves only if the hash matches; then `core/executor.execute_record` re-checks the hash, claims the item once, writes `CandidateStatusStore`, audits `executor.outcome`, and tells each candidate whose status changed |
 | Reject | `action: "reject"`, `reviewer` | nothing is recorded |
+
+After approval, a rejection sends a fixed email with no score or reason, and a shortlist hands the candidate to the
+scheduler, whose bot invitation goes by email. The address is the first one found in the CV, then the one typed in the
+form. Delivery follows `EMAIL_MODE`: `outbox` keeps messages locally, and `smtp` sends them. Each candidate gets an
+`executor.notification` audit event with `outcome`: `sent`, `outbox`, `no_email`, `in_progress` or `failed`. A failed
+message never undoes the decision and is not retried.
 
 `edit` and `redraft` do not apply and pause the workflow again with a message. Workflow and queue statuses add
 `recorded` and `record_failed`.
@@ -346,7 +359,7 @@ code and never echo client input.
 
 | Method and path | Body | Response |
 |---|---|---|
-| `POST /api/screener/candidates` | multipart `files`: 1-20 PDF or DOCX files, 5 MB each; optional `job_id` of a posting to attach them to | `202 {task_id}`; `429 too_many_uploads` above 10 uploads a minute |
+| `POST /api/screener/candidates` | multipart `files`: 1-20 PDF or DOCX files, 5 MB each, or one CSV with the files it names; optional `job_id` of a posting to attach them to | `202 {task_id}`; `429 too_many_uploads` above 10 uploads a minute; `422` with `csv_no_cv_column`, `csv_empty`, `csv_too_many_rows`, `csv_too_large`, `csv_unreadable` or `one_csv_only` |
 | `GET /api/screener/tasks/{task_id}` | | `IngestionTask` |
 | `GET /api/screener/candidates` | | `{candidates: CandidateSummary[]}` |
 | `POST /api/screener/candidates/demo` | | `202 {task_id}` |
@@ -363,21 +376,9 @@ code and never echo client input.
 | `GET /api/screener/runs/{run_id}` | | `ScreeningRun` |
 | `POST /api/screener/runs/{run_id}/shortlist-proposals` | `{candidate_ids: string[], kind: "shortlist" or "rejection"}` | `201 {proposal_id, approval_id, thread_id, payload_hash, status}` |
 | `GET /api/screener/candidates/{candidate_id}/identity` | | `Identity`; audited |
-| `GET /api/hr/approvals?status=` | | `{items: [{approval_id, status, action_type, thread_id, payload_hash, summary, created_at, decided_by, decided_at}]}`; `summary` holds IDs only |
+| `GET /api/hr/approvals?status=` | | `{delivery, items: [{approval_id, status, action_type, thread_id, payload_hash, summary, notifications, created_at, decided_by, decided_at}]}`; `summary` and `notifications` hold IDs and outcomes only |
 | `POST /api/hr/approvals/{approval_id}/decision` | `{action: "approve" or "reject", reviewed_hash}` | `WorkflowView` |
 | `GET /api/hr/audit-log?limit=` | | `{entries: [...], verified: boolean}`, newest first, IDs only |
-
-#### Public endpoints (no login)
-
-| Method and path | Body | Response |
-|---|---|---|
-| `GET /api/jobs` | | `{jobs: [{job_id, published_at, details}]}`, published only |
-| `GET /api/jobs/{job_id}` | | `{job_id, published_at, details}`; `404 job_not_found` for a draft, `409 job_closed` |
-| `POST /api/jobs/{job_id}/applications` | multipart `cv`, optional `cover_letter`, `full_name`, `email`, `consent` | `202 {reference_id}` and nothing else |
-
-Application errors: `429 too_many_applications` (5 a minute), `429 try_later` (20 waiting), `411 length_required`,
-`413 upload_too_large`, `422 consent_required`, `invalid_name`, `invalid_email`, `cv_required`, `cv_<file reason>`,
-`cover_letter_<file reason>`.
 
 ### Daily digest (HR token required)
 

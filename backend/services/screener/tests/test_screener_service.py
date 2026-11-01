@@ -263,7 +263,7 @@ def test_proposal_checks_the_selection_and_builds_an_id_only_action(tmp_path):
     action = service.build_proposed_action(proposal_id)
     payload = {"job_id": JOB, "run_id": run.run_id, "candidate_ids": sorted([a, b])}
     assert action == {
-        "action_type": "record_shortlist", "payload": payload, "in_reply_to": f"record_shortlist:{JOB}",
+        "action_type": "record_shortlist", "payload": payload, "in_reply_to": f"record_shortlist:{proposal_id}",
         "payload_hash": action_hash("record_shortlist", payload), "idempotency_key": proposal_id,
     }
     with pytest.raises(ScreenerError, match="proposal_not_found"):

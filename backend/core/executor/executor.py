@@ -68,8 +68,10 @@ def execute_approved(item_id: str, *, queue: ApprovalQueue, provider: EmailProvi
     return report("sent")
 
 
-def execute_record(item_id: str, *, queue: ApprovalQueue, status_store: CandidateStatusStore, audit: Any) -> ExecutionResult:
-    """Record one approved shortlist or rejection at most once, if it is still the action approved."""
+def execute_record(
+    item_id: str, *, queue: ApprovalQueue, status_store: CandidateStatusStore, audit: Any, notifier: Any = None
+) -> ExecutionResult:
+    """Record one approved shortlist or rejection at most once, then tell each candidate whose status changed."""
     item = queue.get(item_id)
 
     def report(status: str, reason: str | None = None) -> ExecutionResult:
@@ -96,6 +98,7 @@ def execute_record(item_id: str, *, queue: ApprovalQueue, status_store: Candidat
 
     payload = item.proposal["payload"]
     try:
+        previous = status_store.statuses_for(payload["job_id"])
         status_store.record(payload["job_id"], payload["candidate_ids"], status, item_id)
     except Exception as error:
         logger.error("record failed error_type=%s", type(error).__name__)
@@ -103,4 +106,21 @@ def execute_record(item_id: str, *, queue: ApprovalQueue, status_store: Candidat
         return report("record_failed", type(error).__name__)
 
     queue.set_status(item_id, "recorded", "sending")
-    return report("recorded")
+    result = report("recorded")
+    if notifier is not None:
+        for candidate_id in payload["candidate_ids"]:
+            if previous.get(candidate_id) != status:
+                _notify(notifier, item_id, item.proposal["action_type"], payload, candidate_id, audit)
+    return result
+
+
+def _notify(notifier: Any, item_id: str, action_type: str, payload: dict[str, Any], candidate_id: str, audit: Any) -> None:
+    """The decision stands whatever happens here. A failed message is reported, never retried: it may have gone out."""
+    try:
+        outcome = notifier.notify(action_type, payload, candidate_id)
+    except Exception as error:
+        logger.error("notification failed error_type=%s", type(error).__name__)
+        outcome = "failed"
+    audit.record(
+        "executor.notification", approval_id=item_id, action_type=action_type, candidate_id=candidate_id, outcome=outcome
+    )

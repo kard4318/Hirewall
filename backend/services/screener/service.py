@@ -24,7 +24,8 @@ from core.paths import data_dir
 from security.file_validator import FileRejected, validate_upload
 from security.injection_detector import find_injection_lines, remove_injection_lines
 from security.pii_bias_filter import Identity, mask_identity, split_identity
-from security.text_extractor import extract_visible_text
+from security.sanitizer import clean_untrusted_text
+from security.text_extractor import MAX_TEXT_CHARS, extract_visible_text
 from services.screener.config import (
     RUBRIC_PROMPT_VERSION,
     RankingWeights,
@@ -34,6 +35,7 @@ from services.screener.config import (
     embedding_model,
 )
 from services.screener.cover_letter import extract_cover_letter
+from services.screener.csv_import import CsvRow, Document, file_key
 from services.screener.extract import Extraction, clean_profile, extract_document, split_sections
 from services.screener.graph_store.taxonomy import default_taxonomy
 from services.screener.job_extract import build_requirements, extract_job, flagged_requirements
@@ -215,7 +217,9 @@ class ScreeningService:
         task.status = "done"
         self._store.save_task(task)
 
-    def _ingest_file(self, index: int, filename: str, data: bytes, *, source: str = "upload") -> FileResult:
+    def _ingest_file(
+        self, index: int, filename: str, data: bytes, *, source: str = "upload", known_name: str | None = None
+    ) -> FileResult:
         content_hash = hashlib.sha256(data).hexdigest()
         existing = self._store.candidate_by_hash(content_hash)
         if existing:
@@ -226,7 +230,7 @@ class ScreeningService:
             return FileResult(index=index, status="rejected", reason_code=str(rejected))
         return self._accept(
             index, extracted.text, content_hash, source,
-            hidden_lines=list(extracted.hidden_lines), hidden_removed=extracted.hidden_removed,
+            hidden_lines=list(extracted.hidden_lines), hidden_removed=extracted.hidden_removed, known_name=known_name,
         )
 
     def _ingest_demo_entry(self, index: int, entry: dict[str, Any]) -> FileResult:
@@ -540,32 +544,106 @@ class ScreeningService:
     def _with_cover_letter(
         self, application: Application, cover_letter: tuple[str, bytes], contact: ApplicantContact
     ) -> Application:
-        """The same checks as a CV, masked with what is known about this person. A bad letter never loses the CV."""
+        """The same checks as a CV. A bad letter never loses the CV."""
         try:
             extracted = extract_visible_text(validate_upload(*cover_letter))
-            excerpts = find_injection_lines(extracted.text)
-            excerpts += [f"[hidden] {line}" for line in find_injection_lines("\n".join(extracted.hidden_lines))]
-            known = self._identity.get(application.candidate_id)
-            name = (known.full_name if known else None) or contact.full_name
-            _, evidence = split_identity(remove_injection_lines(extracted.text), name)
-            for person in (
-                Identity(known.full_name, tuple(known.emails), tuple(known.phones), tuple(known.links)) if known else None,
-                Identity(contact.full_name, (contact.email,)),
-            ):
-                if person is not None:
-                    evidence = mask_identity(evidence, person)
-                    excerpts = [mask_identity(excerpt, person) for excerpt in excerpts]
-            profile = extract_cover_letter(evidence, self._llm())
-        except (FileRejected, ValueError) as error:
+        except FileRejected as error:
             logger.warning("cover letter refused error_type=%s", type(error).__name__)
             return application.model_copy(update={"cover_letter_failed": True})
+        return self._read_letter(application, extracted.text, extracted.hidden_lines, extracted.hidden_removed, contact)
+
+    def _read_letter(
+        self, application: Application, visible: str, hidden_lines: tuple[str, ...], hidden_removed: bool,
+        contact: ApplicantContact,
+    ) -> Application:
+        """Masked with what is known about this person, then read by the model. Display only: never scored."""
+        excerpts = find_injection_lines(visible)
+        excerpts += [f"[hidden] {line}" for line in find_injection_lines("\n".join(hidden_lines))]
+        known = self._identity.get(application.candidate_id)
+        name = (known.full_name if known else None) or contact.full_name
+        _, evidence = split_identity(remove_injection_lines(visible), name)
+        typed = Identity(contact.full_name or None, (contact.email,) if contact.email else ())
+        found = Identity(known.full_name, tuple(known.emails), tuple(known.phones), tuple(known.links)) if known else None
+        for person in filter(None, (found, typed)):
+            evidence = mask_identity(evidence, person)
+            excerpts = [mask_identity(excerpt, person) for excerpt in excerpts]
+        profile = extract_cover_letter(evidence, self._llm())
         return application.model_copy(update={
             "cover_letter": profile,
             "cover_letter_text": evidence[:_MAX_COVER_LETTER_CHARS],
             "cover_letter_failed": profile is None,
             "injection_excerpts": excerpts,
-            "hidden_text_removed": extracted.hidden_removed,
+            "hidden_text_removed": hidden_removed,
         })
+
+    # CSV import
+
+    def ingest_csv(self, rows: list[CsvRow], files: dict[str, bytes], job_id: str | None = None) -> IngestionTask:
+        """One step per row, in the background. `files` holds the uploads named in the CSV, by original name."""
+        if job_id is not None:
+            self._require_posting(job_id, allow={"published", "closed"})
+        uploads = {file_key(name): (name, data) for name, data in files.items()}
+        steps = [lambda i=i, row=row: self._ingest_row(i, row, uploads, job_id) for i, row in enumerate(rows)]
+        return self._start_task(steps)
+
+    def _ingest_row(
+        self, index: int, row: CsvRow, uploads: dict[str, tuple[str, bytes]], job_id: str | None
+    ) -> FileResult:
+        if row.cv is None:
+            return FileResult(index=index, status="rejected", reason_code="cv_missing")
+        if row.cv.file_name is not None:
+            upload = uploads.get(row.cv.file_name)
+            if upload is None:
+                return FileResult(index=index, status="rejected", reason_code="cv_file_missing")
+            result = self._ingest_file(index, *upload, known_name=row.name)
+        else:
+            result = self._ingest_cv_text(index, row.cv.text or "", row.name)
+        if result.candidate_id is None:
+            return result
+
+        contact = ApplicantContact(
+            reference_id=f"csv-{uuid.uuid4().hex[:12]}", job_id=job_id or "", full_name=row.name or "",
+            email=row.email or "", consent_at="",
+        )
+        if row.email:
+            self._identity.add_contact(result.candidate_id, contact)
+        if job_id is None:
+            return result.model_copy(update={"reason_code": "cover_letter_needs_posting"}) if row.cover_letter else result
+
+        note = None
+        if self._store.get_application(job_id, result.candidate_id) is None:
+            application = self._new_application(job_id, result.candidate_id, "hr_upload")
+            if row.cover_letter is not None:
+                application, note = self._csv_letter(application, row.cover_letter, uploads, contact)
+            if self._store.add_application(application):
+                self._audit.record(
+                    "screener.application_received", application_id=application.application_id, job_id=job_id,
+                    candidate_id=result.candidate_id, source="hr_upload", repeat=False,
+                    cover_letter=application.cover_letter_text is not None,
+                    cover_letter_failed=application.cover_letter_failed,
+                    injection_flag=bool(application.injection_excerpts),
+                    hidden_text_removed=application.hidden_text_removed,
+                )
+        return result.model_copy(update={"reason_code": note}) if note else result
+
+    def _ingest_cv_text(self, index: int, text: str, name: str | None) -> FileResult:
+        cleaned = clean_untrusted_text(text, MAX_TEXT_CHARS)
+        content_hash = _sha256(cleaned.text)
+        existing = self._store.candidate_by_hash(content_hash)
+        if existing:
+            return self._duplicate(index, existing)
+        return self._accept(index, cleaned.text, content_hash, "upload", hidden_removed=cleaned.hidden_removed, known_name=name)
+
+    def _csv_letter(
+        self, application: Application, letter: Document, uploads: dict[str, tuple[str, bytes]], contact: ApplicantContact
+    ) -> tuple[Application, str | None]:
+        if letter.file_name is None:
+            cleaned = clean_untrusted_text(letter.text or "", MAX_TEXT_CHARS)
+            return self._read_letter(application, cleaned.text, (), cleaned.hidden_removed, contact), None
+        upload = uploads.get(letter.file_name)
+        if upload is None:
+            return application.model_copy(update={"cover_letter_failed": True}), "cover_letter_file_missing"
+        return self._with_cover_letter(application, upload, contact), None
 
     def list_applications(self, job_id: str) -> list[dict[str, Any]]:
         """Pseudonymous rows for HR, with the letter's flags merged into the candidate's."""
@@ -765,10 +843,31 @@ class ScreeningService:
         return ProposedRecordAction(
             action_type=action_type,
             payload=RecordPayload(**payload),
-            in_reply_to=f"{action_type}:{payload['job_id']}",
+            in_reply_to=f"{action_type}:{proposal_id}",  # its own scope: one candidate's proposal must not replace another's
             payload_hash=action_hash(action_type, payload),
             idempotency_key=proposal_id,
         ).model_dump(mode="json")
+
+    def decision_contact(self, run_id: str, candidate_id: str, purpose: str) -> dict[str, Any]:
+        """Who to tell about an approved decision. The CV's address comes first; the form's is only a fallback."""
+        run = self._require_run(run_id)
+        ranked = next((c for c in run.candidates if c.candidate_id == candidate_id), None)
+        if ranked is None:
+            raise ScreenerError("unknown_candidate")
+        self._audit.record("screener.contact_used", candidate_id=candidate_id, run_id=run_id, purpose=purpose)
+        record = self._identity.get(candidate_id) or IdentityRecord(candidate_id=candidate_id)
+        # A contact with no job came from a CSV uploaded with no offer selected.
+        form = next((c for c in self._identity.contacts_for(candidate_id) if c.job_id in (run.job_id, "") and c.email), None)
+        posting = self._store.get_posting(run.job_id)
+        return {
+            "email": record.emails[0] if record.emails else (form.email if form else None),
+            "full_name": record.full_name or (form.full_name if form else None),
+            "job_title": " ".join(self.get_job(run.job_id).title.split()),
+            "company": posting.details.company if posting else None,
+            "location": posting.details.location if posting else None,
+            "score": round(ranked.total_score * 100),
+            "matched_skills": ranked.matched_skills,
+        }
 
     def reveal_identity(self, candidate_id: str, reviewer: str) -> IdentityRecord:
         if self._store.get_candidate(candidate_id) is None:

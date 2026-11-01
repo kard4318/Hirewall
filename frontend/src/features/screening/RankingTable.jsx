@@ -1,9 +1,12 @@
 // Ranking table: the total and each criterion, with N/A where a criterion does not apply
 import { percent } from "./api.js";
+import { DecisionButtons } from "./DecisionButtons.jsx";
 
 const STATUS = { shortlisted: "Shortlisted", rejected: "Rejected" };
 
-export function RankingTable({ candidates, pending, statuses, labelFor, selectedId, checked, onSelect, onToggle }) {
+export function RankingTable({
+  candidates, pending, statuses, labelFor, selectedId, checked, onSelect, onToggle, proposals, canDecide, onDecide,
+}) {
   if (!candidates.length && !pending.length) {
     return <p className="scr-muted">Scores appear here once a run starts.</p>;
   }
@@ -39,6 +42,13 @@ export function RankingTable({ candidates, pending, statuses, labelFor, selected
                 <button type="button" className="scr-link" onClick={() => onSelect(c.candidate_id)}>{labelFor(c.candidate_id)}</button>
                 {c.injection_flag && <span className="scr-pill is-danger">flagged</span>}
                 {c.hidden_text_removed && !c.injection_flag && <span className="scr-pill is-warn">hidden text</span>}
+                <DecisionButtons
+                  candidateId={c.candidate_id}
+                  status={statuses[c.candidate_id]}
+                  proposal={proposals[c.candidate_id]}
+                  disabled={!canDecide}
+                  onDecide={onDecide}
+                />
               </td>
               <td>{c.profile}</td>
               <td className="is-num"><strong>{percent(c.total_score)}</strong></td>

@@ -1,0 +1,10 @@
+name,email,cv,cover_letter
+Ines Kacem,ines.kacem@example.com,ines_kacem_backend.pdf,"Dear hiring team, I would like to join your backend team. I built REST APIs in Python and I am available from January 2027."
+Walid Saidi,walid.saidi@example.com,walid_saidi_data.pdf,
+Lina Fictive,lina.fictive@example.com,"Lina Fictive
+Backend Developer
+EXPERIENCE
+Backend Developer, Fictional Co (2020 - 2025)
+Built REST APIs in Python with FastAPI and PostgreSQL, shipped with Docker.
+SKILLS
+Python, FastAPI, PostgreSQL, Docker","I enjoy building reliable services and can start in February 2027."

@@ -1,4 +1,4 @@
-// /hr/approvals: proposed shortlists and rejections awaiting a person, past decisions, and the audit log
+// /hr/approvals: proposed shortlists and rejections awaiting a person, and past decisions
 import { useCallback, useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useHrSession } from "../analytics/HrSession.jsx";
@@ -10,13 +10,20 @@ const TITLES = { record_shortlist: "Shortlist", record_rejection: "Rejection", s
 const label = (text) => (text ?? "").replaceAll("_", " ");
 const when = (iso) => (iso ? dateTime(iso) : "");
 
-function auditLine(entry) {
-  const { status, reason, approval_id: approval, candidate_id: candidate, run_id: run } = entry.fields;
-  const id = approval ?? candidate ?? run;
-  return [label(entry.event), status && label(status), reason && label(reason), id && String(id).slice(0, 12)].filter(Boolean).join(" · ");
-}
+const OUTCOMES = {
+  sent: "Email sent",
+  outbox: "Kept in the local outbox, not delivered",
+  no_email: "No email address found in the CV",
+  in_progress: "Already has a booking in progress",
+  failed: "Could not be sent",
+};
+const EFFECTS = {
+  record_shortlist: "Approving emails each candidate an invitation to book an interview with the Scheduler.",
+  record_rejection: "Approving emails each candidate a rejection. This cannot be taken back.",
+};
+const APPROVE = { record_shortlist: "Approve and invite", record_rejection: "Approve and send rejection" };
 
-function Item({ item, target, busy, onDecide }) {
+function Item({ item, target, busy, onDecide, delivery }) {
   const ids = item.summary.candidate_ids;
   const pending = item.status === "pending";
   const isEmail = item.action_type === "send_email";
@@ -33,11 +40,21 @@ function Item({ item, target, busy, onDecide }) {
         Proposed {when(item.created_at)}
         {item.decided_by && ` · decided by ${item.decided_by} ${when(item.decided_at)}`}
       </p>
-      <p className="scr-muted">Hash <code>{item.payload_hash.slice(0, 16)}</code></p>
       {pending && isEmail && <Link to="/hr/inbox">Review this draft in the inbox</Link>}
+      {pending && !isEmail && <p>{EFFECTS[item.action_type]}</p>}
+      {pending && !isEmail && delivery !== "smtp" && (
+        <p className="scr-alert">Email delivery is off (EMAIL_MODE={delivery}), so candidates will not receive this.</p>
+      )}
+      {item.notifications.length > 0 && (
+        <ul className="apr-audit">
+          {item.notifications.map((note) => (
+            <li key={note.candidate_id}>{shortId(note.candidate_id)}: {OUTCOMES[note.outcome] ?? label(note.outcome)}</li>
+          ))}
+        </ul>
+      )}
       {pending && !isEmail && (
         <div className="scr-row">
-          <button type="button" className="scr-btn is-primary" disabled={busy} onClick={() => onDecide(item, "approve")}>Approve and record</button>
+          <button type="button" className="scr-btn is-primary" disabled={busy} onClick={() => onDecide(item, "approve")}>{APPROVE[item.action_type] ?? "Approve"}</button>
           <button type="button" className="scr-btn" disabled={busy} onClick={() => onDecide(item, "reject")}>Reject</button>
         </div>
       )}
@@ -49,7 +66,7 @@ export function ApprovalsPage() {
   const { token, signOut } = useHrSession();
   const [params] = useSearchParams();
   const [items, setItems] = useState(null);
-  const [audit, setAudit] = useState(null);
+  const [delivery, setDelivery] = useState("outbox");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const target = params.get("id");
@@ -61,9 +78,9 @@ export function ApprovalsPage() {
 
   const refresh = useCallback(async () => {
     try {
-      const [queue, log] = await Promise.all([approvalsApi.list(token), approvalsApi.audit(token)]);
+      const queue = await approvalsApi.list(token);
       setItems(queue.items);
-      setAudit(log);
+      setDelivery(queue.delivery);
     } catch (err) {
       fail(err);
     }
@@ -87,48 +104,30 @@ export function ApprovalsPage() {
 
   const pending = (items ?? []).filter((i) => i.status === "pending");
   const past = (items ?? []).filter((i) => i.status !== "pending");
-  const render = (item) => <Item key={item.approval_id} item={item} target={item.approval_id === target} busy={busy} onDecide={decide} />;
+  const render = (item) => <Item key={item.approval_id} item={item} target={item.approval_id === target} busy={busy} onDecide={decide} delivery={delivery} />;
 
   return (
-    <main className="scr-page">
+    <main className="scr-page apr-page">
       <header className="scr-header">
         <div>
           <h1>Approval queue</h1>
           <p className="scr-muted">Nothing is recorded or sent until a person approves it here.</p>
         </div>
       </header>
-      {error && <p className="scr-alert" role="alert">{label(error)}</p>}
-      {items === null && !error && <p className="scr-muted" aria-busy="true">Loading...</p>}
+      {error && <p className="scr-alert apr-column" role="alert">{label(error)}</p>}
+      {items === null && !error && <p className="scr-muted apr-column" aria-busy="true">Loading...</p>}
       {items !== null && (
-        <div className="apr-grid">
-          <div className="scr-center">
-            <section className="scr-card">
-              <h2>Waiting for a decision ({pending.length})</h2>
-              {pending.length ? <ul className="apr-list">{pending.map(render)}</ul> : <p className="scr-muted">Nothing is waiting. Propose a shortlist from <Link to="/hr/screening">Talent Orbit</Link>.</p>}
-            </section>
-            {past.length > 0 && (
-              <section className="scr-card">
-                <h2>Decided</h2>
-                <ul className="apr-list">{past.map(render)}</ul>
-              </section>
-            )}
-          </div>
+        <div className="scr-center apr-column">
           <section className="scr-card">
-            <h2>Audit log</h2>
-            {audit && (
-              <p className={audit.verified ? "scr-note" : "scr-alert"}>
-                {audit.verified ? "Hash chain verified." : "The audit log failed verification."}
-              </p>
-            )}
-            <ul className="apr-audit">
-              {(audit?.entries ?? []).map((entry) => (
-                <li key={entry.hash}>
-                  <span className="scr-muted">{when(entry.at)}</span><br />
-                  {auditLine(entry)}
-                </li>
-              ))}
-            </ul>
+            <h2>Waiting for a decision ({pending.length})</h2>
+            {pending.length ? <ul className="apr-list">{pending.map(render)}</ul> : <p className="scr-muted">Nothing is waiting. Propose a shortlist from <Link to="/hr/screening">Talent Orbit</Link>.</p>}
           </section>
+          {past.length > 0 && (
+            <section className="scr-card">
+              <h2>Decided</h2>
+              <ul className="apr-list">{past.map(render)}</ul>
+            </section>
+          )}
         </div>
       )}
     </main>
